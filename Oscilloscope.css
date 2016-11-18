@@ -10,7 +10,7 @@ body {
 	overflow: auto;
 	font-family: "Synchro LET", "OCR A Extended", "Agency FB", Consolas, "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
 	color: #c1fff4;
-	text-shadow: #fff 0 0 100px;
+	/* text-shadow: #fff 0 0 100px; */
 }
 
 #background1 {
@@ -88,21 +88,21 @@ body {
 
 #sidebar .links .link a.inactive{
 	color: #88b5ae;
-	text-shadow: #c1fff4 0 0 50px;
+	/* text-shadow: #c1fff4 0 0 50px; */
 	text-decoration: none;
 	font-size: 8pt;
 }
 
 #sidebar .links .link a.active{
 	color: #c1fff4;
-	text-shadow: #fff 0 0 100px;
+	/* text-shadow: #fff 0 0 100px; */
 	text-decoration: none;
 	font-size: 8pt;
 }
 
 #sidebar .links .link a.active:hover {
 	color: #fff;
-	text-shadow: #fff 0 0 200px;
+	/* text-shadow: #fff 0 0 200px; */
 	text-decoration: none;
 }
 
@@ -155,12 +155,12 @@ body {
 
 #main #content a{
 	color: #c1fff4;
-	text-shadow: #fff 0 0 100px;
+	/* text-shadow: #fff 0 0 100px; */
 }
 
 #main #content a:hover {
 	color: #fff;
-	text-shadow: #fff 0 0 200px;
+	/* text-shadow: #fff 0 0 200px; */
 }
 
 
