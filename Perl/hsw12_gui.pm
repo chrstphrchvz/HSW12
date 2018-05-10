@@ -1288,6 +1288,9 @@ sub main_window_set_serial_device_cmd {
       $self->{session}->{preferences}->{io}->{device} =
 	$self->{pod}->set_device($self->{session}->{preferences}->{io}->{device});
     }
+    # pick a default baud in order to apply stty defaults
+    $self->{session}->{preferences}->{io}->{baud} = '9600';
+    $self->main_window_set_serial_speed_cmd($self);
 }
 
 ####################################
