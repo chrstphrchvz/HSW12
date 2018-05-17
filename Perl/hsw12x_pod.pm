@@ -263,8 +263,8 @@ Dirk Heisswolf
 #################
 # Perl settings #
 #################
-#use warnings;
-#use strict;
+use warnings;
+use strict;
 use FindBin qw($RealBin);
 use lib $RealBin;
 use Fctl ':flock';

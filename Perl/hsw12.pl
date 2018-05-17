@@ -62,7 +62,8 @@ initial release
 # Perl settings #
 #################
 use 5.005;
-#use warnings;
+use warnings;
+use strict;
 use Tk;
 use FindBin qw($RealBin);
 use lib $RealBin;

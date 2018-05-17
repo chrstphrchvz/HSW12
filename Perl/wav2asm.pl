@@ -57,6 +57,7 @@ Dirk Heisswolf
 #################
 use 5.005;
 use warnings;
+use strict;
 use IO::File;
 use Readonly;
 

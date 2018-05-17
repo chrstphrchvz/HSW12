@@ -134,8 +134,8 @@ Dirk Heisswolf
 #################
 # Perl settings #
 #################
-#use warnings;
-#use strict;
+use warnings;
+use strict;
 require hsw12_asm;
 use Readonly;
 

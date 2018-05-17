@@ -373,8 +373,8 @@ Dirk Heisswolf
 #################
 # Perl settings #
 #################
-#use warnings;
-#use strict;
+use warnings;
+use strict;
 
 ####################
 # create namespace #

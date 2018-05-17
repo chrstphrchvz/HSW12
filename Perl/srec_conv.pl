@@ -57,7 +57,8 @@ Dirk Heisswolf
 # Perl settings #
 #################
 use 5.005;
-#use warnings;
+use warnings;
+use strict;
 use File::Basename;
 use FindBin qw($RealBin);
 use lib $RealBin;
