@@ -207,6 +207,8 @@ use Tk 800.000;
 use Tk::ROText;
 use Tk::Dialog;
 use Tk::FBox;
+use Tk::IDElayout;
+use Tk::IDEtabFrame;
 use Data::Dumper;
 use IO::File;
 use Fcntl;
@@ -1466,32 +1468,32 @@ sub main_window_about_cmd {
 }
 
 ##########################
-# create_terminal_window #
+# create_terminal_frame #
 ##########################
-sub create_terminal_window {
+sub create_terminal_frame {
     my $self         = shift @_;
     #macro button;
     my $macro_button;
 
     if ($self->{session}->{gui}->{terminal}->{state} !~ /^closed$/) {
-	if (Tk::Exists($self->{gui}->{terminal}->{toplevel})) {
+	if (Tk::Exists($self->{gui}->{terminal}->{tab_frame})) {
 	    ##########################
 	    # redraw terminal window #
 	    ##########################
 	    
 	} else {
 	    ########################## 
-	    # create terminal window #
+	    # create terminal frame #
 	    ##########################
-	    #toplevel
-	    $self->{gui}->{terminal}->{toplevel} = $self->{gui}->{main}->Toplevel;
-	    $self->{gui}->{terminal}->{toplevel}->gridColumnconfigure(0, -weight => 1);
-	    $self->{gui}->{terminal}->{toplevel}->gridRowconfigure(   0, -weight => 1);
-	    $self->{gui}->{terminal}->{toplevel}->gridRowconfigure(   1, -weight => 0);
-	    $self->{gui}->{terminal}->{toplevel}->gridRowconfigure(   2, -weight => 0);
+	    #tab_frame
+	    $self->{gui}->{terminal}->{tab_frame} = $self->{gui}->{main}->IDEtabFrame(@{$self->{IDE_tab_frame_config}});
+	    $self->{gui}->{terminal}->{tab_frame}->gridColumnconfigure(0, -weight => 1);
+	    $self->{gui}->{terminal}->{tab_frame}->gridRowconfigure(   0, -weight => 1);
+	    $self->{gui}->{terminal}->{tab_frame}->gridRowconfigure(   1, -weight => 0);
+	    $self->{gui}->{terminal}->{tab_frame}->gridRowconfigure(   2, -weight => 0);
 	    
 	    #text_frame
-	    $self->{gui}->{terminal}->{text_frame} = $self->{gui}->{terminal}->{toplevel}->Frame(-relief => 'ridge', -border => 2);
+	    $self->{gui}->{terminal}->{text_frame} = $self->{gui}->{terminal}->{tab_frame}->Frame(-relief => 'ridge', -border => 2);
 	    $self->{gui}->{terminal}->{text_frame}->grid(-column => 0, -row => 0, -sticky => 'nsew');
 	    $self->{gui}->{terminal}->{text_frame}->gridColumnconfigure(0, -weight => 1);
 	    $self->{gui}->{terminal}->{text_frame}->gridRowconfigure(   0, -weight => 1);
@@ -1514,7 +1516,7 @@ sub create_terminal_window {
 	    );
 	    
 	    #input_frame
-	    $self->{gui}->{terminal}->{input_frame} = $self->{gui}->{terminal}->{toplevel}->Frame(-relief => 'ridge', -border => 2);
+	    $self->{gui}->{terminal}->{input_frame} = $self->{gui}->{terminal}->{tab_frame}->Frame(-relief => 'ridge', -border => 2);
 	    $self->{gui}->{terminal}->{input_frame}->grid(-column => 0, -row => 1, -sticky => 'nsew');
 	    $self->{gui}->{terminal}->{input_frame}->gridColumnconfigure(0, -weight => 1);
 	    $self->{gui}->{terminal}->{input_frame}->gridColumnconfigure(1, -weight => 0);
@@ -1540,7 +1542,7 @@ sub create_terminal_window {
 														 );
 	    $self->{gui}->{terminal}->{input_clear_button}->grid(-column => 3, -row => 0, -sticky => 'nsew');
 	    #macro_frame
-	    $self->{gui}->{terminal}->{macro_frame} = $self->{gui}->{terminal}->{toplevel}->Frame(-relief => 'ridge', -border => 2);
+	    $self->{gui}->{terminal}->{macro_frame} = $self->{gui}->{terminal}->{tab_frame}->Frame(-relief => 'ridge', -border => 2);
 	    $self->{gui}->{terminal}->{macro_frame}->grid(-column => 0, -row => 2, -sticky => 'nsew');
 	    $self->{gui}->{terminal}->{macro_frame}->gridColumnconfigure(0, -weight => 1);
 	    $self->{gui}->{terminal}->{macro_frame}->gridColumnconfigure(1, -weight => 1);
@@ -1620,32 +1622,34 @@ sub create_terminal_window {
 	################
 	# set geometry #
 	################
-	$self->{gui}->{terminal}->{toplevel}->geometry($self->{session}->{gui}->{terminal}->{geometry});
+=pod
+	$self->{gui}->{terminal}->{tab_frame}->geometry($self->{session}->{gui}->{terminal}->{geometry});
 	if ($self->{session}->{gui}->{terminal}->{state} =~ /^iconic$/) {
 	    $self->{gui}->{main}->iconify();
 	}
+=cut
 	
 	####################
 	# connect callback #
 	####################
-	$self->{gui}->{terminal}->{toplevel}->bind('<Configure>', 
+	$self->{gui}->{terminal}->{tab_frame}->bind('<Configure>', 
 						   [\&geometry_callback, $self, "terminal"]);
 	
 	##################
 	# close callback #
 	##################
-	$self->{gui}->{terminal}->{toplevel}->OnDestroy([\&terminal_destroy_callback, $self]);
+	$self->{gui}->{terminal}->{tab_frame}->OnDestroy([\&terminal_destroy_callback, $self]);
 
 	##########################
 	# update terminal window #
 	##########################
 	$self->update_terminal_window();
 
-    } elsif (Tk::Exists($self->{gui}->{terminal}->{toplevel})) {
+    } elsif (Tk::Exists($self->{gui}->{terminal}->{tab_frame})) {
 	#########################
 	# close terminal window #
 	#########################
-	$self->{gui}->{terminal}->{toplevel}->destroy();
+	$self->{gui}->{terminal}->{tab_frame}->destroy();
     }
 }
 
@@ -1672,13 +1676,15 @@ sub update_terminal_window {
 	#############
 	# set title #
 	#############
+=pod
 	if ($self->{session}->{source_file} =~ /^\s*$/) {
-	    $self->{gui}->{terminal}->{toplevel}->title("HSW12 - Terminal");
+	    $self->{gui}->{terminal}->{tab_frame}->title("HSW12 - Terminal");
 	} else {
 	    $file_short = $self->{session}->{source_file};
 	    $file_short =~ s/^.*\///;
-	    $self->{gui}->{terminal}->{toplevel}->title(sprintf("HSW12 - Terminal (%s)", $file_short));
+	    $self->{gui}->{terminal}->{tab_frame}->title(sprintf("HSW12 - Terminal (%s)", $file_short));
 	}  
+=cut
 
 	#####################
 	# configure widgets #
@@ -1750,9 +1756,9 @@ sub update_terminal_window {
 	# lock size #
 	#############
 	#if ($self->{session}->{gui}->{main}->{connect}) {
-	#    $self->{gui}->{terminal}->{toplevel}->resizable(0, 0);
+	#    $self->{gui}->{terminal}->{tab_frame}->resizable(0, 0);
 	#} else {
-	#    $self->{gui}->{terminal}->{toplevel}->resizable(1, 1);
+	#    $self->{gui}->{terminal}->{tab_frame}->resizable(1, 1);
 	#}
     }
 }
@@ -1764,7 +1770,7 @@ sub terminal_destroy_callback {
     my $self     = shift @_;
     
     if ($self->{session}->{gui}->{terminal}->{state} !~ /^closed$/) {
-	$self->{session}->{gui}->{terminal}->{geometry} = $self->{gui}->{terminal}->{toplevel}->geometry();
+	$self->{session}->{gui}->{terminal}->{geometry} = $self->{gui}->{terminal}->{tab_frame}->geometry();
     }
     $self->{session}->{gui}->{terminal}->{state}    = 'closed';
 
@@ -1949,9 +1955,9 @@ sub terminal_define_macro_cmd {
 }   
 
 #############################
-# create_source_code_window #
+# create_source_code_frame #
 #############################
-sub create_source_code_window {
+sub create_source_code_frame {
     my $self         = shift @_;
     my $state;
 
@@ -2698,9 +2704,9 @@ sub source_edit_cmd {
 }
 
 ###########################
-# create_variables_window #
+# create_variables_frame #
 ###########################
-sub create_variables_window {
+sub create_variables_frame {
     my $self     = shift @_;
     my $state;
 
@@ -3151,9 +3157,9 @@ sub auto_select_variables {
 }
 
 ###########################
-# create_registers_window #
+# create_registers_frame #
 ###########################
-sub create_registers_window {
+sub create_registers_frame {
     my $self     = shift @_;
 
     if ($self->{session}->{gui}->{registers}->{state} !~ /^closed$/) {
@@ -3800,9 +3806,9 @@ sub update_register_values {
 }
 
 #########################
-# create_control_window #
+# create_control_frame #
 #########################
-sub create_control_window {
+sub create_control_frame {
     my $self     = shift @_;
 
     if ($self->{session}->{gui}->{control}->{state} !~ /^closed$/) {
@@ -4578,21 +4584,59 @@ sub build_gui {
 
     #main window
     $self->create_main_window();
-
-    #terminal window
-    $self->create_terminal_window();
     
-    #source code window
-    $self->create_source_code_window();
+	#???
+	$self->{IDE_tab_frame_config} = Tk::IDElayout->defaultIDEtabFrameConfig();
     
-    #variables window
-    $self->create_variables_window();
+	#terminal frame
+    $self->create_terminal_frame();
     
-    #register window
-    $self->create_registers_window();
+    #source code frame
+    $self->create_source_code_frame();
+    
+    #variables frame
+    $self->create_variables_frame();
+    
+    #register frame
+    $self->create_registers_frame();
  
-    #control window
-    $self->create_control_window();
+    #control frame
+    $self->create_control_frame();
+
+    $self->{IDE_nodes} = [
+        {
+			name => 'pane_window', 
+			dir  => 'V',
+			childOrder => [
+				'terminal_tab',
+			],
+			type => 'panedWindow',
+        },
+        {
+			name => "terminal_tab",
+			type => 'widget',
+        },
+	];
+
+	$self->{IDE_edges} = [
+		[
+			'pane_window',
+			'terminal_tab',
+		],
+	];
+
+	$self->{IDE_widgets} = {
+		'terminal_tab' => $self->{gui}->{terminal}->{tab_frame},
+	};
+
+	$self->{IDE_layout} = $self->{gui}->{main}->IDElayout(
+        -widgets => $self->{IDE_widgets},
+        -frameStructure => {
+			nodes => $self->{IDE_nodes},
+			edges => $self->{IDE_edges},
+		},
+        #-menu    => $MenuBar,
+    );
 }
 
 #################
