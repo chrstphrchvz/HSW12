@@ -6535,7 +6535,7 @@ sub psop_align {
                 $$pc_lin_ref      = undef;
                 $$pc_pag_ref      = undef;
                 $$label_value_ref = undef;
-                $$undef_count++;
+                $$undef_count_ref++;
             } else {
                 ##################
                 # valid bit mask #
@@ -6566,7 +6566,7 @@ sub psop_align {
                     #$$label_value_ref = $$pc_pag_ref;
                     #undefine hexcode
                     $code_entry->[8] = undef;
-                    $$undef_count++;
+                    $$undef_count_ref++;
                 } else {
                     ###################
                     # valid fill byte #
@@ -7350,7 +7350,7 @@ sub psop_fill {
             $$pc_lin_ref      = undef;
             $$pc_pag_ref      = undef;
             $$label_value_ref = undef;
-            $$undef_count++;
+            $$undef_count_ref++;
         } else {
             ####################
             # valid byte count #
@@ -7378,7 +7378,7 @@ sub psop_fill {
                 if (defined $$pc_pag_ref) {$$pc_pag_ref = $$pc_pag_ref + $byte_count_res;}
                 #undefine hexcode
                 $code_entry->[8] = undef;
-                $$undef_count++;
+                $$undef_count_ref++;
             } else {
                 ###################
                 # valid fill byte #
@@ -8002,7 +8002,7 @@ sub psop_unalign {
                 $$pc_lin_ref      = undef;
                 $$pc_pag_ref      = undef;
                 $$label_value_ref = undef;
-                $$undef_count++;
+                $$undef_count_ref++;
             } else {
                 ##################
                 # valid bit mask #
@@ -8033,7 +8033,7 @@ sub psop_unalign {
                     #$$label_value_ref = $$pc_pag_ref;
                     #undefine hexcode
                     $code_entry->[8] = undef;
-                    $$undef_count++;
+                    $$undef_count_ref++;
                 } else {
                     ###################
                     # valid fill byte #
@@ -8116,7 +8116,7 @@ sub psop_zmb {
             # undefined value #
             ###################
             #undefine hexcode
-            $$undef_count++;
+            $$undef_count_ref++;
             $$pc_lin_ref = undef;
             $$pc_pag_ref = undef;
         } else {
