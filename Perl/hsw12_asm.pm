@@ -10317,7 +10317,7 @@ sub check_idx2_ext {
         }
         return 1;
     }
-    printf "check_idx2_ext: addr1=%s, addr2=%s\n", $addr1, $addr2;
+    #printf "check_idx2_ext: addr0=%s, addr1=%s\n", $addr0, $addr1;
     return 0;
 }
 
