@@ -1207,7 +1207,7 @@ sub send_string {
     $self->{esc_instr} = 1;
 
     if($self->{transmit}) {
-      push @$output_queue, [$data, O];
+      push @$output_queue, [$data, 0];
     } else {
       push @$output_queue, [$data, 0];
       $self->transmit();
