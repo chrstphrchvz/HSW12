@@ -319,7 +319,7 @@ sub reload {
 	# determine address spaces #
 	############################
 	$self->determine_addrspaces();
-	$self->{problems} = 0
+	$self->{problems} = 0;
     }
 }
 
