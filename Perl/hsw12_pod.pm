@@ -1471,7 +1471,8 @@ sub write_mem {
 		    ##############
 		    $self->send_command(sprintf("mm %.4x %.2x\n", (($address + $i), 
 								   ($data & 0xff))),
-					$delay_mm);
+					#$delay_mm,
+					);
 		    #check memory
 		    $self->send_command(sprintf("md %.4x\n", ($address + $i)));
 		    $data = $data >> 8;
@@ -1483,7 +1484,8 @@ sub write_mem {
 		##############
 		$self->send_command(sprintf("mm %.4x %.2x\n", (($address + $i), 
 							       ($data & 0xff))),
-				    $delay_mm);
+				    #$delay_mm,
+					);
 		#check memory
 		$self->send_command(sprintf("md %.4x\n", ($address + $i)));
 		$data = $data >> 8;
