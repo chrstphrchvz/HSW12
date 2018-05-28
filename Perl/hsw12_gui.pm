@@ -2234,7 +2234,7 @@ sub update_source_code_text {
 	$code_pc_pag   = $code_entry->[7];
 	$code_hex      = $code_entry->[8];
 	$code_errors   = $code_entry->[10];
-        $code_macros   = $code_entry->[11];
+	$code_macros   = $code_entry->[11];
 	
 	###############################
 	# convert integers to strings #
