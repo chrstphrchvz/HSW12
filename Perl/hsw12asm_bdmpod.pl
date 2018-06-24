@@ -212,7 +212,7 @@ if ($code->{problems}) {
 	print FILEHANDLE $out_string;
 	close FILEHANDLE;
     } else {
-	printf STDERR "Can't open S-recordfile \"%s_fw.%s\"\n", $prog_name, lc(srec_format);
+	printf STDERR "Can't open S-recordfile \"%s_fw.%s\"\n", $prog_name, lc($srec_format);
 	exit;
     }
 }
