@@ -111,7 +111,7 @@ foreach $arg (@ARGV) {
     } elsif ($arg =~ /^\s*\-/) {
 	#ignore
     } elsif ($arg_type eq "offset") {
-	if ($offset =~ \D) {
+	if ($offset =~ /\D/) {
 	    printf STDOUT ("    WARNING! Invalid offset \"%s\" ignored\n", $arg);
 	} else {
 	    $offset = $arg;
