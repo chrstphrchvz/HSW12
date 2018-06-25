@@ -126,6 +126,8 @@ if ($code->{problems}) {
     #########################
     # write linear S-record #
     #########################
+    # FIXME: undefined variables $srec_format, $srec_data_length,
+    #        $srec_add_s5, $srec_word_entries
     if (open (FILEHANDLE, sprintf(">%s_lin.%s\n", $prog_name, lc($srec_format)))) {
 	$out_string = $code->print_lin_srec(uc($prog_name),
 					    $srec_format,
