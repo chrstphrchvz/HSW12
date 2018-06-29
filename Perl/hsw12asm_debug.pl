@@ -67,18 +67,19 @@ require hsw12_asm;
 ###############
 # global vars #
 ###############
-@src_files         = ();
-@lib_files         = ();
-%defines           = ();
-$output_path       = ();
-$prog_name         = "";
-$arg_type          = "src";
-$srec_format       = $hsw12_asm::srec_def_format;
-$srec_data_length  = $hsw12_asm::srec_def_data_length;
-$srec_add_s5       = $hsw12_asm::srec_def_add_s5;
-$srec_word_entries = 1;
-$symbols           = {};
-$code              = {};
+our @src_files         = ();
+our @lib_files         = ();
+our %defines           = ();
+our $output_path       = ();
+our $prog_name         = "";
+our $arg_type          = "src";
+our $srec_format       = $hsw12_asm::SREC_DEF_FORMAT;
+our $srec_data_length  = $hsw12_asm::SREC_DEF_DATA_LENGTH;
+our $srec_add_s5       = $hsw12_asm::SREC_DEF_ADD_S5;
+our $srec_word_entries = 1;
+our $symbols           = {};
+our $code              = {};
+our $symbol_file_name  = "";
 
 #########################
 # Dump Perl information #
@@ -90,7 +91,7 @@ printf STDERR "Command line arguments:   \"%d\"\n", ($#ARGV+1);
 ##############################
 # Dump all command line args #
 ##############################
-foreach $i (0..$#ARGV) {
+foreach my $i (0..$#ARGV) {
     printf STDERR "Command line argument %2d: \"%s\"\n", $i, $ARGV[$i];
 }
 
@@ -98,7 +99,7 @@ foreach $i (0..$#ARGV) {
 # Interpret command line args #
 ###############################
 #printf "parsing args: count: %s\n", $#ARGV + 1;
-foreach $arg (@ARGV) {
+foreach my $arg (@ARGV) {
     #printf "  arg: %s\n", $arg;
     if ($arg =~ /^\s*\-L\s*$/i) {
 	$arg_type = "lib";
@@ -118,7 +119,7 @@ foreach $arg (@ARGV) {
 	push @src_files, $arg;
     } elsif ($arg_type eq "lib") {
 	#library path
-	if ($arg !~ /\/$/) {$arg = sprintf("%s%s", $arg, $hsw12_asm::path_del);}
+	if ($arg !~ /\/$/) {$arg = sprintf("%s%s", $arg, $hsw12_asm::PATH_DEL);}
 	unshift @lib_files, $arg;
         $arg_type          = "src";
     } elsif ($arg_type eq "def") {
@@ -133,7 +134,7 @@ foreach $arg (@ARGV) {
 }
 $prog_name        = basename($src_files[0], ".s");
 $output_path      = dirname($src_files[0], ".s");
-$symbol_file_name = sprintf("%s%s%s.sym", $output_path, $hsw12_asm::path_del, $prog_name);
+$symbol_file_name = sprintf("%s%s%s.sym", $output_path, $hsw12_asm::PATH_DEL, $prog_name);
 
 ###################
 # add default lib #
@@ -141,9 +142,9 @@ $symbol_file_name = sprintf("%s%s%s.sym", $output_path, $hsw12_asm::path_del, $p
 #printf "libraries:    %s (%s)\n",join(", ", @lib_files), $#lib_files;
 #printf "source files: %s (%s)\n",join(", ", @src_files), $#src_files;
 if ($#lib_files < 0) {
-  foreach $src_file (@src_files) {
+  foreach my $src_file (@src_files) {
     #printf "add library:%s/\n", dirname($src_file);
-    push @lib_files, sprintf("%s%s", dirname($src_file), $hsw12_asm::path_del);
+    push @lib_files, sprintf("%s%s", dirname($src_file), $hsw12_asm::PATH_DEL);
   }
 }
 ######################

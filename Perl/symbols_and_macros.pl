@@ -67,29 +67,30 @@ require hsw12_asm;
 ###############
 # global vars #
 ###############
-@src_files         = ();
-@lib_files         = ();
-%defines           = ();
-$output_path       = ();
-$prog_name         = "";
-$arg_type          = "src";
-$srec_format       = $hsw12_asm::srec_def_format;
-$srec_data_length  = $hsw12_asm::srec_def_data_length;
-$srec_add_s5       = $hsw12_asm::srec_def_add_s5;
-$srec_word_entries = 1;
-$symbols           = {};
-$code              = {};
+our @src_files         = ();
+our @lib_files         = ();
+our %defines           = ();
+our $output_path       = ();
+our $prog_name         = "";
+our $arg_type          = "src";
+our $srec_format       = $hsw12_asm::SREC_DEF_FORMAT;
+our $srec_data_length  = $hsw12_asm::SREC_DEF_DATA_LENGTH;
+our $srec_add_s5       = $hsw12_asm::SREC_DEF_ADD_S5;
+our $srec_word_entries = 1;
+our $symbols           = {};
+our $code              = {};
+our $symbol_file_name  = "";
 
-($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+our ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
 $year += 1900;
-@months = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
-@days   = ("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat");
+our @months = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
+our @days   = ("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat");
 
 ##########################
 # read command line args #
 ##########################
 #printf "parsing args: count: %s\n", $#ARGV + 1;
-foreach $arg (@ARGV) {
+foreach my $arg (@ARGV) {
     #printf "  arg: %s\n", $arg;
     if ($arg =~ /^\s*\-L\s*$/i) {
 	$arg_type = "lib";
@@ -102,7 +103,7 @@ foreach $arg (@ARGV) {
 	push @src_files, $arg;
     } elsif ($arg_type eq "lib") {
 	#library path
-	if ($arg !~ /\/$/) {$arg = sprintf("%s%s", $arg, $hsw12_asm::path_del);}
+	if ($arg !~ /\/$/) {$arg = sprintf("%s%s", $arg, $hsw12_asm::PATH_DEL);}
 	unshift @lib_files, $arg;
         $arg_type          = "src";
     } elsif ($arg_type eq "def") {
@@ -137,19 +138,19 @@ $output_path = dirname($src_files[0], ".s");
 #printf "libraries:    %s (%s)\n",join(", ", @lib_files), $#lib_files;
 #printf "source files: %s (%s)\n",join(", ", @src_files), $#src_files;
 if ($#lib_files < 0) {
-  foreach $src_file (@src_files) {
+  foreach my $src_file (@src_files) {
     #printf "add library:%s/\n", dirname($src_file);
-    push @lib_files, sprintf("%s%s", dirname($src_file), $hsw12_asm::path_del);
+    push @lib_files, sprintf("%s%s", dirname($src_file), $hsw12_asm::PATH_DEL);
   }
 }
 
 ####################
 # load symbol file #
 ####################
-$symbol_file_name = sprintf("%s%s%s.sym", $output_path, $hsw12_asm::path_del, $prog_name);
+$symbol_file_name = sprintf("%s%s%s.sym", $output_path, $hsw12_asm::PATH_DEL, $prog_name);
 #printf STDERR "Loading: %s\n",  $symbol_file_name;
 if (open (FILEHANDLE, sprintf("<%s", $symbol_file_name))) {
-    $data = join "", <FILEHANDLE>;
+    my $data = join "", <FILEHANDLE>;
     eval $data;
     close FILEHANDLE;
 }
@@ -176,7 +177,7 @@ if ($code->{problems}) {
     # write symbol file #
     #####################
     if (open (FILEHANDLE, sprintf("+>%s", $symbol_file_name))) {
-	$dump = Data::Dumper->new([$code->{comp_symbols}], ['symbols']);
+	my $dump = Data::Dumper->new([$code->{comp_symbols}], ['symbols']);
 	$dump->Indent(2);
 	print FILEHANDLE $dump->Dump;
  	close FILEHANDLE;
@@ -188,7 +189,7 @@ if ($code->{problems}) {
     #########################
     # write linear S-record #
     #########################
-    $symbol_file_name = sprintf("%s%s%s_sym.s", $output_path, $hsw12_asm::path_del, $prog_name);
+    $symbol_file_name = sprintf("%s%s%s_sym.s", $output_path, $hsw12_asm::PATH_DEL, $prog_name);
     if (open (FILEHANDLE, sprintf("+>%s", $symbol_file_name))) {
 	#Print header
 	#------------ 
@@ -222,7 +223,7 @@ if ($code->{problems}) {
 	printf FILEHANDLE ";###############################################################################\n";
 	printf FILEHANDLE ";# Symbol definitions                                                          #\n";
 	printf FILEHANDLE ";###############################################################################\n";
-	foreach $key (sort keys %{$code->{comp_symbols}}) {
+	foreach my $key (sort keys %{$code->{comp_symbols}}) {
 	    if ($code->{comp_symbols}->{$key} > 0xffffff) {
 		printf FILEHANDLE "%-24s EQU %12s\n", $key, sprintf("\$%.4X_%.4X", $code->{comp_symbols}->{$key}>>16, 
 								                   $code->{comp_symbols}->{$key}&0xffff);
@@ -239,11 +240,11 @@ if ($code->{problems}) {
 	printf FILEHANDLE ";###############################################################################\n";
 	printf FILEHANDLE ";# Macro definitions                                                           #\n";
 	printf FILEHANDLE ";###############################################################################\n";
-	foreach $macro (sort keys %{$code->{macros}}) {
+	foreach my $macro (sort keys %{$code->{macros}}) {
 	    printf FILEHANDLE "#macro %s, %d\n", $macro, $code->{macro_argcs}->{$macro};
 	    #printf FILEHANDLE "count: %d\n", $#{$code->{macros}->{$macro}}+1;
-	    foreach $code_entry (@{$code->{macros}->{$macro}}) {
-		foreach $line (@{$code_entry->[2]}) {
+	    foreach my $code_entry (@{$code->{macros}->{$macro}}) {
+		foreach my $line (@{$code_entry->[2]}) {
 		    #Remove comments 
 		    $line =~ s/^\*.*$//;
 		    $line =~ s/;.*$//;

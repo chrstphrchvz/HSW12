@@ -289,7 +289,7 @@ Dirk Heisswolf
   delimeters " or '
 
 =item V00.37 - May 3, 2009
- -fixed regular expression $precomp_opcode. Got btoken in V00.37 (did not
+ -fixed regular expression $PRECOMP_OPCODE. Got btoken in V00.37 (did not
   handle expressions with ascii chars correctly
   
 =item V00.38 - May 7, 2009
@@ -388,6 +388,7 @@ use IO::File;
 use Fcntl;
 use Text::Tabs;
 use File::Basename;
+use Readonly;
 
 ####################
 # global variables #
@@ -410,2664 +411,2670 @@ use File::Basename;
 ################################
 # Max. number of compile runs) #
 ################################
-*max_comp_runs = \200;
+Readonly our $MAX_COMP_RUNS => 200;
 
 ###########
 # version #
 ###########
-*version = \"00.58";#"
+Readonly our $VERSION => "00.58";#"
 
 #############################
 # default S-record settings #
 #############################
-*srec_def_format      = \"S28";#"
-*srec_def_data_length = \64;
-*srec_def_add_s5      = \64;
-*srec_def_fill_byte   = \0xff;
-*srec_def_alignment   = \8;
+Readonly our $SREC_DEF_FORMAT      => "S28";#"
+Readonly our $SREC_DEF_DATA_LENGTH => 64;
+Readonly our $SREC_DEF_ADD_S5      => 64;
+Readonly our $SREC_DEF_FILL_BYTE   => 0xff;
+Readonly our $SREC_DEF_ALIGNMENT   => 8;
 
 ###################
 # path delimeters #
 ###################
-if ($^O =~ /MSWin/i) {
-    $path_del         = "\\";
-    *path_absolute    = \qr/^[A-Z]\:/;
-} else {
-    $path_del         = "\/";
-    *path_absolute    = \qr/^\//;
-}
+Readonly our $PATH_DEL         => ($^O =~ /MSWin/i)
+    ? "\\"
+    : "\/"
+;
+Readonly our $PATH_ABSOLUTE    => ($^O =~ /MSWin/i)
+    ? qr/^[A-Z]\:/
+    : qr/^\//
+;
 
 ########################
 # code entry structure #
 ########################
-*code_entry_line   =  \0;
-*code_entry_file   =  \1;
-*code_entry_code   =  \2;
-*code_entry_label  =  \3;
-*code_entry_opcode =  \4;
-*code_entry_args   =  \5;
-*code_entry_lin_pc =  \6;
-*code_entry_pag_pc =  \7;
-*code_entry_hex    =  \8;
-*code_entry_bytes  =  \9;
-*code_entry_errors = \10;
-*code_macros       = \11;
-*code_sym_tabs     = \12;
+Readonly our $CODE_ENTRY_LINE     =>  0;
+Readonly our $CODE_ENTRY_FILE     =>  1;
+Readonly our $CODE_ENTRY_CODE     =>  2;
+Readonly our $CODE_ENTRY_LABEL    =>  3;
+Readonly our $CODE_ENTRY_OPCODE   =>  4;
+Readonly our $CODE_ENTRY_ARGS     =>  5;
+Readonly our $CODE_ENTRY_LIN_PC   =>  6;
+Readonly our $CODE_ENTRY_PAG_PC   =>  7;
+Readonly our $CODE_ENTRY_HEX      =>  8;
+Readonly our $CODE_ENTRY_BYTES    =>  9;
+Readonly our $CODE_ENTRY_ERRORS   => 10;
+Readonly our $CODE_ENTRY_MACROS   => 11;
+Readonly our $CODE_ENTRY_SYM_TABS => 12;
 
 ###########################
 # precompiler expressions #
 ###########################
-*precomp_directive    = \qr/^\#(\w+)\s*([^\,\s\;]*|\(.*\))\s*[\s,]?\s*([^\,\s\;]*|\(.*\))\s*[;\*]?/;  #$1:directive $2:name $3:value
-*precomp_define       = \qr/define/i;
-*precomp_undef        = \qr/undef/i;
-*precomp_ifdef        = \qr/ifdef/i;
-*precomp_ifndef       = \qr/ifndef/i;
-*precomp_ifmac        = \qr/ifmac/i;
-*precomp_ifnmac       = \qr/ifnmac/i;
-*precomp_if           = \qr/if/i;
-*precomp_ifcpu        = \qr/ifcpu/i;
-*precomp_ifncpu       = \qr/ifncpu/i;
-*precomp_else         = \qr/else/i;
-*precomp_endif        = \qr/endif/i;
-*precomp_include      = \qr/include/i;
-*precomp_macro        = \qr/macro/i;
-*precomp_emac         = \qr/emac/i;
-*precomp_blanc_line   = \qr/^\s*$/;
-*precomp_comment_line = \qr/^\s*[\;\*]/;
-#*precomp_opcode      = \qr/^([^\#][\\\w]*\`?):?\s*([\w\.]*)\s*([^;]*)\s*[;\*]?/;                       #$1:label $2:opcode $3:arguments
-*precomp_opcode       = \qr/^([^\#][\\\w]*\`?):?\s*([\\\w\.]*)\s*((?:\".*?\"|\'.*?\'|[^;])*)\s*[;\*]?/; #$1:label $2:opcode $3:arguments
+Readonly our $PRECOMP_DIRECTIVE    => qr/^\#(\w+)\s*([^\,\s\;]*|\(.*\))\s*[\s,]?\s*([^\,\s\;]*|\(.*\))\s*[;\*]?/;  #$1:directive $2:name $3:value
+Readonly our $PRECOMP_DEFINE       => qr/define/i;
+Readonly our $PRECOMP_UNDEF        => qr/undef/i;
+Readonly our $PRECOMP_IFDEF        => qr/ifdef/i;
+Readonly our $PRECOMP_IFNDEF       => qr/ifndef/i;
+Readonly our $PRECOMP_IFMAC        => qr/ifmac/i;
+Readonly our $PRECOMP_IFNMAC       => qr/ifnmac/i;
+Readonly our $PRECOMP_IF           => qr/if/i;
+Readonly our $PRECOMP_IFCPU        => qr/ifcpu/i;
+Readonly our $PRECOMP_IFNCPU       => qr/ifncpu/i;
+Readonly our $PRECOMP_ELSE         => qr/else/i;
+Readonly our $PRECOMP_ENDIF        => qr/endif/i;
+Readonly our $PRECOMP_INCLUDE      => qr/include/i;
+Readonly our $PRECOMP_MACRO        => qr/macro/i;
+Readonly our $PRECOMP_EMAC         => qr/emac/i;
+Readonly our $PRECOMP_BLANC_LINE   => qr/^\s*$/;
+Readonly our $PRECOMP_COMMENT_LINE => qr/^\s*[\;\*]/;
+#Readonly our $PRECOMP_OPCODE      => qr/^([^\#][\\\w]*\`?):?\s*([\w\.]*)\s*([^;]*)\s*[;\*]?/;                       #$1:label $2:opcode $3:arguments
+Readonly our $PRECOMP_OPCODE       => qr/^([^\#][\\\w]*\`?):?\s*([\\\w\.]*)\s*((?:\".*?\"|\'.*?\'|[^;])*)\s*[;\*]?/; #$1:label $2:opcode $3:arguments
 
 #############
 # TFR codes #
 #############
-*tfr_s12               = \0;
-*tfr_s12x              = \1;
-*tfr_tfr               = \0;
-*tfr_sex               = \1;
-*tfr_exg               = \2;
+Readonly our $TFR_S12               => 0;
+Readonly our $TFR_S12X              => 1;
+Readonly our $TFR_TFR               => 0;
+Readonly our $TFR_SEX               => 1;
+Readonly our $TFR_EXG               => 2;
 
 ############################
 # address mode expressions #
 ############################
 #operands (S12)
-*op_keywords           = \qr/^\s*(A|B|D|X|Y|PC|SP|UNMAPPED|R[0-7])\s*$/i; #$1: keyword
-#*del                  = \qr/\s*,\s*/;
-*del                   = \qr/\s*[\s,]\s*/;
-*op_expr               = \qr/([^\"\'\s\,\<\>\[][^\"\'\s\,]*\'?|\".*\"|\'.*\'|\(.*\))/i;
-*op_offset             = \qr/([^\"\'\s\,]*\'?|\".*\"|\'.*\'|\(.*\))/i;
-*op_imm                = \qr/\#$op_expr/i;
-*op_dir                = \qr/\<?$op_expr/i;
-*op_ext                = \qr/\>?$op_expr/i;
-*op_idx                = \qr/$op_offset,([\+\-]?)(X|Y|SP|PC)([\+\-]?)/i;                                #$1:offset $2:preop $3:register $4:postop
-*op_idx1               = \qr/$op_offset,(X|Y|SP|PC)/i;                                                  #$1:offset $2:register
-*op_idx2               = \qr/$op_offset,\s*(X|Y|SP|PC)/i;                                               #$1:offset $2:register
-*op_ididx              = \qr/\[\s*D\s*,\s*(X|Y|SP|PC)\s*\]/i;                                           #$1:register
-*op_iidx2              = \qr/\[\s*$op_offset\s*,\s*(X|Y|SP|PC)\s*\]/i;                                  #$1:offset $2:register
-*op_iext               = \qr/\[\s*$op_expr\s*\]/i;                                                      #$1:addresss
-*op_pg                 = \qr/$op_expr/i;                                                                #$1:page
-*op_rel                = \qr/$op_expr/i;                                                                #$1:address
-*op_msk                = \qr/\#?$op_expr/i;                                                             #$1:mask
-*op_trap               = \qr/$op_expr/i;                                                                #$1:value
-*op_reg_src            = \qr/(A|B|D|X|XL|Y|YL|SP|SPL|CCR|CCRL|TMP3|TMP3L)/i;                            #$1:register
-*op_reg_dst            = \qr/(A|B|D|X|XL|Y|YL|SP|SPL|CCR|CCRL|TMP2|TMP2L)/i;                            #$1:register
-*op_reg_idx            = \qr/(A|B|D|X|Y|SP)/i;                                                          #$1:register
+Readonly our $OP_KEYWORDS           => qr/^\s*(A|B|D|X|Y|PC|SP|UNMAPPED|R[0-7])\s*$/i; #$1: keyword
+#Readonly our $DEL                  => qr/\s*,\s*/;
+Readonly our $DEL                   => qr/\s*[\s,]\s*/;
+Readonly our $OP_EXPR               => qr/([^\"\'\s\,\<\>\[][^\"\'\s\,]*\'?|\".*\"|\'.*\'|\(.*\))/i;
+Readonly our $OP_OFFSET             => qr/([^\"\'\s\,]*\'?|\".*\"|\'.*\'|\(.*\))/i;
+Readonly our $OP_IMM                => qr/\#$OP_EXPR/i;
+Readonly our $OP_DIR                => qr/\<?$OP_EXPR/i;
+Readonly our $OP_EXT                => qr/\>?$OP_EXPR/i;
+Readonly our $OP_IDX                => qr/$OP_OFFSET,([\+\-]?)(X|Y|SP|PC)([\+\-]?)/i;                                #$1:offset $2:preop $3:register $4:postop
+Readonly our $OP_IDX1               => qr/$OP_OFFSET,(X|Y|SP|PC)/i;                                                  #$1:offset $2:register
+Readonly our $OP_IDX2               => qr/$OP_OFFSET,\s*(X|Y|SP|PC)/i;                                               #$1:offset $2:register
+Readonly our $OP_IDIDX              => qr/\[\s*D\s*,\s*(X|Y|SP|PC)\s*\]/i;                                           #$1:register
+Readonly our $OP_IIDX2              => qr/\[\s*$OP_OFFSET\s*,\s*(X|Y|SP|PC)\s*\]/i;                                  #$1:offset $2:register
+Readonly our $OP_IEXT               => qr/\[\s*$OP_EXPR\s*\]/i;                                                      #$1:addresss
+Readonly our $OP_PG                 => qr/$OP_EXPR/i;                                                                #$1:page
+Readonly our $OP_REL                => qr/$OP_EXPR/i;                                                                #$1:address
+Readonly our $OP_MSK                => qr/\#?$OP_EXPR/i;                                                             #$1:mask
+Readonly our $OP_TRAP               => qr/$OP_EXPR/i;                                                                #$1:value
+Readonly our $OP_REG_SRC            => qr/(A|B|D|X|XL|Y|YL|SP|SPL|CCR|CCRL|TMP3|TMP3L)/i;                            #$1:register
+Readonly our $OP_REG_DST            => qr/(A|B|D|X|XL|Y|YL|SP|SPL|CCR|CCRL|TMP2|TMP2L)/i;                            #$1:register
+Readonly our $OP_REG_IDX            => qr/(A|B|D|X|Y|SP)/i;                                                          #$1:register
 #operands (S12X)
-*op_s12x_reg_src       = \qr/(A|B|D|X|XH|XL|Y|YH|YL|SP|SPH|SPL|CCR|CCRW|CCRH|CCRL|TMP1|TMP3|TMP3H|TMP3L)/i;#$1:register
-*op_s12x_reg_dst       = \qr/(A|B|D|X|XH|XL|Y|YH|YL|SP|SPH|SPL|CCR|CCRW|CCRH|CCRL|TMP1|TMP2|TMP2H|TMP2L)/i;#$1:register
+Readonly our $OP_S12X_REG_SRC       => qr/(A|B|D|X|XH|XL|Y|YH|YL|SP|SPH|SPL|CCR|CCRW|CCRH|CCRL|TMP1|TMP3|TMP3H|TMP3L)/i;#$1:register
+Readonly our $OP_S12X_REG_DST       => qr/(A|B|D|X|XH|XL|Y|YH|YL|SP|SPH|SPL|CCR|CCRW|CCRH|CCRL|TMP1|TMP2|TMP2H|TMP2L)/i;#$1:register
 #operands (HC11)
-*op_indx               = \qr/$op_offset$del[X]/i;                                                       #$1:offset $2:preop $3:register $4:postop
-*op_indy               = \qr/$op_offset$del[Y]/i;                                                       #$1:offset $2:preop $3:register $4:postop
+Readonly our $OP_INDX               => qr/$OP_OFFSET$DEL[X]/i;                                                       #$1:offset $2:preop $3:register $4:postop
+Readonly our $OP_INDY               => qr/$OP_OFFSET$DEL[Y]/i;                                                       #$1:offset $2:preop $3:register $4:postop
 #operands (XGATE)
-*op_xgate_reg_gpr      = \qr/(R[0-7])/i;                                                                #$1:register
-*op_xgate_reg_src      = \qr/(R[0-7]|CCR)/i;                                                            #$1:register
-*op_xgate_reg_dst      = \qr/(R[0-7]|CCR)/i;                                                            #$1:register
+Readonly our $OP_XGATE_REG_GPR      => qr/(R[0-7])/i;                                                                #$1:register
+Readonly our $OP_XGATE_REG_SRC      => qr/(R[0-7]|CCR)/i;                                                            #$1:register
+Readonly our $OP_XGATE_REG_DST      => qr/(R[0-7]|CCR)/i;                                                            #$1:register
 #operands (pseudo opcodes)
-*op_psop               = \qr/$op_expr/i;                                                                #$1:operand
+Readonly our $OP_PSOP               => qr/$OP_EXPR/i;                                                                #$1:operand
 
 #S12 address modes
-*amod_inh          = \qr/^\s*$/i;
-*amod_imm8         = \qr/^\s*$op_imm\s*$/i;        #$1:data
-*amod_imm16        = \$amod_imm8;
-*amod_dir          = \qr/^\s*$op_dir\s*$/i;        #$1:address
-*amod_ext          = \qr/^\s*$op_ext\s*$/i;        #$1:address
-*amod_rel8_forced  = \qr/^\s*\<$op_rel\s*$/i;      #$1:address
-*amod_rel8         = \qr/^\s*\<?$op_rel\s*$/i;     #$1:address
-*amod_rel16        = \qr/^\s*\>?$op_rel\s*$/i;     #$1:address
-*amod_idx          = \qr/^\s*$op_idx\s*$/i;        #$1:offset $2:preop $3:register $4:postop
-*amod_idx1         = \qr/^\s*$op_idx1\s*$/i;       #$1:offset $2:register
-*amod_idx2         = \$amod_idx1;
-*amod_ididx        = \qr/^\s*$op_ididx\s*$/i;      #$1:register
-*amod_iidx2        = \qr/^\s*$op_iidx2\s*$/i;      #$1:offset $2:register
-*amod_iext         = \qr/^\s*$op_iext\s*$/i;       #$1:address
+Readonly our $AMOD_INH          => qr/^\s*$/i;
+Readonly our $AMOD_IMM8         => qr/^\s*$OP_IMM\s*$/i;        #$1:data
+Readonly our $AMOD_IMM16        => $AMOD_IMM8;
+Readonly our $AMOD_DIR          => qr/^\s*$OP_DIR\s*$/i;        #$1:address
+Readonly our $AMOD_EXT          => qr/^\s*$OP_EXT\s*$/i;        #$1:address
+Readonly our $AMOD_REL8_FORCED  => qr/^\s*\<$OP_REL\s*$/i;      #$1:address
+Readonly our $AMOD_REL8         => qr/^\s*\<?$OP_REL\s*$/i;     #$1:address
+Readonly our $AMOD_REL16        => qr/^\s*\>?$OP_REL\s*$/i;     #$1:address
+Readonly our $AMOD_IDX          => qr/^\s*$OP_IDX\s*$/i;        #$1:offset $2:preop $3:register $4:postop
+Readonly our $AMOD_IDX1         => qr/^\s*$OP_IDX1\s*$/i;       #$1:offset $2:register
+Readonly our $AMOD_IDX2         => $AMOD_IDX1;
+Readonly our $AMOD_IDIDX        => qr/^\s*$OP_IDIDX\s*$/i;      #$1:register
+Readonly our $AMOD_IIDX2        => qr/^\s*$OP_IIDX2\s*$/i;      #$1:offset $2:register
+Readonly our $AMOD_IEXT         => qr/^\s*$OP_IEXT\s*$/i;       #$1:address
 
-*amod_dir_msk      = \qr/^\s*$op_dir$del$op_msk\s*$/i;  #$1:address $2:mask
-*amod_ext_msk      = \qr/^\s*$op_ext$del$op_msk\s*$/i;  #$1:address $2:mask
-*amod_idx_msk      = \qr/^\s*$op_idx$del$op_msk\s*$/i;  #$1:offset $2:preop $3:register $4:postop $4:mask
-*amod_idx1_msk     = \qr/^\s*$op_idx1$del$op_msk\s*$/i; #$1:offset $2:register $3:mask
-*amod_idx2_msk     = \$amod_idx1_msk;
+Readonly our $AMOD_DIR_MSK      => qr/^\s*$OP_DIR$DEL$OP_MSK\s*$/i;  #$1:address $2:mask
+Readonly our $AMOD_EXT_MSK      => qr/^\s*$OP_EXT$DEL$OP_MSK\s*$/i;  #$1:address $2:mask
+Readonly our $AMOD_IDX_MSK      => qr/^\s*$OP_IDX$DEL$OP_MSK\s*$/i;  #$1:offset $2:preop $3:register $4:postop $4:mask
+Readonly our $AMOD_IDX1_MSK     => qr/^\s*$OP_IDX1$DEL$OP_MSK\s*$/i; #$1:offset $2:register $3:mask
+Readonly our $AMOD_IDX2_MSK     => $AMOD_IDX1_MSK;
 
-*amod_dir_msk_rel  = \qr/^\s*$op_dir$del$op_msk$del$op_rel\s*$/i;  #$1:address $2:mask $3:address
-*amod_ext_msk_rel  = \qr/^\s*$op_ext$del$op_msk$del$op_rel\s*$/i;  #$1:address $2:mask $3:address
-*amod_idx_msk_rel  = \qr/^\s*$op_idx$del$op_msk$del$op_rel\s*$/i;  #$1:offset $2:preop $3:register $4:postop $5:mask $6:address
-*amod_idx1_msk_rel = \qr/^\s*$op_idx1$del$op_msk$del$op_rel\s*$/i; #$1:offset $2:register $3:mask $4:address
-*amod_idx2_msk_rel = \$amod_idx1_msk_rel;
+Readonly our $AMOD_DIR_MSK_REL  => qr/^\s*$OP_DIR$DEL$OP_MSK$DEL$OP_REL\s*$/i;  #$1:address $2:mask $3:address
+Readonly our $AMOD_EXT_MSK_REL  => qr/^\s*$OP_EXT$DEL$OP_MSK$DEL$OP_REL\s*$/i;  #$1:address $2:mask $3:address
+Readonly our $AMOD_IDX_MSK_REL  => qr/^\s*$OP_IDX$DEL$OP_MSK$DEL$OP_REL\s*$/i;  #$1:offset $2:preop $3:register $4:postop $5:mask $6:address
+Readonly our $AMOD_IDX1_MSK_REL => qr/^\s*$OP_IDX1$DEL$OP_MSK$DEL$OP_REL\s*$/i; #$1:offset $2:register $3:mask $4:address
+Readonly our $AMOD_IDX2_MSK_REL => $AMOD_IDX1_MSK_REL;
 
-*amod_ext_pgimpl   = \qr/^\s*$op_ext\s*$/i;             #$1:address
-*amod_ext_pg       = \qr/^\s*$op_ext$del$op_pg\s*$/i;   #$1:address $2:page
-*amod_idx_pg       = \qr/^\s*$op_idx$del$op_pg\s*$/i;   #$1:offset $2:preop $3:register $4:postop $5:page
-*amod_idx1_pg      = \qr/^\s*$op_idx1$del$op_pg\s*$/i;  #$1:offset $2:register $3:page
-*amod_idx2_pg      = \$amod_idx1_pg;
+Readonly our $AMOD_EXT_PGIMPL   => qr/^\s*$OP_EXT\s*$/i;             #$1:address
+Readonly our $AMOD_EXT_PG       => qr/^\s*$OP_EXT$DEL$OP_PG\s*$/i;   #$1:address $2:page
+Readonly our $AMOD_IDX_PG       => qr/^\s*$OP_IDX$DEL$OP_PG\s*$/i;   #$1:offset $2:preop $3:register $4:postop $5:page
+Readonly our $AMOD_IDX1_PG      => qr/^\s*$OP_IDX1$DEL$OP_PG\s*$/i;  #$1:offset $2:register $3:page
+Readonly our $AMOD_IDX2_PG      => $AMOD_IDX1_PG;
 
-*amod_imm8_ext     = \qr/^\s*$op_imm$del$op_ext\s*$/i; #$1:data $2:address
-*amod_imm8_idx     = \qr/^\s*$op_imm$del$op_idx\s*$/i; #$1:data $2:offset $3:preop $4:register $5:postop
-*amod_imm16_ext    = \$amod_imm8_ext;
-*amod_imm16_idx    = \$amod_imm8_idx;
-*amod_ext_ext      = \qr/^\s*$op_ext$del$op_ext\s*$/i; #$1:address $2:address
-*amod_ext_idx      = \qr/^\s*$op_ext$del$op_idx\s*$/i; #$1:address $2:offset $3:preop $4:register $5:postop
-*amod_idx_ext      = \qr/^\s*$op_idx$del$op_ext\s*$/i; #$1:offset $1:preop $3:register $4:postop $5:address
-*amod_idx_idx      = \qr/^\s*$op_idx$del$op_idx\s*$/i; #$1:offset $2:preop $3:register $4:postop #$5:offset $6:preop $7:register $8:postop
+Readonly our $AMOD_IMM8_EXT     => qr/^\s*$OP_IMM$DEL$OP_EXT\s*$/i; #$1:data $2:address
+Readonly our $AMOD_IMM8_IDX     => qr/^\s*$OP_IMM$DEL$OP_IDX\s*$/i; #$1:data $2:offset $3:preop $4:register $5:postop
+Readonly our $AMOD_IMM16_EXT    => $AMOD_IMM8_EXT;
+Readonly our $AMOD_IMM16_IDX    => $AMOD_IMM8_IDX;
+Readonly our $AMOD_EXT_EXT      => qr/^\s*$OP_EXT$DEL$OP_EXT\s*$/i; #$1:address $2:address
+Readonly our $AMOD_EXT_IDX      => qr/^\s*$OP_EXT$DEL$OP_IDX\s*$/i; #$1:address $2:offset $3:preop $4:register $5:postop
+Readonly our $AMOD_IDX_EXT      => qr/^\s*$OP_IDX$DEL$OP_EXT\s*$/i; #$1:offset $1:preop $3:register $4:postop $5:address
+Readonly our $AMOD_IDX_IDX      => qr/^\s*$OP_IDX$DEL$OP_IDX\s*$/i; #$1:offset $2:preop $3:register $4:postop #$5:offset $6:preop $7:register $8:postop
 
-*amod_exg          = \qr/^\s*$op_reg_src$del$op_reg_dst\s*$/i; #$1:register $1:register
-*amod_tfr          = \$amod_exg;                           #$1:register $1:register
+Readonly our $AMOD_EXG          => qr/^\s*$OP_REG_SRC$DEL$OP_REG_DST\s*$/i; #$1:register $1:register
+Readonly our $AMOD_TFR          => $AMOD_EXG;                           #$1:register $1:register
 
-*amod_dbeq         = \qr/^\s*$op_reg_idx$del$op_rel\s*$/i;   #$1:register $1:address
-*amod_dbne         = \$amod_dbeq;
-*amod_tbeq         = \$amod_dbeq;
-*amod_tbne         = \$amod_dbeq;
-*amod_ibeq         = \$amod_dbeq;
-*amod_ibne         = \$amod_dbeq;
+Readonly our $AMOD_DBEQ         => qr/^\s*$OP_REG_IDX$DEL$OP_REL\s*$/i;   #$1:register $1:address
+Readonly our $AMOD_DBNE         => $AMOD_DBEQ;
+Readonly our $AMOD_TBEQ         => $AMOD_DBEQ;
+Readonly our $AMOD_TBNE         => $AMOD_DBEQ;
+Readonly our $AMOD_IBEQ         => $AMOD_DBEQ;
+Readonly our $AMOD_IBNE         => $AMOD_DBEQ;
 
-*amod_trap         = \qr/^\s*$op_trap\s*$/i; #$1:value
+Readonly our $AMOD_TRAP         => qr/^\s*$OP_TRAP\s*$/i; #$1:value
 
 #HC11 address modes
-*amod_hc11_indx         = \qr/^\s*$op_indx\s*$/i; #$1:offset
-*amod_hc11_indy         = \qr/^\s*$op_indy\s*$/i; #$1:offset
-*amod_hc11_indx_msk     = \qr/^\s*$op_indx$del$op_msk\s*$/i; #$1:offset $2:mask
-*amod_hc11_indy_msk     = \qr/^\s*$op_indy$del$op_msk\s*$/i; #$1:offset $2:mask
-*amod_hc11_indx_msk_rel = \qr/^\s*$op_indx$del$op_msk$del$op_rel\s*$/i; #$1:offset $2:mask $3:address
-*amod_hc11_indy_msk_rel = \qr/^\s*$op_indy$del$op_msk$del$op_rel\s*$/i; #$1:offset $2:mask $3:address
+Readonly our $AMOD_HC11_INDX         => qr/^\s*$OP_INDX\s*$/i; #$1:offset
+Readonly our $AMOD_HC11_INDY         => qr/^\s*$OP_INDY\s*$/i; #$1:offset
+Readonly our $AMOD_HC11_INDX_MSK     => qr/^\s*$OP_INDX$DEL$OP_MSK\s*$/i; #$1:offset $2:mask
+Readonly our $AMOD_HC11_INDY_MSK     => qr/^\s*$OP_INDY$DEL$OP_MSK\s*$/i; #$1:offset $2:mask
+Readonly our $AMOD_HC11_INDX_MSK_REL => qr/^\s*$OP_INDX$DEL$OP_MSK$DEL$OP_REL\s*$/i; #$1:offset $2:mask $3:address
+Readonly our $AMOD_HC11_INDY_MSK_REL => qr/^\s*$OP_INDY$DEL$OP_MSK$DEL$OP_REL\s*$/i; #$1:offset $2:mask $3:address
 
 #S12X address modes
-*amod_s12x_dir          = \$amod_dir;
-*amod_s12x_dir_msk      = \$amod_dir_msk;
-*amod_s12x_dir_msk_rel  = \$amod_dir_msk_rel;
+Readonly our $AMOD_S12X_DIR          => $AMOD_DIR;
+Readonly our $AMOD_S12X_DIR_MSK      => $AMOD_DIR_MSK;
+Readonly our $AMOD_S12X_DIR_MSK_REL  => $AMOD_DIR_MSK_REL;
 
-*amod_imm8_idx1         = \qr/^\s*$op_imm$del$op_idx1\s*$/i; #$1:data $2:offset $3:register;
-*amod_imm8_idx2         = \$amod_imm8_idx1;
-*amod_imm8_ididx        = \qr/^\s*$op_imm$del$op_ididx\s*$/i; #$1:data $2:register;
-*amod_imm8_iidx2        = \qr/^\s*$op_imm$del$op_iidx2\s*$/i; #$1:data $2:offset $3:register;
-*amod_imm8_iext         = \qr/^\s*$op_imm$del$op_iext\s*$/i;  #$1:data $2:address;
+Readonly our $AMOD_IMM8_IDX1         => qr/^\s*$OP_IMM$DEL$OP_IDX1\s*$/i; #$1:data $2:offset $3:register;
+Readonly our $AMOD_IMM8_IDX2         => $AMOD_IMM8_IDX1;
+Readonly our $AMOD_IMM8_IDIDX        => qr/^\s*$OP_IMM$DEL$OP_IDIDX\s*$/i; #$1:data $2:register;
+Readonly our $AMOD_IMM8_IIDX2        => qr/^\s*$OP_IMM$DEL$OP_IIDX2\s*$/i; #$1:data $2:offset $3:register;
+Readonly our $AMOD_IMM8_IEXT         => qr/^\s*$OP_IMM$DEL$OP_IEXT\s*$/i;  #$1:data $2:address;
 
-*amod_imm16_idx1        = \$amod_imm8_idx1;
-*amod_imm16_idx2        = \$amod_imm8_idx2;
-*amod_imm16_ididx       = \$amod_imm8_ididx;
-*amod_imm16_iidx2       = \$amod_imm8_iidx2;
-*amod_imm16_iext        = \$amod_imm8_iext;
+Readonly our $AMOD_IMM16_IDX1        => $AMOD_IMM8_IDX1;
+Readonly our $AMOD_IMM16_IDX2        => $AMOD_IMM8_IDX2;
+Readonly our $AMOD_IMM16_IDIDX       => $AMOD_IMM8_IDIDX;
+Readonly our $AMOD_IMM16_IIDX2       => $AMOD_IMM8_IIDX2;
+Readonly our $AMOD_IMM16_IEXT        => $AMOD_IMM8_IEXT;
 
-*amod_ext_idx1          = \qr/^\s*$op_ext$del$op_idx1\s*$/i;  #$1:address $2:offset $3:register;
-*amod_ext_idx2          = \$amod_ext_idx1;
-*amod_ext_ididx         = \qr/^\s*$op_ext$del$op_ididx\s*$/i; #$1:address $2:register;
-*amod_ext_iidx2         = \qr/^\s*$op_ext$del$op_iidx2\s*$/i; #$1:address $2:offset $3:register;
-*amod_ext_iext          = \qr/^\s*$op_ext$del$op_iext\s*$/i;  #$1:address $2:address;
+Readonly our $AMOD_EXT_IDX1          => qr/^\s*$OP_EXT$DEL$OP_IDX1\s*$/i;  #$1:address $2:offset $3:register;
+Readonly our $AMOD_EXT_IDX2          => $AMOD_EXT_IDX1;
+Readonly our $AMOD_EXT_IDIDX         => qr/^\s*$OP_EXT$DEL$OP_IDIDX\s*$/i; #$1:address $2:register;
+Readonly our $AMOD_EXT_IIDX2         => qr/^\s*$OP_EXT$DEL$OP_IIDX2\s*$/i; #$1:address $2:offset $3:register;
+Readonly our $AMOD_EXT_IEXT          => qr/^\s*$OP_EXT$DEL$OP_IEXT\s*$/i;  #$1:address $2:address;
 
-*amod_idx_idx1          = \qr/^\s*$op_idx$del$op_idx1\s*$/i;  #$1:offset $2:preop $3:register $4:postop $5:offset $6:register;
-*amod_idx_idx2          = \$amod_idx_idx1;
-*amod_idx_ididx         = \qr/^\s*$op_idx$del$op_ididx\s*$/i; #$1:offset $2:preop $3:register $4:postop $5:register;
-*amod_idx_iidx2         = \qr/^\s*$op_idx$del$op_iidx2\s*$/i; #$1:offset $2:preop $3:register $4:postop $5:offset $6:register;
-*amod_idx_iext          = \qr/^\s*$op_idx$del$op_iext\s*$/i;  #$1:offset $2:preop $3:register $4:postop $5:address;
+Readonly our $AMOD_IDX_IDX1          => qr/^\s*$OP_IDX$DEL$OP_IDX1\s*$/i;  #$1:offset $2:preop $3:register $4:postop $5:offset $6:register;
+Readonly our $AMOD_IDX_IDX2          => $AMOD_IDX_IDX1;
+Readonly our $AMOD_IDX_IDIDX         => qr/^\s*$OP_IDX$DEL$OP_IDIDX\s*$/i; #$1:offset $2:preop $3:register $4:postop $5:register;
+Readonly our $AMOD_IDX_IIDX2         => qr/^\s*$OP_IDX$DEL$OP_IIDX2\s*$/i; #$1:offset $2:preop $3:register $4:postop $5:offset $6:register;
+Readonly our $AMOD_IDX_IEXT          => qr/^\s*$OP_IDX$DEL$OP_IEXT\s*$/i;  #$1:offset $2:preop $3:register $4:postop $5:address;
 
-*amod_idx1_ext          = \qr/^\s*$op_idx1$del$op_ext\s*$/i;  #$1:offset $2:register $3:address;
-*amod_idx1_idx          = \qr/^\s*$op_idx1$del$op_idx\s*$/i;  #$1:offset $2:register $3:offset $4:preop $5:register $6:postop;
-*amod_idx1_idx1         = \qr/^\s*$op_idx1$del$op_idx1\s*$/i; #$1:offset $2:register $3:offset $4:register;
-*amod_idx1_idx2         = \$amod_idx1_idx1;
-*amod_idx1_ididx        = \qr/^\s*$op_idx1$del$op_ididx\s*$/i;#1$:offset $2:register $3:register;
-*amod_idx1_iidx2        = \qr/^\s*$op_idx1$del$op_iidx2\s*$/i;#1$:offset $2:register $3:offset $4:register;
-*amod_idx1_iext         = \qr/^\s*$op_idx1$del$op_iext\s*$/i; #1$:offset $2:register $3:address;
+Readonly our $AMOD_IDX1_EXT          => qr/^\s*$OP_IDX1$DEL$OP_EXT\s*$/i;  #$1:offset $2:register $3:address;
+Readonly our $AMOD_IDX1_IDX          => qr/^\s*$OP_IDX1$DEL$OP_IDX\s*$/i;  #$1:offset $2:register $3:offset $4:preop $5:register $6:postop;
+Readonly our $AMOD_IDX1_IDX1         => qr/^\s*$OP_IDX1$DEL$OP_IDX1\s*$/i; #$1:offset $2:register $3:offset $4:register;
+Readonly our $AMOD_IDX1_IDX2         => $AMOD_IDX1_IDX1;
+Readonly our $AMOD_IDX1_IDIDX        => qr/^\s*$OP_IDX1$DEL$OP_IDIDX\s*$/i;#1$:offset $2:register $3:register;
+Readonly our $AMOD_IDX1_IIDX2        => qr/^\s*$OP_IDX1$DEL$OP_IIDX2\s*$/i;#1$:offset $2:register $3:offset $4:register;
+Readonly our $AMOD_IDX1_IEXT         => qr/^\s*$OP_IDX1$DEL$OP_IEXT\s*$/i; #1$:offset $2:register $3:address;
 
-*amod_idx2_ext          = \$amod_idx1_ext;
-*amod_idx2_idx          = \$amod_idx1_idx;
-*amod_idx2_idx1         = \$amod_idx1_idx1;
-*amod_idx2_idx2         = \$amod_idx1_idx1;
-*amod_idx2_ididx        = \$amod_idx1_ididx;
-*amod_idx2_iidx2        = \$amod_idx1_iidx2;
-*amod_idx2_iext         = \$amod_idx1_iext;
+Readonly our $AMOD_IDX2_EXT          => $AMOD_IDX1_EXT;
+Readonly our $AMOD_IDX2_IDX          => $AMOD_IDX1_IDX;
+Readonly our $AMOD_IDX2_IDX1         => $AMOD_IDX1_IDX1;
+Readonly our $AMOD_IDX2_IDX2         => $AMOD_IDX1_IDX1;
+Readonly our $AMOD_IDX2_IDIDX        => $AMOD_IDX1_IDIDX;
+Readonly our $AMOD_IDX2_IIDX2        => $AMOD_IDX1_IIDX2;
+Readonly our $AMOD_IDX2_IEXT         => $AMOD_IDX1_IEXT;
 
-*amod_ididx_ext         = \qr/^\s*$op_ididx$del$op_ext\s*$/i;  #$1:register $2:address;
-*amod_ididx_idx         = \qr/^\s*$op_ididx$del$op_idx\s*$/i;  #$1:register $2:offset $3:preop $4:register $5:postop;
-*amod_ididx_idx1        = \qr/^\s*$op_ididx$del$op_idx1\s*$/i; #$1:register $2:offset $3:register;
-*amod_ididx_idx2        = \$amod_ididx_idx1;
-*amod_ididx_ididx       = \qr/^\s*$op_ididx$del$op_ididx\s*$/i;#$1:register $2:register;
-*amod_ididx_iidx2       = \qr/^\s*$op_ididx$del$op_iidx2\s*$/i;#$1:register $2:offset $3:register;
-*amod_ididx_iext        = \qr/^\s*$op_ididx$del$op_iext\s*$/i; #$1:register $2:address;
+Readonly our $AMOD_IDIDX_EXT         => qr/^\s*$OP_IDIDX$DEL$OP_EXT\s*$/i;  #$1:register $2:address;
+Readonly our $AMOD_IDIDX_IDX         => qr/^\s*$OP_IDIDX$DEL$OP_IDX\s*$/i;  #$1:register $2:offset $3:preop $4:register $5:postop;
+Readonly our $AMOD_IDIDX_IDX1        => qr/^\s*$OP_IDIDX$DEL$OP_IDX1\s*$/i; #$1:register $2:offset $3:register;
+Readonly our $AMOD_IDIDX_IDX2        => $AMOD_IDIDX_IDX1;
+Readonly our $AMOD_IDIDX_IDIDX       => qr/^\s*$OP_IDIDX$DEL$OP_IDIDX\s*$/i;#$1:register $2:register;
+Readonly our $AMOD_IDIDX_IIDX2       => qr/^\s*$OP_IDIDX$DEL$OP_IIDX2\s*$/i;#$1:register $2:offset $3:register;
+Readonly our $AMOD_IDIDX_IEXT        => qr/^\s*$OP_IDIDX$DEL$OP_IEXT\s*$/i; #$1:register $2:address;
 
-*amod_iidx2_ext         = \qr/^\s*$op_iidx2$del$op_ext\s*$/i;  #$1:offset $2:register $3:address;
-*amod_iidx2_idx         = \qr/^\s*$op_iidx2$del$op_idx\s*$/i;  #$1:offset $2:register $3:offset $4:preop $5:register $6:postop;
-*amod_iidx2_idx1        = \qr/^\s*$op_iidx2$del$op_idx1\s*$/i; #$1:offset $2:register $3:offset $4:register;
-*amod_iidx2_idx2        = \$amod_iidx2_idx1;
-*amod_iidx2_ididx       = \qr/^\s*$op_iidx2$del$op_ididx\s*$/i;#$1:offset $2:register $3:register;
-*amod_iidx2_iidx2       = \qr/^\s*$op_iidx2$del$op_iidx2\s*$/i;#$1:offset $2:register $3:offset $4:register;
-*amod_iidx2_iext        = \qr/^\s*$op_iidx2$del$op_iext\s*$/i; #$1:offset $2:register $3:address;
+Readonly our $AMOD_IIDX2_EXT         => qr/^\s*$OP_IIDX2$DEL$OP_EXT\s*$/i;  #$1:offset $2:register $3:address;
+Readonly our $AMOD_IIDX2_IDX         => qr/^\s*$OP_IIDX2$DEL$OP_IDX\s*$/i;  #$1:offset $2:register $3:offset $4:preop $5:register $6:postop;
+Readonly our $AMOD_IIDX2_IDX1        => qr/^\s*$OP_IIDX2$DEL$OP_IDX1\s*$/i; #$1:offset $2:register $3:offset $4:register;
+Readonly our $AMOD_IIDX2_IDX2        => $AMOD_IIDX2_IDX1;
+Readonly our $AMOD_IIDX2_IDIDX       => qr/^\s*$OP_IIDX2$DEL$OP_IDIDX\s*$/i;#$1:offset $2:register $3:register;
+Readonly our $AMOD_IIDX2_IIDX2       => qr/^\s*$OP_IIDX2$DEL$OP_IIDX2\s*$/i;#$1:offset $2:register $3:offset $4:register;
+Readonly our $AMOD_IIDX2_IEXT        => qr/^\s*$OP_IIDX2$DEL$OP_IEXT\s*$/i; #$1:offset $2:register $3:address;
 
-*amod_iext_ext          = \qr/^\s*$op_iext$del$op_ext\s*$/i;  #$1:address $2:address;
-*amod_iext_idx          = \qr/^\s*$op_iext$del$op_idx\s*$/i;  #$1:address $2:offset $3:preop $4:register $5:postop;
-*amod_iext_idx1         = \qr/^\s*$op_iext$del$op_idx1\s*$/i; #$1:address $2:offset $3:register;
-*amod_iext_idx2         = \$amod_iext_idx1;
-*amod_iext_ididx        = \qr/^\s*$op_iext$del$op_ididx\s*$/i;#$1:address $2:register;
-*amod_iext_iidx2        = \qr/^\s*$op_iext$del$op_iidx2\s*$/i;#$1:address $2:offset $3:register;
-*amod_iext_iext         = \qr/^\s*$op_iext$del$op_iext\s*$/i; #$1:address $2:address;
+Readonly our $AMOD_IEXT_EXT          => qr/^\s*$OP_IEXT$DEL$OP_EXT\s*$/i;  #$1:address $2:address;
+Readonly our $AMOD_IEXT_IDX          => qr/^\s*$OP_IEXT$DEL$OP_IDX\s*$/i;  #$1:address $2:offset $3:preop $4:register $5:postop;
+Readonly our $AMOD_IEXT_IDX1         => qr/^\s*$OP_IEXT$DEL$OP_IDX1\s*$/i; #$1:address $2:offset $3:register;
+Readonly our $AMOD_IEXT_IDX2         => $AMOD_IEXT_IDX1;
+Readonly our $AMOD_IEXT_IDIDX        => qr/^\s*$OP_IEXT$DEL$OP_IDIDX\s*$/i;#$1:address $2:register;
+Readonly our $AMOD_IEXT_IIDX2        => qr/^\s*$OP_IEXT$DEL$OP_IIDX2\s*$/i;#$1:address $2:offset $3:register;
+Readonly our $AMOD_IEXT_IEXT         => qr/^\s*$OP_IEXT$DEL$OP_IEXT\s*$/i; #$1:address $2:address;
 
-*amod_s12x_exg          = \qr/^\s*$op_s12x_reg_src$del$op_s12x_reg_dst\s*$/i; #$1:register $1:register
-*amod_s12x_tfr          = \$amod_s12x_exg;                                    #$1:register $1:register
+Readonly our $AMOD_S12X_EXG          => qr/^\s*$OP_S12X_REG_SRC$DEL$OP_S12X_REG_DST\s*$/i; #$1:register $1:register
+Readonly our $AMOD_S12X_TFR          => $AMOD_S12X_EXG;                                    #$1:register $1:register
 
-*amod_s12x_trap         = \$amod_trap;
+Readonly our $AMOD_S12X_TRAP         => $AMOD_TRAP;
 
 #XGATE address modes
-*amod_xgate_imm3        = \qr/^\s*$op_imm\s*$/i;                                                                  #$1:value
-*amod_xgate_imm4        = \qr/^\s*$op_xgate_reg_gpr$del$op_imm\s*$/i;                                             #$1:register $2:value
-*amod_xgate_imm8        = \$amod_xgate_imm4;
-*amod_xgate_imm16       = \$amod_xgate_imm4;
-*amod_xgate_mon         = \qr/^\s*$op_xgate_reg_gpr\s*$/i;                                                        #$1:register
-*amod_xgate_dya         = \qr/^\s*$op_xgate_reg_gpr$del$op_xgate_reg_gpr\s*$/i;                                   #$1:register
-*amod_xgate_tri         = \qr/^\s*$op_xgate_reg_gpr$del$op_xgate_reg_gpr$del$op_xgate_reg_gpr\s*$/i;              #$1:register
-*amod_xgate_rel9        = \qr/^\s*$op_rel\s*$/i;                                                                  #$1:address
-*amod_xgate_rel10       = \$amod_xgate_rel9;
-*amod_xgate_ido5        = \qr/^\s*$op_xgate_reg_gpr$del\(\s*$op_xgate_reg_gpr\s*,\s*$op_imm\s*\)\s*$/i;             #$1:register $2:register $3:offset
-*amod_xgate_idr         = \qr/^\s*$op_xgate_reg_gpr$del\(\s*$op_xgate_reg_gpr\s*,\s*$op_xgate_reg_gpr\s*\)\s*$/i;   #$1:register $2:register $3:register
-*amod_xgate_idri        = \qr/^\s*$op_xgate_reg_gpr$del\(\s*$op_xgate_reg_gpr\s*,\s*$op_xgate_reg_gpr[+]\s*\)\s*$/i;#$1:register $2:register $3:register
-*amod_xgate_idrd        = \qr/^\s*$op_xgate_reg_gpr$del\(\s*$op_xgate_reg_gpr\s*,\s*[-]$op_xgate_reg_gpr\s*\)\s*$/i;#$1:register $2:register $3:register
-*amod_xgate_tfr_rd_ccr  = \qr/^\s*$op_xgate_reg_gpr$del[C]CR\s*$/i;                                                  #$1:register
-*amod_xgate_tfr_ccr_rs  = \qr/^\s*CCR$del$op_xgate_reg_gpr\s*$/i;                                                   #$1:register
-*amod_xgate_tfr_rd_pc   = \qr/^\s*$op_xgate_reg_gpr$del[P]C\s*$/i;                                                  #$1:register
+Readonly our $AMOD_XGATE_IMM3        => qr/^\s*$OP_IMM\s*$/i;                                                                  #$1:value
+Readonly our $AMOD_XGATE_IMM4        => qr/^\s*$OP_XGATE_REG_GPR$DEL$OP_IMM\s*$/i;                                             #$1:register $2:value
+Readonly our $AMOD_XGATE_IMM8        => $AMOD_XGATE_IMM4;
+Readonly our $AMOD_XGATE_IMM16       => $AMOD_XGATE_IMM4;
+Readonly our $AMOD_XGATE_MON         => qr/^\s*$OP_XGATE_REG_GPR\s*$/i;                                                        #$1:register
+Readonly our $AMOD_XGATE_DYA         => qr/^\s*$OP_XGATE_REG_GPR$DEL$OP_XGATE_REG_GPR\s*$/i;                                   #$1:register
+Readonly our $AMOD_XGATE_TRI         => qr/^\s*$OP_XGATE_REG_GPR$DEL$OP_XGATE_REG_GPR$DEL$OP_XGATE_REG_GPR\s*$/i;              #$1:register
+Readonly our $AMOD_XGATE_REL9        => qr/^\s*$OP_REL\s*$/i;                                                                  #$1:address
+Readonly our $AMOD_XGATE_REL10       => $AMOD_XGATE_REL9;
+Readonly our $AMOD_XGATE_IDO5        => qr/^\s*$OP_XGATE_REG_GPR$DEL\(\s*$OP_XGATE_REG_GPR\s*,\s*$OP_IMM\s*\)\s*$/i;             #$1:register $2:register $3:offset
+Readonly our $AMOD_XGATE_IDR         => qr/^\s*$OP_XGATE_REG_GPR$DEL\(\s*$OP_XGATE_REG_GPR\s*,\s*$OP_XGATE_REG_GPR\s*\)\s*$/i;   #$1:register $2:register $3:register
+Readonly our $AMOD_XGATE_IDRI        => qr/^\s*$OP_XGATE_REG_GPR$DEL\(\s*$OP_XGATE_REG_GPR\s*,\s*$OP_XGATE_REG_GPR[+]\s*\)\s*$/i;#$1:register $2:register $3:register
+Readonly our $AMOD_XGATE_IDRD        => qr/^\s*$OP_XGATE_REG_GPR$DEL\(\s*$OP_XGATE_REG_GPR\s*,\s*[-]$OP_XGATE_REG_GPR\s*\)\s*$/i;#$1:register $2:register $3:register
+Readonly our $AMOD_XGATE_TFR_RD_CCR  => qr/^\s*$OP_XGATE_REG_GPR$DEL[C]CR\s*$/i;                                                  #$1:register
+Readonly our $AMOD_XGATE_TFR_CCR_RS  => qr/^\s*CCR$DEL$OP_XGATE_REG_GPR\s*$/i;                                                   #$1:register
+Readonly our $AMOD_XGATE_TFR_RD_PC   => qr/^\s*$OP_XGATE_REG_GPR$DEL[P]C\s*$/i;                                                  #$1:register
 
 ##############################
 # pseudo opcocde expressions #
 ##############################
-*psop_no_arg      = \qr/^\s*$/i; #
-*psop_1_arg       = \qr/^\s*$op_psop\s*$/i; #$1:arg
-*psop_2_args      = \qr/^\s*$op_psop$del$op_psop\s*$/i; #$1:arg $2:arg
-*psop_3_args      = \qr/^\s*$op_psop$del$op_psop$del$op_psop\s*$/i; #$1:arg $2:arg $3:arg
-*psop_string      = \qr/^\s*(.+)\s*$/i; #$1:string
+Readonly our $PSOP_NO_ARG      => qr/^\s*$/i; #
+Readonly our $PSOP_1_ARG       => qr/^\s*$OP_PSOP\s*$/i; #$1:arg
+Readonly our $PSOP_2_ARGS      => qr/^\s*$OP_PSOP$DEL$OP_PSOP\s*$/i; #$1:arg $2:arg
+Readonly our $PSOP_3_ARGS      => qr/^\s*$OP_PSOP$DEL$OP_PSOP$DEL$OP_PSOP\s*$/i; #$1:arg $2:arg $3:arg
+Readonly our $PSOP_STRING      => qr/^\s*(.+)\s*$/i; #$1:string
 
 #######################
 # operand expressions #
 #######################
-*op_unmapped           = \qr/^\s*UNMAPPED\s*$/i;
-*op_oprtr              = \qr/\-|\+|\*|\/|%|&|\||~|<<|>>/;
-*op_no_oprtr           = \qr/[^\-\+\/%&\|~<>\s]/;
-*op_term               = \qr/\%[01]+|[0-9]+|\$[0-9a-fA-F]+|\"(\w)\"|\*|\@/;
-*op_binery             = \qr/^\s*([~\-]?)\s*\%([01_]+)\s*$/; #$1:complement $2:binery number
-*op_dec                = \qr/^\s*([~\-]?)\s*([0-9_]+)\s*$/; #$1:complement $2:decimal number
-*op_hex                = \qr/^\s*([~\-]?)\s*\$([0-9a-fA-F_]+)\s*$/; #$1:complement $2:hex number
-*op_ascii              = \qr/^\s*([~\-]?)\s*[\'\"](.+)[\'\"]\s*$/; #$1:complement $2:ASCII caracter
-*op_symbol             = \qr/^\s*([~\-]?)\s*([\w]+[\`]?)\s*$/; #$1:complement $2:symbol
-#*op_symbol             = \qr/^\s*([~\-]?)\s*([\w]+[\`]?|[\`])\s*$/; #$1:complement $2:symbol
-*op_curr_lin_pc        = \qr/^\s*([~\-]?)\s*\@\s*$/;
-*op_curr_pag_pc        = \qr/^\s*([~\-]?)\s*\*\s*$/;
-*op_formula            = \qr/^\s*($op_psop)\s*$/; #$1:formula
-*op_formula_pars       = \qr/^\s*(.*)\s*\(\s*([^\(\)]+)\s*\)\s*(.*)\s*$/; #$1:leftside $2:inside $3:rightside
-*op_formula_complement = \qr/^\s*([~\-])\s*([~\-].*)\s*$/; #$1:leftside $2:rightside
-*op_formula_and        = \qr/^\s*([^\&]*)\s*\&\s*(.+)\s*$/; #$1:leftside $2:rightside
-*op_formula_or         = \qr/^\s*([^\|]*)\s*\|\s*(.+)\s*$/; #$1:leftside $2:rightside
-*op_formula_exor       = \qr/^\s*([^\^]*)\s*\^\s*(.+)\s*$/; #$1:leftside $2:rightside
-*op_formula_rightshift = \qr/^\s*([^>]*)\s*>>\s*(.+)\s*$/; #$1:leftside $2:rightside
-*op_formula_leftshift  = \qr/^\s*([^<]*)\s*<<\s*(.+)\s*$/; #$1:leftside $2:rightside
-*op_formula_mul        = \qr/^\s*(.*$op_no_oprtr)\s*\*\s*(.+)\s*$/; #$1:leftside $2:rightside
-*op_formula_div        = \qr/^\s*([^\/]*)\s*\/\s*(.+)\s*$/; #$1:leftside $2:rightside
-*op_formula_mod        = \qr/^\s*(.*$op_no_oprtr)\s*\%\s*(.*)\s*$/; #$1:leftside $2:rightside
-*op_formula_plus       = \qr/^\s*([^\+]*)\s*\+\s*(.+)\s*$/; #$1:leftside $2:rightside
-*op_formula_minus      = \qr/^\s*(.*$op_no_oprtr)\s*\-\s*(.+)\s*$/; #$1:leftside $2:rightside
-*op_whitespace         = \qr/^\s*$/;
+Readonly our $OP_UNMAPPED           => qr/^\s*UNMAPPED\s*$/i;
+Readonly our $OP_OPRTR              => qr/\-|\+|\*|\/|%|&|\||~|<<|>>/;
+Readonly our $OP_NO_OPRTR           => qr/[^\-\+\/%&\|~<>\s]/;
+Readonly our $OP_TERM               => qr/\%[01]+|[0-9]+|\$[0-9a-fA-F]+|\"(\w)\"|\*|\@/;
+Readonly our $OP_BINERY             => qr/^\s*([~\-]?)\s*\%([01_]+)\s*$/; #$1:complement $2:binery number
+Readonly our $OP_DEC                => qr/^\s*([~\-]?)\s*([0-9_]+)\s*$/; #$1:complement $2:decimal number
+Readonly our $OP_HEX                => qr/^\s*([~\-]?)\s*\$([0-9a-fA-F_]+)\s*$/; #$1:complement $2:hex number
+Readonly our $OP_ASCII              => qr/^\s*([~\-]?)\s*[\'\"](.+)[\'\"]\s*$/; #$1:complement $2:ASCII caracter
+Readonly our $OP_SYMBOL             => qr/^\s*([~\-]?)\s*([\w]+[\`]?)\s*$/; #$1:complement $2:symbol
+#Readonly our $OP_SYMBOL             => qr/^\s*([~\-]?)\s*([\w]+[\`]?|[\`])\s*$/; #$1:complement $2:symbol
+Readonly our $OP_CURR_LIN_PC        => qr/^\s*([~\-]?)\s*\@\s*$/;
+Readonly our $OP_CURR_PAG_PC        => qr/^\s*([~\-]?)\s*\*\s*$/;
+Readonly our $OP_FORMULA            => qr/^\s*($OP_PSOP)\s*$/; #$1:formula
+Readonly our $OP_FORMULA_PARS       => qr/^\s*(.*)\s*\(\s*([^\(\)]+)\s*\)\s*(.*)\s*$/; #$1:leftside $2:inside $3:rightside
+Readonly our $OP_FORMULA_COMPLEMENT => qr/^\s*([~\-])\s*([~\-].*)\s*$/; #$1:leftside $2:rightside
+Readonly our $OP_FORMULA_AND        => qr/^\s*([^\&]*)\s*\&\s*(.+)\s*$/; #$1:leftside $2:rightside
+Readonly our $OP_FORMULA_OR         => qr/^\s*([^\|]*)\s*\|\s*(.+)\s*$/; #$1:leftside $2:rightside
+Readonly our $OP_FORMULA_EXOR       => qr/^\s*([^\^]*)\s*\^\s*(.+)\s*$/; #$1:leftside $2:rightside
+Readonly our $OP_FORMULA_RIGHTSHIFT => qr/^\s*([^>]*)\s*>>\s*(.+)\s*$/; #$1:leftside $2:rightside
+Readonly our $OP_FORMULA_LEFTSHIFT  => qr/^\s*([^<]*)\s*<<\s*(.+)\s*$/; #$1:leftside $2:rightside
+Readonly our $OP_FORMULA_MUL        => qr/^\s*(.*$OP_NO_OPRTR)\s*\*\s*(.+)\s*$/; #$1:leftside $2:rightside
+Readonly our $OP_FORMULA_DIV        => qr/^\s*([^\/]*)\s*\/\s*(.+)\s*$/; #$1:leftside $2:rightside
+Readonly our $OP_FORMULA_MOD        => qr/^\s*(.*$OP_NO_OPRTR)\s*\%\s*(.*)\s*$/; #$1:leftside $2:rightside
+Readonly our $OP_FORMULA_PLUS       => qr/^\s*([^\+]*)\s*\+\s*(.+)\s*$/; #$1:leftside $2:rightside
+Readonly our $OP_FORMULA_MINUS      => qr/^\s*(.*$OP_NO_OPRTR)\s*\-\s*(.+)\s*$/; #$1:leftside $2:rightside
+Readonly our $OP_WHITESPACE         => qr/^\s*$/;
 
 ########################
 # compiler expressions #
 ########################
-*cmp_no_hexcode        = \qr/^\s*(.*?[^0-9a-fA-F\ ].*?)\s*$/; #$1:string
+Readonly our $CMP_NO_HEXCODE        => qr/^\s*(.*?[^0-9a-fA-F\ ].*?)\s*$/; #$1:string
 
 #############
 # cpu types #
 #############
-*cpu_hc11               = \qr/^\s*HC11\s*$/i;
-*cpu_s12                = \qr/^\s*((HC)|(S))12\s*$/i;
-*cpu_s12x               = \qr/^\s*S12X\s*$/i;
-*cpu_xgate              = \qr/^\s*XGATE\s*$/i;
+Readonly our $CPU_HC11               => qr/^\s*HC11\s*$/i;
+Readonly our $CPU_S12                => qr/^\s*((HC)|(S))12\s*$/i;
+Readonly our $CPU_S12X               => qr/^\s*S12X\s*$/i;
+Readonly our $CPU_XGATE              => qr/^\s*XGATE\s*$/i;
 
 #################
 # opcode tables #
 #################
 #HC11:           MNEMONIC      ADDRESS MODE                                             OPCODE
-*opctab_hc11 = \{"ABA"    => [[$amod_inh,               \&check_inh,                    "1B"   ]], #INH
-                 "ABX"    => [[$amod_inh,               \&check_inh,                    "3A"   ]], #INH
-                 "ABY"    => [[$amod_inh,               \&check_inh,                    "18 3A"]], #INH
-                 "ADCA"   => [[$amod_imm8,              \&check_imm8,                   "89"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "99"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "B9"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "A9"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 A9"]], #IND,Y
-                 "ADCB"   => [[$amod_imm8,              \&check_imm8,                   "C9"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "D9"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "F9"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "E9"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 E9"]], #IND,Y
-                 "ADDA"   => [[$amod_imm8,              \&check_imm8,                   "8B"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "9B"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "BB"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "AB"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 AB"]], #IND,Y
-                 "ADDB"   => [[$amod_imm8,              \&check_imm8,                   "CB"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "DB"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "FB"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "EB"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 EB"]], #IND,Y
-                 "ADDD"   => [[$amod_imm16,             \&check_imm16,                  "C3"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "D3"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "F3"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "E3"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 E3"]], #IND,Y
-                 "ANDA"   => [[$amod_imm8,              \&check_imm8,                   "84"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "94"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "B4"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "A4"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 A4"]], #IND,Y
-                 "ANDB"   => [[$amod_imm8,              \&check_imm8,                   "C4"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "D4"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "F4"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "E4"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 E4"]], #IND,Y
-                 "ASL"    => [[$amod_ext,               \&check_ext,                    "78"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "68"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 68"]], #IND,Y
-                 "ASLA"   => [[$amod_inh,               \&check_inh,                    "48"   ]], #INH
-                 "ASLB"   => [[$amod_inh,               \&check_inh,                    "58"   ]], #INH
-                 "ASLD"   => [[$amod_inh,               \&check_inh,                    "05"   ]], #INH
-                 "ASR"    => [[$amod_ext,               \&check_ext,                    "77"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "67"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 67"]], #IND,Y
-                 "ASRA"   => [[$amod_inh,               \&check_inh,                    "47"   ]], #INH
-                 "ASRB"   => [[$amod_inh,               \&check_inh,                    "57"   ]], #INH
-                 "BCC"    => [[$amod_rel8,              \&check_rel8,                   "24"   ]], #REL
-                 "BCLR"   => [[$amod_dir_msk,           \&check_dir_msk,                "15"   ],  #DIR
-                              [$amod_hc11_indx_msk,     \&check_hc11_indx_msk,          "1D"   ],  #IND,X
-                              [$amod_hc11_indy_msk,     \&check_hc11_indy_msk,          "18 1D"]], #IND,Y
-                 "BCS"    => [[$amod_rel8,              \&check_rel8,                   "25"   ]], #REL
-                 "BEQ"    => [[$amod_rel8,              \&check_rel8,                   "27"   ]], #REL
-                 "BGE"    => [[$amod_rel8,              \&check_rel8,                   "2C"   ]], #REL
-                 "BGT"    => [[$amod_rel8,              \&check_rel8,                   "2E"   ]], #REL
-                 "BHI"    => [[$amod_rel8,              \&check_rel8,                   "22"   ]], #REL
-                 "BHS"    => [[$amod_rel8,              \&check_rel8,                   "24"   ]], #REL
-                 "BITA"   => [[$amod_imm8,              \&check_imm8,                   "85"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "95"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "B5"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "A5"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 A5"]], #IND,Y
-                 "BITB"   => [[$amod_imm8,              \&check_imm8,                   "C5"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "D5"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "F5"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "E5"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 E5"]], #IND,Y
-                 "BLE"    => [[$amod_rel8,              \&check_rel8,                   "2F"   ]], #REL
-                 "BLO"    => [[$amod_rel8,              \&check_rel8,                   "25"   ]], #REL
-                 "BLS"    => [[$amod_rel8,              \&check_rel8,                   "23"   ]], #REL
-                 "BLT"    => [[$amod_rel8,              \&check_rel8,                   "2D"   ]], #REL
-                 "BMI"    => [[$amod_rel8,              \&check_rel8,                   "2B"   ]], #REL
-                 "BNE"    => [[$amod_rel8,              \&check_rel8,                   "26"   ]], #REL
-                 "BPL"    => [[$amod_rel8,              \&check_rel8,                   "2A"   ]], #REL
-                 "BRA"    => [[$amod_rel8,              \&check_rel8,                   "20"   ]], #REL
-                 "BRCLR"  => [[$amod_dir_msk_rel,       \&check_dir_msk_rel,            "13"   ],  #DIR
-                              [$amod_hc11_indx_msk_rel, \&check_hc11_indx_msk_rel,      "1F"   ],  #IND,X
-                              [$amod_hc11_indy_msk_rel, \&check_hc11_indy_msk_rel,      "18 1F"]], #IND,Y
-                 "BRN"    => [[$amod_rel8,              \&check_rel8,                   "21"   ]], #REL
-                 "BRSET"  => [[$amod_dir_msk_rel,       \&check_dir_msk_rel,            "12"   ],  #DIR
-                              [$amod_hc11_indx_msk_rel, \&check_hc11_indx_msk_rel,      "1E"   ],  #IND,X
-                              [$amod_hc11_indy_msk_rel, \&check_hc11_indy_msk_rel,      "18 1E"]], #IND,Y
-                 "BSET"   => [[$amod_dir_msk,           \&check_dir_msk,                "14"   ],  #DIR
-                              [$amod_hc11_indx_msk,     \&check_hc11_indx_msk,          "1C"   ],  #IND,X
-                              [$amod_hc11_indy_msk,     \&check_hc11_indy_msk,          "18 1C"]], #IND,Y
-                 "BSR"    => [[$amod_rel8,              \&check_rel8,                   "8D"   ]], #REL
-                 "BVC"    => [[$amod_rel8,              \&check_rel8,                   "28"   ]], #REL
-                 "BVS"    => [[$amod_rel8,              \&check_rel8,                   "29"   ]], #REL
-                 "CBA"    => [[$amod_inh,               \&check_inh,                    "11"   ]], #INH
-                 "CLC"    => [[$amod_inh,               \&check_inh,                    "0C"   ]], #INH
-                 "CLI"    => [[$amod_inh,               \&check_inh,                    "0E"   ]], #INH
-                 "CLR"    => [[$amod_ext,               \&check_ext,                    "7F"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "6F"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 6F"]], #IND,Y
-                 "CLRA"   => [[$amod_inh,               \&check_inh,                    "4F"   ]], #INH
-                 "CLRB"   => [[$amod_inh,               \&check_inh,                    "5F"   ]], #INH
-                 "CLRD"   => [[$amod_inh,               \&check_inh,                    "4F 5F"]], #INH
-                 "CLV"    => [[$amod_inh,               \&check_inh,                    "0A"   ]], #INH
-                 "CMPA"   => [[$amod_imm8,              \&check_imm8,                   "81"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "91"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "B1"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "A1"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 A1"]], #IND,Y
-                 "CMPB"   => [[$amod_imm8,              \&check_imm8,                   "C1"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "D1"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "F1"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "E1"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 E1"]], #IND,Y
-                 "COM"    => [[$amod_ext,               \&check_ext,                    "73"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "63"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 63"]], #IND,Y
-                 "COMA"   => [[$amod_inh,               \&check_inh,                    "43"   ]], #INH
-                 "COMB"   => [[$amod_inh,               \&check_inh,                    "53"   ]], #INH
-                 "CPD"    => [[$amod_imm16,             \&check_imm16,                  "1A 83"],  #IMM
-                              [$amod_dir,               \&check_dir,                    "1A 93"],  #DIR
-                              [$amod_ext,               \&check_ext,                    "1A B3"],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "1A A3"],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "CD A3"]], #IND,Y
-                 "CPX"    => [[$amod_imm16,             \&check_imm16,                  "8C"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "9C"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "BC"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "AC"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "CD AC"]], #IND,Y
-                 "CPY"    => [[$amod_imm16,             \&check_imm16,                  "18 8D"],  #IMM
-                              [$amod_dir,               \&check_dir,                    "18 9D"],  #DIR
-                              [$amod_ext,               \&check_ext,                    "18 BD"],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "1A AC"],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 AC"]], #IND,Y
-                 "DAA"    => [[$amod_inh,               \&check_inh,                    "19"   ]], #INH
-                 "DEC"    => [[$amod_ext,               \&check_ext,                    "7A"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "6A"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 6A"]], #IND,Y
-                 "DECA"   => [[$amod_inh,               \&check_inh,                    "4A"   ]], #INH
-                 "DECB"   => [[$amod_inh,               \&check_inh,                    "5A"   ]], #INH
-                 "DES"    => [[$amod_inh,               \&check_inh,                    "34"   ]], #INH
-                 "DEX"    => [[$amod_inh,               \&check_inh,                    "09"   ]], #INH
-                 "DEY"    => [[$amod_inh,               \&check_inh,                    "18 09"]], #INH
-                 "EORA"   => [[$amod_imm8,              \&check_imm8,                   "88"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "98"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "B8"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "A8"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 A8"]], #IND,Y
-                 "EORB"   => [[$amod_imm8,              \&check_imm8,                   "C8"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "D8"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "F8"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "E8"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 E8"]], #IND,Y
-                 "FDIV"   => [[$amod_inh,               \&check_inh,                    "03"   ]], #INH
-                 "IDIV"   => [[$amod_inh,               \&check_inh,                    "02"   ]], #INH
-                 "INC"    => [[$amod_ext,               \&check_ext,                    "7C"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "6C"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 6C"]], #IND,Y
-                 "INCA"   => [[$amod_inh,               \&check_inh,                    "4C"   ]], #INH
-                 "INCB"   => [[$amod_inh,               \&check_inh,                    "5C"   ]], #INH
-                 "INS"    => [[$amod_inh,               \&check_inh,                    "31"   ]], #INH
-                 "INX"    => [[$amod_inh,               \&check_inh,                    "08"   ]], #INH
-                 "INY"    => [[$amod_inh,               \&check_inh,                    "18 08"]], #INH
-                 "JMP"    => [[$amod_ext,               \&check_ext,                    "7E"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "6E"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 6E"]], #IND,Y
-                 "JSR"    => [[$amod_dir,               \&check_dir,                    "9D"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "BD"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "AD"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 AD"]], #IND,Y
-                 "LDAA"   => [[$amod_imm8,              \&check_imm8,                   "86"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "96"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "B6"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "A6"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 A6"]], #IND,Y
-                 "LDAB"   => [[$amod_imm8,              \&check_imm8,                   "C6"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "D6"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "F6"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "E6"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 E6"]], #IND,Y
-                 "LDD"    => [[$amod_imm16,             \&check_imm16,                  "CC"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "DC"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "FC"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "EC"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 EC"]], #IND,Y
-                 "LDS"    => [[$amod_imm16,             \&check_imm16,                  "8E"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "9E"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "BE"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "AE"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 AE"]], #IND,Y
-                 "LDX"    => [[$amod_imm16,             \&check_imm16,                  "CE"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "DE"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "FE"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "EE"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "CD EE"]], #IND,Y
-                 "LDY"    => [[$amod_imm16,             \&check_imm16,                  "18 CE"],  #IMM
-                              [$amod_dir,               \&check_dir,                    "18 DE"],  #DIR
-                              [$amod_ext,               \&check_ext,                    "18 FE"],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "1A EE"],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 EE"]], #IND,Y
-                 "LSL"    => [[$amod_ext,               \&check_ext,                    "78"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "68"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 68"]], #IND,Y
-                 "LSLA"   => [[$amod_inh,               \&check_inh,                    "48"   ]], #INH
-                 "LSLB"   => [[$amod_inh,               \&check_inh,                    "58"   ]], #INH
-                 "LSLD"   => [[$amod_inh,               \&check_inh,                    "05"   ]], #INH
-                 "LSR"    => [[$amod_ext,               \&check_ext,                    "74"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "64"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 64"]], #IND,Y
-                 "LSRA"   => [[$amod_inh,               \&check_inh,                    "44"   ]], #INH
-                 "LSRB"   => [[$amod_inh,               \&check_inh,                    "54"   ]], #INH
-                 "LSRD"   => [[$amod_inh,               \&check_inh,                    "04"   ]], #INH
-                 "MUL"    => [[$amod_inh,               \&check_inh,                    "3D"   ]], #INH
-                 "NEG"    => [[$amod_ext,               \&check_ext,                    "70"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "60"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 60"]], #IND,Y
-                 "NEGA"   => [[$amod_inh,               \&check_inh,                    "40"   ]], #INH
-                 "NEGB"   => [[$amod_inh,               \&check_inh,                    "50"   ]], #INH
-                 "NOP"    => [[$amod_inh,               \&check_inh,                    "01"   ]], #INH
-                 "ORAA"   => [[$amod_imm8,              \&check_imm8,                   "8A"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "9A"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "BA"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "AA"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 AA"]], #IND,Y
-                 "ORAB"   => [[$amod_imm8,              \&check_imm8,                   "CA"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "DA"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "FA"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "EA"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 EA"]], #IND,Y
-                 "PSHA"   => [[$amod_inh,               \&check_inh,                    "36"   ]], #INH
-                 "PSHB"   => [[$amod_inh,               \&check_inh,                    "37"   ]], #INH
-                 "PSHX"   => [[$amod_inh,               \&check_inh,                    "3C"   ]], #INH
-                 "PSHY"   => [[$amod_inh,               \&check_inh,                    "18 3C"]], #INH
-                 "PULA"   => [[$amod_inh,               \&check_inh,                    "32"   ]], #INH
-                 "PULB"   => [[$amod_inh,               \&check_inh,                    "33"   ]], #INH
-                 "PULX"   => [[$amod_inh,               \&check_inh,                    "38"   ]], #INH
-                 "PULY"   => [[$amod_inh,               \&check_inh,                    "18 38"]], #INH
-                 "ROL"    => [[$amod_ext,               \&check_ext,                    "79"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "69"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 69"]], #IND,Y
-                 "ROLA"   => [[$amod_inh,               \&check_inh,                    "49"   ]], #INH
-                 "ROLB"   => [[$amod_inh,               \&check_inh,                    "59"   ]], #INH
-                 "ROR"    => [[$amod_ext,               \&check_ext,                    "76"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "66"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 66"]], #IND,Y
-                 "RORA"   => [[$amod_inh,               \&check_inh,                    "46"   ]], #INH
-                 "RORB"   => [[$amod_inh,               \&check_inh,                    "56"   ]], #INH
-                 "RTI"    => [[$amod_inh,               \&check_inh,                    "3B"   ]], #INH
-                 "RTS"    => [[$amod_inh,               \&check_inh,                    "39"   ]], #INH
-                 "SBA"    => [[$amod_inh,               \&check_inh,                    "10"   ]], #INH
-                 "SBCA"   => [[$amod_imm8,              \&check_imm8,                   "82"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "92"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "B2"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "A2"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 A2"]], #IND,Y
-                 "SBCB"   => [[$amod_imm8,              \&check_imm8,                   "C2"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "D2"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "F2"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "E2"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 E2"]], #IND,Y
-                 "SEC"    => [[$amod_inh,               \&check_inh,                    "0D"   ]], #INH
-                 "SEI"    => [[$amod_inh,               \&check_inh,                    "0F"   ]], #INH
-                 "SEV"    => [[$amod_inh,               \&check_inh,                    "0B"   ]], #INH
-                 "STAA"   => [[$amod_dir,               \&check_dir,                    "97"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "B7"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "A7"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 A7"]], #IND,Y
-                 "STAB"   => [[$amod_dir,               \&check_dir,                    "D7"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "F7"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "E7"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 E7"]], #IND,Y
-                 "STD"    => [[$amod_dir,               \&check_dir,                    "DD"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "FD"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "ED"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 ED"]], #IND,Y
-                 "STOP"   => [[$amod_inh,               \&check_inh,                    "18 3E"]], #INH
-                 "STS"    => [[$amod_dir,               \&check_dir,                    "9F"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "BF"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "AF"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 AF"]], #IND,Y
-                 "STX"    => [[$amod_dir,               \&check_dir,                    "DF"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "FF"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "EF"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "CD EF"]], #IND,Y
-                 "STY"    => [[$amod_dir,               \&check_dir,                    "18 DF"],  #DIR
-                              [$amod_ext,               \&check_ext,                    "18 FF"],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "1A EF"],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 EF"]], #IND,Y
-                 "SUBA"   => [[$amod_imm8,              \&check_imm8,                   "80"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "90"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "B0"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "A0"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 A0"]], #IND,Y
-                 "SUBB"   => [[$amod_imm8,              \&check_imm8,                   "C0"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "D0"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "F0"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "E0"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 E0"]], #IND,Y
-                 "SUBD"   => [[$amod_imm16,             \&check_imm16,                  "83"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "93"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "B3"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "A3"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 A3"]], #IND,Y
-                 "SWI"    => [[$amod_inh,               \&check_inh,                    "3F"   ]], #INH
-                 "TAB"    => [[$amod_inh,               \&check_inh,                    "16"   ]], #INH
-                 "TAP"    => [[$amod_inh,               \&check_inh,                    "06"   ]], #INH
-                 "TBA"    => [[$amod_inh,               \&check_inh,                    "17"   ]], #INH
-                 "TEST"   => [[$amod_inh,               \&check_inh,                    "00"   ]], #INH
-                 "TPA"    => [[$amod_inh,               \&check_inh,                    "07"   ]], #INH
-                 "TST"    => [[$amod_ext,               \&check_ext,                    "7D"   ],  #EXT
-                              [$amod_hc11_indx,         \&check_hc11_indx,              "6D"   ],  #IND,X
-                              [$amod_hc11_indy,         \&check_hc11_indy,              "18 6D"]], #IND,Y
-                 "TSTA"   => [[$amod_inh,               \&check_inh,                    "4D"   ]], #INH
-                 "TSTB"   => [[$amod_inh,               \&check_inh,                    "5D"   ]], #INH
-                 "TSX"    => [[$amod_inh,               \&check_inh,                    "30"   ]], #INH
-                 "TSY"    => [[$amod_inh,               \&check_inh,                    "18 30"]], #INH
-                 "TXS"    => [[$amod_inh,               \&check_inh,                    "35"   ]], #INH
-                 "TYS"    => [[$amod_inh,               \&check_inh,                    "18 35"]], #INH
-                 "WAI"    => [[$amod_inh,               \&check_inh,                    "3E"   ]], #INH
-                 "XGDX"   => [[$amod_inh,               \&check_inh,                    "8F"   ]], #INH
-                 "XGDY"   => [[$amod_inh,               \&check_inh,                    "18 8F"]]};#INH
+Readonly our $OPCTAB_HC11 => {
+                 "ABA"    => [[$AMOD_INH,               \&check_inh,                    "1B"   ]], #INH
+                 "ABX"    => [[$AMOD_INH,               \&check_inh,                    "3A"   ]], #INH
+                 "ABY"    => [[$AMOD_INH,               \&check_inh,                    "18 3A"]], #INH
+                 "ADCA"   => [[$AMOD_IMM8,              \&check_imm8,                   "89"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "99"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "B9"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "A9"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 A9"]], #IND,Y
+                 "ADCB"   => [[$AMOD_IMM8,              \&check_imm8,                   "C9"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "D9"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "F9"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "E9"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 E9"]], #IND,Y
+                 "ADDA"   => [[$AMOD_IMM8,              \&check_imm8,                   "8B"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "9B"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "BB"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "AB"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 AB"]], #IND,Y
+                 "ADDB"   => [[$AMOD_IMM8,              \&check_imm8,                   "CB"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "DB"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "FB"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "EB"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 EB"]], #IND,Y
+                 "ADDD"   => [[$AMOD_IMM16,             \&check_imm16,                  "C3"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "D3"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "F3"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "E3"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 E3"]], #IND,Y
+                 "ANDA"   => [[$AMOD_IMM8,              \&check_imm8,                   "84"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "94"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "B4"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "A4"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 A4"]], #IND,Y
+                 "ANDB"   => [[$AMOD_IMM8,              \&check_imm8,                   "C4"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "D4"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "F4"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "E4"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 E4"]], #IND,Y
+                 "ASL"    => [[$AMOD_EXT,               \&check_ext,                    "78"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "68"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 68"]], #IND,Y
+                 "ASLA"   => [[$AMOD_INH,               \&check_inh,                    "48"   ]], #INH
+                 "ASLB"   => [[$AMOD_INH,               \&check_inh,                    "58"   ]], #INH
+                 "ASLD"   => [[$AMOD_INH,               \&check_inh,                    "05"   ]], #INH
+                 "ASR"    => [[$AMOD_EXT,               \&check_ext,                    "77"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "67"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 67"]], #IND,Y
+                 "ASRA"   => [[$AMOD_INH,               \&check_inh,                    "47"   ]], #INH
+                 "ASRB"   => [[$AMOD_INH,               \&check_inh,                    "57"   ]], #INH
+                 "BCC"    => [[$AMOD_REL8,              \&check_rel8,                   "24"   ]], #REL
+                 "BCLR"   => [[$AMOD_DIR_MSK,           \&check_dir_msk,                "15"   ],  #DIR
+                              [$AMOD_HC11_INDX_MSK,     \&check_hc11_indx_msk,          "1D"   ],  #IND,X
+                              [$AMOD_HC11_INDY_MSK,     \&check_hc11_indy_msk,          "18 1D"]], #IND,Y
+                 "BCS"    => [[$AMOD_REL8,              \&check_rel8,                   "25"   ]], #REL
+                 "BEQ"    => [[$AMOD_REL8,              \&check_rel8,                   "27"   ]], #REL
+                 "BGE"    => [[$AMOD_REL8,              \&check_rel8,                   "2C"   ]], #REL
+                 "BGT"    => [[$AMOD_REL8,              \&check_rel8,                   "2E"   ]], #REL
+                 "BHI"    => [[$AMOD_REL8,              \&check_rel8,                   "22"   ]], #REL
+                 "BHS"    => [[$AMOD_REL8,              \&check_rel8,                   "24"   ]], #REL
+                 "BITA"   => [[$AMOD_IMM8,              \&check_imm8,                   "85"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "95"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "B5"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "A5"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 A5"]], #IND,Y
+                 "BITB"   => [[$AMOD_IMM8,              \&check_imm8,                   "C5"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "D5"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "F5"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "E5"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 E5"]], #IND,Y
+                 "BLE"    => [[$AMOD_REL8,              \&check_rel8,                   "2F"   ]], #REL
+                 "BLO"    => [[$AMOD_REL8,              \&check_rel8,                   "25"   ]], #REL
+                 "BLS"    => [[$AMOD_REL8,              \&check_rel8,                   "23"   ]], #REL
+                 "BLT"    => [[$AMOD_REL8,              \&check_rel8,                   "2D"   ]], #REL
+                 "BMI"    => [[$AMOD_REL8,              \&check_rel8,                   "2B"   ]], #REL
+                 "BNE"    => [[$AMOD_REL8,              \&check_rel8,                   "26"   ]], #REL
+                 "BPL"    => [[$AMOD_REL8,              \&check_rel8,                   "2A"   ]], #REL
+                 "BRA"    => [[$AMOD_REL8,              \&check_rel8,                   "20"   ]], #REL
+                 "BRCLR"  => [[$AMOD_DIR_MSK_REL,       \&check_dir_msk_rel,            "13"   ],  #DIR
+                              [$AMOD_HC11_INDX_MSK_REL, \&check_hc11_indx_msk_rel,      "1F"   ],  #IND,X
+                              [$AMOD_HC11_INDY_MSK_REL, \&check_hc11_indy_msk_rel,      "18 1F"]], #IND,Y
+                 "BRN"    => [[$AMOD_REL8,              \&check_rel8,                   "21"   ]], #REL
+                 "BRSET"  => [[$AMOD_DIR_MSK_REL,       \&check_dir_msk_rel,            "12"   ],  #DIR
+                              [$AMOD_HC11_INDX_MSK_REL, \&check_hc11_indx_msk_rel,      "1E"   ],  #IND,X
+                              [$AMOD_HC11_INDY_MSK_REL, \&check_hc11_indy_msk_rel,      "18 1E"]], #IND,Y
+                 "BSET"   => [[$AMOD_DIR_MSK,           \&check_dir_msk,                "14"   ],  #DIR
+                              [$AMOD_HC11_INDX_MSK,     \&check_hc11_indx_msk,          "1C"   ],  #IND,X
+                              [$AMOD_HC11_INDY_MSK,     \&check_hc11_indy_msk,          "18 1C"]], #IND,Y
+                 "BSR"    => [[$AMOD_REL8,              \&check_rel8,                   "8D"   ]], #REL
+                 "BVC"    => [[$AMOD_REL8,              \&check_rel8,                   "28"   ]], #REL
+                 "BVS"    => [[$AMOD_REL8,              \&check_rel8,                   "29"   ]], #REL
+                 "CBA"    => [[$AMOD_INH,               \&check_inh,                    "11"   ]], #INH
+                 "CLC"    => [[$AMOD_INH,               \&check_inh,                    "0C"   ]], #INH
+                 "CLI"    => [[$AMOD_INH,               \&check_inh,                    "0E"   ]], #INH
+                 "CLR"    => [[$AMOD_EXT,               \&check_ext,                    "7F"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "6F"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 6F"]], #IND,Y
+                 "CLRA"   => [[$AMOD_INH,               \&check_inh,                    "4F"   ]], #INH
+                 "CLRB"   => [[$AMOD_INH,               \&check_inh,                    "5F"   ]], #INH
+                 "CLRD"   => [[$AMOD_INH,               \&check_inh,                    "4F 5F"]], #INH
+                 "CLV"    => [[$AMOD_INH,               \&check_inh,                    "0A"   ]], #INH
+                 "CMPA"   => [[$AMOD_IMM8,              \&check_imm8,                   "81"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "91"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "B1"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "A1"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 A1"]], #IND,Y
+                 "CMPB"   => [[$AMOD_IMM8,              \&check_imm8,                   "C1"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "D1"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "F1"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "E1"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 E1"]], #IND,Y
+                 "COM"    => [[$AMOD_EXT,               \&check_ext,                    "73"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "63"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 63"]], #IND,Y
+                 "COMA"   => [[$AMOD_INH,               \&check_inh,                    "43"   ]], #INH
+                 "COMB"   => [[$AMOD_INH,               \&check_inh,                    "53"   ]], #INH
+                 "CPD"    => [[$AMOD_IMM16,             \&check_imm16,                  "1A 83"],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "1A 93"],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "1A B3"],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "1A A3"],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "CD A3"]], #IND,Y
+                 "CPX"    => [[$AMOD_IMM16,             \&check_imm16,                  "8C"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "9C"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "BC"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "AC"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "CD AC"]], #IND,Y
+                 "CPY"    => [[$AMOD_IMM16,             \&check_imm16,                  "18 8D"],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "18 9D"],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "18 BD"],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "1A AC"],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 AC"]], #IND,Y
+                 "DAA"    => [[$AMOD_INH,               \&check_inh,                    "19"   ]], #INH
+                 "DEC"    => [[$AMOD_EXT,               \&check_ext,                    "7A"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "6A"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 6A"]], #IND,Y
+                 "DECA"   => [[$AMOD_INH,               \&check_inh,                    "4A"   ]], #INH
+                 "DECB"   => [[$AMOD_INH,               \&check_inh,                    "5A"   ]], #INH
+                 "DES"    => [[$AMOD_INH,               \&check_inh,                    "34"   ]], #INH
+                 "DEX"    => [[$AMOD_INH,               \&check_inh,                    "09"   ]], #INH
+                 "DEY"    => [[$AMOD_INH,               \&check_inh,                    "18 09"]], #INH
+                 "EORA"   => [[$AMOD_IMM8,              \&check_imm8,                   "88"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "98"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "B8"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "A8"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 A8"]], #IND,Y
+                 "EORB"   => [[$AMOD_IMM8,              \&check_imm8,                   "C8"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "D8"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "F8"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "E8"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 E8"]], #IND,Y
+                 "FDIV"   => [[$AMOD_INH,               \&check_inh,                    "03"   ]], #INH
+                 "IDIV"   => [[$AMOD_INH,               \&check_inh,                    "02"   ]], #INH
+                 "INC"    => [[$AMOD_EXT,               \&check_ext,                    "7C"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "6C"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 6C"]], #IND,Y
+                 "INCA"   => [[$AMOD_INH,               \&check_inh,                    "4C"   ]], #INH
+                 "INCB"   => [[$AMOD_INH,               \&check_inh,                    "5C"   ]], #INH
+                 "INS"    => [[$AMOD_INH,               \&check_inh,                    "31"   ]], #INH
+                 "INX"    => [[$AMOD_INH,               \&check_inh,                    "08"   ]], #INH
+                 "INY"    => [[$AMOD_INH,               \&check_inh,                    "18 08"]], #INH
+                 "JMP"    => [[$AMOD_EXT,               \&check_ext,                    "7E"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "6E"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 6E"]], #IND,Y
+                 "JSR"    => [[$AMOD_DIR,               \&check_dir,                    "9D"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "BD"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "AD"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 AD"]], #IND,Y
+                 "LDAA"   => [[$AMOD_IMM8,              \&check_imm8,                   "86"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "96"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "B6"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "A6"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 A6"]], #IND,Y
+                 "LDAB"   => [[$AMOD_IMM8,              \&check_imm8,                   "C6"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "D6"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "F6"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "E6"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 E6"]], #IND,Y
+                 "LDD"    => [[$AMOD_IMM16,             \&check_imm16,                  "CC"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "DC"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "FC"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "EC"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 EC"]], #IND,Y
+                 "LDS"    => [[$AMOD_IMM16,             \&check_imm16,                  "8E"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "9E"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "BE"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "AE"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 AE"]], #IND,Y
+                 "LDX"    => [[$AMOD_IMM16,             \&check_imm16,                  "CE"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "DE"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "FE"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "EE"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "CD EE"]], #IND,Y
+                 "LDY"    => [[$AMOD_IMM16,             \&check_imm16,                  "18 CE"],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "18 DE"],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "18 FE"],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "1A EE"],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 EE"]], #IND,Y
+                 "LSL"    => [[$AMOD_EXT,               \&check_ext,                    "78"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "68"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 68"]], #IND,Y
+                 "LSLA"   => [[$AMOD_INH,               \&check_inh,                    "48"   ]], #INH
+                 "LSLB"   => [[$AMOD_INH,               \&check_inh,                    "58"   ]], #INH
+                 "LSLD"   => [[$AMOD_INH,               \&check_inh,                    "05"   ]], #INH
+                 "LSR"    => [[$AMOD_EXT,               \&check_ext,                    "74"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "64"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 64"]], #IND,Y
+                 "LSRA"   => [[$AMOD_INH,               \&check_inh,                    "44"   ]], #INH
+                 "LSRB"   => [[$AMOD_INH,               \&check_inh,                    "54"   ]], #INH
+                 "LSRD"   => [[$AMOD_INH,               \&check_inh,                    "04"   ]], #INH
+                 "MUL"    => [[$AMOD_INH,               \&check_inh,                    "3D"   ]], #INH
+                 "NEG"    => [[$AMOD_EXT,               \&check_ext,                    "70"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "60"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 60"]], #IND,Y
+                 "NEGA"   => [[$AMOD_INH,               \&check_inh,                    "40"   ]], #INH
+                 "NEGB"   => [[$AMOD_INH,               \&check_inh,                    "50"   ]], #INH
+                 "NOP"    => [[$AMOD_INH,               \&check_inh,                    "01"   ]], #INH
+                 "ORAA"   => [[$AMOD_IMM8,              \&check_imm8,                   "8A"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "9A"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "BA"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "AA"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 AA"]], #IND,Y
+                 "ORAB"   => [[$AMOD_IMM8,              \&check_imm8,                   "CA"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "DA"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "FA"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "EA"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 EA"]], #IND,Y
+                 "PSHA"   => [[$AMOD_INH,               \&check_inh,                    "36"   ]], #INH
+                 "PSHB"   => [[$AMOD_INH,               \&check_inh,                    "37"   ]], #INH
+                 "PSHX"   => [[$AMOD_INH,               \&check_inh,                    "3C"   ]], #INH
+                 "PSHY"   => [[$AMOD_INH,               \&check_inh,                    "18 3C"]], #INH
+                 "PULA"   => [[$AMOD_INH,               \&check_inh,                    "32"   ]], #INH
+                 "PULB"   => [[$AMOD_INH,               \&check_inh,                    "33"   ]], #INH
+                 "PULX"   => [[$AMOD_INH,               \&check_inh,                    "38"   ]], #INH
+                 "PULY"   => [[$AMOD_INH,               \&check_inh,                    "18 38"]], #INH
+                 "ROL"    => [[$AMOD_EXT,               \&check_ext,                    "79"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "69"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 69"]], #IND,Y
+                 "ROLA"   => [[$AMOD_INH,               \&check_inh,                    "49"   ]], #INH
+                 "ROLB"   => [[$AMOD_INH,               \&check_inh,                    "59"   ]], #INH
+                 "ROR"    => [[$AMOD_EXT,               \&check_ext,                    "76"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "66"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 66"]], #IND,Y
+                 "RORA"   => [[$AMOD_INH,               \&check_inh,                    "46"   ]], #INH
+                 "RORB"   => [[$AMOD_INH,               \&check_inh,                    "56"   ]], #INH
+                 "RTI"    => [[$AMOD_INH,               \&check_inh,                    "3B"   ]], #INH
+                 "RTS"    => [[$AMOD_INH,               \&check_inh,                    "39"   ]], #INH
+                 "SBA"    => [[$AMOD_INH,               \&check_inh,                    "10"   ]], #INH
+                 "SBCA"   => [[$AMOD_IMM8,              \&check_imm8,                   "82"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "92"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "B2"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "A2"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 A2"]], #IND,Y
+                 "SBCB"   => [[$AMOD_IMM8,              \&check_imm8,                   "C2"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "D2"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "F2"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "E2"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 E2"]], #IND,Y
+                 "SEC"    => [[$AMOD_INH,               \&check_inh,                    "0D"   ]], #INH
+                 "SEI"    => [[$AMOD_INH,               \&check_inh,                    "0F"   ]], #INH
+                 "SEV"    => [[$AMOD_INH,               \&check_inh,                    "0B"   ]], #INH
+                 "STAA"   => [[$AMOD_DIR,               \&check_dir,                    "97"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "B7"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "A7"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 A7"]], #IND,Y
+                 "STAB"   => [[$AMOD_DIR,               \&check_dir,                    "D7"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "F7"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "E7"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 E7"]], #IND,Y
+                 "STD"    => [[$AMOD_DIR,               \&check_dir,                    "DD"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "FD"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "ED"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 ED"]], #IND,Y
+                 "STOP"   => [[$AMOD_INH,               \&check_inh,                    "18 3E"]], #INH
+                 "STS"    => [[$AMOD_DIR,               \&check_dir,                    "9F"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "BF"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "AF"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 AF"]], #IND,Y
+                 "STX"    => [[$AMOD_DIR,               \&check_dir,                    "DF"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "FF"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "EF"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "CD EF"]], #IND,Y
+                 "STY"    => [[$AMOD_DIR,               \&check_dir,                    "18 DF"],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "18 FF"],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "1A EF"],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 EF"]], #IND,Y
+                 "SUBA"   => [[$AMOD_IMM8,              \&check_imm8,                   "80"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "90"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "B0"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "A0"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 A0"]], #IND,Y
+                 "SUBB"   => [[$AMOD_IMM8,              \&check_imm8,                   "C0"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "D0"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "F0"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "E0"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 E0"]], #IND,Y
+                 "SUBD"   => [[$AMOD_IMM16,             \&check_imm16,                  "83"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "93"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "B3"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "A3"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 A3"]], #IND,Y
+                 "SWI"    => [[$AMOD_INH,               \&check_inh,                    "3F"   ]], #INH
+                 "TAB"    => [[$AMOD_INH,               \&check_inh,                    "16"   ]], #INH
+                 "TAP"    => [[$AMOD_INH,               \&check_inh,                    "06"   ]], #INH
+                 "TBA"    => [[$AMOD_INH,               \&check_inh,                    "17"   ]], #INH
+                 "TEST"   => [[$AMOD_INH,               \&check_inh,                    "00"   ]], #INH
+                 "TPA"    => [[$AMOD_INH,               \&check_inh,                    "07"   ]], #INH
+                 "TST"    => [[$AMOD_EXT,               \&check_ext,                    "7D"   ],  #EXT
+                              [$AMOD_HC11_INDX,         \&check_hc11_indx,              "6D"   ],  #IND,X
+                              [$AMOD_HC11_INDY,         \&check_hc11_indy,              "18 6D"]], #IND,Y
+                 "TSTA"   => [[$AMOD_INH,               \&check_inh,                    "4D"   ]], #INH
+                 "TSTB"   => [[$AMOD_INH,               \&check_inh,                    "5D"   ]], #INH
+                 "TSX"    => [[$AMOD_INH,               \&check_inh,                    "30"   ]], #INH
+                 "TSY"    => [[$AMOD_INH,               \&check_inh,                    "18 30"]], #INH
+                 "TXS"    => [[$AMOD_INH,               \&check_inh,                    "35"   ]], #INH
+                 "TYS"    => [[$AMOD_INH,               \&check_inh,                    "18 35"]], #INH
+                 "WAI"    => [[$AMOD_INH,               \&check_inh,                    "3E"   ]], #INH
+                 "XGDX"   => [[$AMOD_INH,               \&check_inh,                    "8F"   ]], #INH
+                 "XGDY"   => [[$AMOD_INH,               \&check_inh,                    "18 8F"]]};#INH
 
 #HC12/S12:      MNEMONIC      ADDRESS MODE                                              OPCODE
-*opctab_s12 =  \{"ABA"    => [[$amod_inh,               \&check_inh,                    "18 06"]], #INH
-                 "ABX"    => [[$amod_inh,               \&check_inh,                    "1A E5"]], #INH
-                 "ABY"    => [[$amod_inh,               \&check_inh,                    "19 ED"]], #INH
-                 "ADCA"   => [[$amod_imm8,              \&check_imm8,                   "89"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "99"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "B9"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "A9"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "A9"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "A9"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "A9"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "A9"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "A9"   ]], #[EXT]
-                 "ADCB"   => [[$amod_imm8,              \&check_imm8,                   "C9"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "D9"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "F9"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "E9"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "E9"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "E9"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "E9"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "E9"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "E9"   ]], #[EXT]
-                 "ADDA"   => [[$amod_imm8,              \&check_imm8,                   "8B"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "9B"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "BB"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "AB"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "AB"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "AB"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "AB"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "AB"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "AB"   ]], #[EXT]
-                 "ADDB"   => [[$amod_imm8,              \&check_imm8,                   "CB"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "DB"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "FB"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "EB"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "EB"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "EB"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "EB"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "EB"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "EB"   ]], #[EXT]
-                 "ADDD"   => [[$amod_imm16,             \&check_imm16,                  "C3"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "D3"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "F3"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "E3"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "E3"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "E3"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "E3"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "E3"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "E3"   ]], #[EXT]
-                 "ANDA"   => [[$amod_imm8,              \&check_imm8,                   "84"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "94"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "B4"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "A4"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "A4"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "A4"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "A4"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "A4"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "A4"   ]], #[EXT]
-                 "ANDB"   => [[$amod_imm8,              \&check_imm8,                   "C4"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "D4"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "F4"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "E4"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "E4"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "E4"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "E4"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "E4"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "E4"   ]], #[EXT]
-                 "ANDCC"  => [[$amod_imm8,              \&check_imm8,                   "10"   ]], #IMM
-                 "ASL"    => [[$amod_ext,               \&check_ext,                    "78"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "68"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "68"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "68"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "68"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "68"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "68"   ]], #[EXT]
-                 "ASLA"   => [[$amod_inh,               \&check_inh,                    "48"   ]], #INH
-                 "ASLB"   => [[$amod_inh,               \&check_inh,                    "58"   ]], #INH
-                 "ASLD"   => [[$amod_inh,               \&check_inh,                    "59"   ]], #INH
-                 "ASR"    => [[$amod_ext,               \&check_ext,                    "77"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "67"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "67"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "67"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "67"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "67"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "67"   ]], #[EXT]
-                 "ASRA"   => [[$amod_inh,               \&check_inh,                    "47"   ]], #INH
-                 "ASRB"   => [[$amod_inh,               \&check_inh,                    "57"   ]], #INH
-                 "BCC"    => [[$amod_rel8,              \&check_rel8,                   "24"   ],  #REL
-                              [$amod_rel16,             \&check_rel16,                  "18 24"],  #REL
-                              [$amod_rel8_forced,       \&check_rel8_forced,            "24"   ]], #REL
-                 "BCLR"   => [[$amod_dir_msk,           \&check_dir_msk,                "4D"   ],  #DIR
-                              [$amod_ext_msk,           \&check_ext_msk,                "1D"   ],  #EXT
-                              [$amod_idx_msk,           \&check_idx_msk,                "0D"   ],  #IDX
-                              [$amod_idx1_msk,          \&check_idx1_msk,               "0D"   ],  #IDX1
-                              [$amod_idx2_msk,          \&check_idx2_msk,               "0D"   ]], #IDX2
-                 "BCS"    => [[$amod_rel8,              \&check_rel8,                   "25"   ],  #REL
-                              [$amod_rel16,             \&check_rel16,                  "18 25"],  #REL
-                              [$amod_rel8_forced,       \&check_rel8_forced,            "25"   ]], #REL
-                 "BEQ"    => [[$amod_rel8,              \&check_rel8,                   "27"   ],  #REL
-                              [$amod_rel16,             \&check_rel16,                  "18 27"],  #REL
-                              [$amod_rel8_forced,       \&check_rel8_forced,            "27"   ]], #REL
-                 "BGE"    => [[$amod_rel8,              \&check_rel8,                   "2C"   ],  #REL
-                              [$amod_rel16,             \&check_rel16,                  "18 2C"],  #REL
-                              [$amod_rel8,              \&check_rel8,                   "2C"   ]], #REL
-                 "BGND"   => [[$amod_inh,               \&check_inh,                    "00"   ]], #INH
-                 "BGT"    => [[$amod_rel8,              \&check_rel8,                   "2E"   ],  #REL
-                              [$amod_rel16,             \&check_rel16,                  "18 2E"],  #REL
-                              [$amod_rel8_forced,       \&check_rel8_forced,            "2E"   ]], #REL
-                 "BHI"    => [[$amod_rel8,              \&check_rel8,                   "22"   ],  #REL
-                              [$amod_rel16,             \&check_rel16,                  "18 22"],  #REL
-                              [$amod_rel8_forced,       \&check_rel8_forced,            "22"   ]], #REL
-                 "BHS"    => [[$amod_rel8,              \&check_rel8,                   "24"   ],  #REL
-                              [$amod_rel16,             \&check_rel16,                  "18 24"],  #REL
-                              [$amod_rel8_forced,       \&check_rel8_forced,            "24"   ]], #REL
-                 "BITA"   => [[$amod_imm8,              \&check_imm8,                   "85"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "95"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "B5"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "A5"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "A5"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "A5"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "A5"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "A5"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "A5"   ]], #[EXT]
-                 "BITB"   => [[$amod_imm8,              \&check_imm8,                   "C5"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "D5"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "F5"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "E5"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "E5"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "E5"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "E5"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "E5"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "E5"   ]], #[EXT]
-                 "BLE"    => [[$amod_rel8,              \&check_rel8,                   "2F"   ],  #REL
-                              [$amod_rel16,             \&check_rel16,                  "18 2F"],  #REL
-                              [$amod_rel8_forced,       \&check_rel8_forced,            "2F"   ]], #REL
-                 "BLO"    => [[$amod_rel8,              \&check_rel8,                   "25"   ],  #REL
-                              [$amod_rel16,             \&check_rel16,                  "18 25"],  #REL
-                              [$amod_rel8_forced,       \&check_rel8_forced,            "25"   ]], #REL
-                 "BLS"    => [[$amod_rel8,              \&check_rel8,                   "23"   ],  #REL
-                              [$amod_rel16,             \&check_rel16,                  "18 23"],  #REL
-                              [$amod_rel8_forced,       \&check_rel8_forced,            "23"   ]], #REL
-                 "BLT"    => [[$amod_rel8,              \&check_rel8,                   "2D"   ],  #REL
-                              [$amod_rel16,             \&check_rel16,                  "18 2D"],  #REL
-                              [$amod_rel8_forced,       \&check_rel8_forced,            "2D"   ]], #REL
-                 "BMI"    => [[$amod_rel8,              \&check_rel8,                   "2B"   ],  #REL
-                              [$amod_rel16,             \&check_rel16,                  "18 2B"],  #REL
-                              [$amod_rel8_forced,       \&check_rel8_forced,            "2B"   ]], #REL
-                 "BNE"    => [[$amod_rel8,              \&check_rel8,                   "26"   ],  #REL
-                              [$amod_rel16,             \&check_rel16,                  "18 26"],  #REL
-                              [$amod_rel8_forced,       \&check_rel8_forced,            "26"   ]], #REL
-                 "BPL"    => [[$amod_rel8,              \&check_rel8,                   "2A"   ],  #REL
-                              [$amod_rel16,             \&check_rel16,                  "18 2A"],  #REL
-                              [$amod_rel8_forced,       \&check_rel8_forced,            "2A"   ]], #REL
-                 "BRA"    => [[$amod_rel8,              \&check_rel8,                   "20"   ],  #REL
-                              [$amod_rel16,             \&check_rel16,                  "18 20"],  #REL
-                              [$amod_rel8_forced,       \&check_rel8_forced,            "20"   ]], #REL
-                 "BRCLR"  => [[$amod_dir_msk_rel,       \&check_dir_msk_rel,            "4F"   ],  #DIR
-                              [$amod_ext_msk_rel,       \&check_ext_msk_rel,            "1F"   ],  #EXT
-                              [$amod_idx_msk_rel,       \&check_idx_msk_rel,            "0F"   ],  #IDX
-                              [$amod_idx1_msk_rel,      \&check_idx1_msk_rel,           "0F"   ],  #IDX1
-                              [$amod_idx2_msk_rel,      \&check_idx2_msk_rel,           "0F"   ]], #IDX2
-                 "BRN"    => [[$amod_rel8,              \&check_rel8,                   "21"   ],  #REL
-                              [$amod_rel16,             \&check_rel16,                  "18 21"],  #REL
-                              [$amod_rel8_forced,       \&check_rel8_forced,            "21"   ]], #REL
-                 "BRSET"  => [[$amod_dir_msk_rel,       \&check_dir_msk_rel,            "4E"   ],  #DIR
-                              [$amod_ext_msk_rel,       \&check_ext_msk_rel,            "1E"   ],  #EXT
-                              [$amod_idx_msk_rel,       \&check_idx_msk_rel,            "0E"   ],  #IDX
-                              [$amod_idx1_msk_rel,      \&check_idx1_msk_rel,           "0E"   ],  #IDX1
-                              [$amod_idx2_msk_rel,      \&check_idx2_msk_rel,           "0E"   ]], #IDX2
-                 "BSET"   => [[$amod_dir_msk,           \&check_dir_msk,                "4C"   ],  #DIR
-                              [$amod_ext_msk,           \&check_ext_msk,                "1C"   ],  #EXT
-                              [$amod_idx_msk,           \&check_idx_msk,                "0C"   ],  #IDX
-                              [$amod_idx1_msk,          \&check_idx1_msk,               "0C"   ],  #IDX1
-                              [$amod_idx2_msk,          \&check_idx2_msk,               "0C"   ]], #IDX2
-                 "BSR"    => [[$amod_rel8,              \&check_rel8,                   "07"   ]], #REL
-                 "BVC"    => [[$amod_rel8,              \&check_rel8,                   "28"   ],  #REL
-                              [$amod_rel16,             \&check_rel16,                  "18 28"]], #REL
-                 "BVS"    => [[$amod_rel8,              \&check_rel8,                   "29"   ],  #REL
-                              [$amod_rel16,             \&check_rel16,                  "18 29"]], #REL
-                 "CALL"   => [[$amod_ext_pgimpl,        \&check_ext_pgimpl,             "4A"   ],  #EXT
-                              [$amod_ext_pg,            \&check_ext_pg,                 "4A"   ],  #EXT
-                              [$amod_idx_pg,            \&check_idx_pg,                 "4B"   ],  #IDX
-                              [$amod_idx1_pg,           \&check_idx1_pg,                "4B"   ],  #IDX1
-                              [$amod_idx2_pg,           \&check_idx2_pg,                "4B"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "4B"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "4B"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "4B"   ]], #[EXT]
-                 "CBA"    => [[$amod_inh,               \&check_inh,                    "18 17"]], #INH
-                 "CLC"    => [[$amod_inh,               \&check_inh,                    "10 FE"]], #INH
-                 "CLI"    => [[$amod_inh,               \&check_inh,                    "10 EF"]], #INH
-                 "CLR"    => [[$amod_ext,               \&check_ext,                    "79"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "69"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "69"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "69"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "69"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "69"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "69"   ]], #[EXT]
-                 "CLRA"   => [[$amod_inh,               \&check_inh,                    "87"   ]], #INH
-                 "CLRB"   => [[$amod_inh,               \&check_inh,                    "C7"   ]], #INH
-                 "CLRD"   => [[$amod_inh,               \&check_inh,                    "87 C7"]], #INH
-                 "CLV"    => [[$amod_inh,               \&check_inh,                    "10 FD"]], #INH
-                 "CMPA"   => [[$amod_imm8,              \&check_imm8,                   "81"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "91"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "B1"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "A1"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "A1"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "A1"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "A1"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "A1"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "A1"   ]], #[EXT]
-                 "CMPB"   => [[$amod_imm8,              \&check_imm8,                   "C1"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "D1"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "F1"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "E1"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "E1"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "E1"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "E1"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "E1"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "E1"   ]], #[EXT]
-                 "COM"    => [[$amod_ext,               \&check_ext,                    "71"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "61"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "61"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "61"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "61"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "61"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "61"   ]], #[EXT]
-                 "COMA"   => [[$amod_inh,               \&check_inh,                    "41"   ]], #INH
-                 "COMB"   => [[$amod_inh,               \&check_inh,                    "51"   ]], #INH
-                 "CPD"    => [[$amod_imm16,             \&check_imm16,                  "8C"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "9C"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "BC"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "AC"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "AC"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "AC"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "AC"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "AC"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "AC"   ]], #[EXT]
-                 "CPS"    => [[$amod_imm16,             \&check_imm16,                  "8F"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "9F"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "BF"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "AF"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "AF"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "AF"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "AF"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "AF"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "AF"   ]], #[EXT]
-                 "CPX"    => [[$amod_imm16,             \&check_imm16,                  "8E"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "9E"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "BE"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "AE"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "AE"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "AE"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "AE"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "AE"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "AE"   ]], #[EXT]
-                 "CPY"    => [[$amod_imm16,             \&check_imm16,                  "8D"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "9D"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "BD"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "AD"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "AD"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "AD"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "AD"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "AD"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "AD"   ]], #[EXT]
-                 "DAA"    => [[$amod_inh,               \&check_inh,                    "18 07"]], #INH
-                 "DBEQ"   => [[$amod_dbeq,              \&check_dbeq,                   "04"   ]], #REL
-                 "DBNE"   => [[$amod_dbne,              \&check_dbne,                   "04"   ]], #REL
-                 "DEC"    => [[$amod_ext,               \&check_ext,                    "73"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "63"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "63"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "63"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "63"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "63"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "63"   ]], #[EXT]
-                 "DECA"   => [[$amod_inh,               \&check_inh,                    "43"   ]], #INH
-                 "DECB"   => [[$amod_inh,               \&check_inh,                    "53"   ]], #INH
-                 "DES"    => [[$amod_inh,               \&check_inh,                    "1B 9F"]], #INH
-                 "DEX"    => [[$amod_inh,               \&check_inh,                    "09"   ]], #INH
-                 "DEY"    => [[$amod_inh,               \&check_inh,                    "03"   ]], #INH
-                 "EDIV"   => [[$amod_inh,               \&check_inh,                    "11"   ]], #INH
-                 "EDIVS"  => [[$amod_inh,               \&check_inh,                    "18 14"]], #INH
-                 "EMACS"  => [[$amod_ext,               \&check_ext,                    "18 12"]], #EXT
-                 "EMAXD"  => [[$amod_idx,               \&check_idx,                    "18 1A"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 1A"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 1A"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 1A"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 1A"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 1A"]], #[EXT]
-                 "EMAXM"  => [[$amod_idx,               \&check_idx,                    "18 1E"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 1E"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 1E"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 1E"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 1E"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 1E"]], #[EXT]
-                 "EMIND"  => [[$amod_idx,               \&check_idx,                    "18 1B"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 1B"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 1B"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 1B"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 1B"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 1B"]], #[EXT]
-                 "EMINM"  => [[$amod_idx,               \&check_idx,                    "18 1F"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 1F"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 1F"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 1F"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 1F"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 1F"]], #[EXT]
-                 "EMUL"   => [[$amod_inh,               \&check_inh,                    "13"   ]], #INH
-                 "EMULS"  => [[$amod_inh,               \&check_inh,                    "18 13"]], #INH
-                 "EORA"   => [[$amod_imm8,              \&check_imm8,                   "88"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "98"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "B8"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "A8"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "A8"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "A8"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "A8"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "A8"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "A8"   ]], #[EXT]
-                 "EORB"   => [[$amod_imm8,              \&check_imm8,                   "C8"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "D8"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "F8"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "E8"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "E8"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "E8"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "E8"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "E8"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "E8"   ]], #[EXT]
-                 "ETBL"   => [[$amod_idx,               \&check_idx,                    "18 3F"]], #IDX
-                 "EXG"    => [[$amod_exg,               \&check_exg,                    "B7"   ]], #INH
-                 "FDIV"   => [[$amod_inh,               \&check_inh,                    "18 11"]], #INH
-                 "IBEQ"   => [[$amod_ibeq,              \&check_ibeq,                   "04"   ]], #REL
-                 "IBNE"   => [[$amod_ibne,              \&check_ibne,                   "04"   ]], #REL
-                 "IDIV"   => [[$amod_inh,               \&check_inh,                    "18 10"]], #INH
-                 "IDIVS"  => [[$amod_inh,               \&check_inh,                    "18 15"]], #INH
-                 "INC"    => [[$amod_ext,               \&check_ext,                    "72"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "62"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "62"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "62"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "62"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "62"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "62"   ]], #[EXT]
-                 "INCA"   => [[$amod_inh,               \&check_inh,                    "42"   ]], #INH
-                 "INCB"   => [[$amod_inh,               \&check_inh,                    "52"   ]], #INH
-                 "INS"    => [[$amod_inh,               \&check_inh,                    "1B 81"]], #INH
-                 "INX"    => [[$amod_inh,               \&check_inh,                    "08"   ]], #INH
-                 "INY"    => [[$amod_inh,               \&check_inh,                    "02"   ]], #INH
-                 "JMP"    => [[$amod_ext,               \&check_ext,                    "06"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "05"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "05"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "05"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "05"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "05"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "05"   ]], #[EXT]
-                 "JOB"    => [[$amod_rel8,              \&check_rel8,                   "20"   ],  #REL
-                              [$amod_ext,               \&check_ext,                    "06"   ]], #EXT
-                 "JOBSR"  => [[$amod_rel8,              \&check_rel8,                   "07"   ],  #REL
-                              [$amod_ext,               \&check_ext,                    "16"   ]], #EXT
-                 "JSR"    => [[$amod_dir,               \&check_dir,                    "17"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "16"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "15"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "15"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "15"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "15"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "15"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "15"   ]], #[EXT]
-                 "LBCC"   => [[$amod_rel16,             \&check_rel16,                  "18 24"]], #REL
-                 "LBCS"   => [[$amod_rel16,             \&check_rel16,                  "18 25"]], #REL
-                 "LBEQ"   => [[$amod_rel16,             \&check_rel16,                  "18 27"]], #REL
-                 "LBGE"   => [[$amod_rel16,             \&check_rel16,                  "18 2C"]], #REL
-                 "LBGT"   => [[$amod_rel16,             \&check_rel16,                  "18 2E"]], #REL
-                 "LBHI"   => [[$amod_rel16,             \&check_rel16,                  "18 22"]], #REL
-                 "LBHS"   => [[$amod_rel16,             \&check_rel16,                  "18 24"]], #REL
-                 "LBLE"   => [[$amod_rel16,             \&check_rel16,                  "18 2F"]], #REL
-                 "LBLO"   => [[$amod_rel16,             \&check_rel16,                  "18 25"]], #REL
-                 "LBLS"   => [[$amod_rel16,             \&check_rel16,                  "18 23"]], #REL
-                 "LBLT"   => [[$amod_rel16,             \&check_rel16,                  "18 2D"]], #REL
-                 "LBMI"   => [[$amod_rel16,             \&check_rel16,                  "18 2B"]], #REL
-                 "LBNE"   => [[$amod_rel16,             \&check_rel16,                  "18 26"]], #REL
-                 "LBPL"   => [[$amod_rel16,             \&check_rel16,                  "18 2A"]], #REL
-                 "LBRA"   => [[$amod_rel16,             \&check_rel16,                  "18 20"]], #REL
-                 "LBRN"   => [[$amod_rel16,             \&check_rel16,                  "18 21"]], #REL
-                 "LBVC"   => [[$amod_rel16,             \&check_rel16,                  "18 28"]], #REL
-                 "LBVS"   => [[$amod_rel16,             \&check_rel16,                  "18 29"]], #REL
-                 "LDAA"   => [[$amod_imm8,              \&check_imm8,                   "86"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "96"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "B6"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "A6"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "A6"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "A6"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "A6"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "A6"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "A6"   ]], #[EXT]
-                 "LDAB"   => [[$amod_imm8,              \&check_imm8,                   "C6"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "D6"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "F6"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "E6"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "E6"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "E6"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "E6"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "E6"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "E6"   ]], #[EXT]
-                 "LDD"    => [[$amod_imm16,             \&check_imm16,                  "CC"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "DC"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "FC"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "EC"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "EC"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "EC"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "EC"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "EC"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "EC"   ]], #[EXT]
-                 "LDS"    => [[$amod_imm16,             \&check_imm16,                  "CF"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "DF"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "FF"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "EF"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "EF"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "EF"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "EF"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "EF"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "EF"   ]], #[EXT]
-                 "LDX"    => [[$amod_imm16,             \&check_imm16,                  "CE"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "DE"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "FE"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "EE"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "EE"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "EE"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "EE"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "EE"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "EE"   ]], #[EXT]
-                 "LDY"    => [[$amod_imm16,             \&check_imm16,                  "CD"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "DD"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "FD"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "ED"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "ED"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "ED"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "ED"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "ED"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "ED"   ]], #[EXT]
-                 "LEAS"   => [[$amod_idx,               \&check_idx,                    "1B"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "1B"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "1B"   ]], #IDX2
-                 "LEAX"   => [[$amod_idx,               \&check_idx,                    "1A"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "1A"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "1A"   ]], #IDX2
-                 "LEAY"   => [[$amod_idx,               \&check_idx,                    "19"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "19"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "19"   ]], #IDX2
-                 "LSL"    => [[$amod_ext,               \&check_ext,                    "78"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "68"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "68"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "68"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "68"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "68"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "68"   ]], #[EXT]
-                 "LSLA"   => [[$amod_inh,               \&check_inh,                    "48"   ]], #INH
-                 "LSLB"   => [[$amod_inh,               \&check_inh,                    "58"   ]], #INH
-                 "LSLD"   => [[$amod_inh,               \&check_inh,                    "59"   ]], #INH
-                 "LSR"    => [[$amod_ext,               \&check_ext,                    "74"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "64"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "64"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "64"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "64"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "64"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "64"   ]], #[EXT]
-                 "LSRA"   => [[$amod_inh,               \&check_inh,                    "44"   ]], #INH
-                 "LSRB"   => [[$amod_inh,               \&check_inh,                    "54"   ]], #INH
-                 "LSRD"   => [[$amod_inh,               \&check_inh,                    "49"   ]], #INH
-                 "MAXA"   => [[$amod_idx,               \&check_idx,                    "18 18"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 18"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 18"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 18"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 18"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 18"]], #[EXT]
-                 "MAXM"   => [[$amod_idx,               \&check_idx,                    "18 1C"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 1C"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 1C"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 1C"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 1C"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 1C"]], #[EXT]
-                 "MEM"    => [[$amod_inh,               \&check_inh,                    "01"   ]], #INH
-                 "MINA"   => [[$amod_idx,               \&check_idx,                    "18 19"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 19"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 19"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 19"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 19"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 19"]], #[EXT]
-                 "MINM"   => [[$amod_idx,               \&check_idx,                    "18 1D"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 1D"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 1D"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 1D"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 1D"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 1D"]], #[EXT]
-                 "MOVB"   => [[$amod_imm8_ext,          \&check_imm8_ext,               "18 0B"],  #IMM-EXT
-                              [$amod_imm8_idx,          \&check_imm8_idx,               "18 08"],  #IMM-IDX
-                              [$amod_ext_ext,           \&check_ext_ext,                "18 0C"],  #EXT-EXT
-                              [$amod_ext_idx,           \&check_ext_idx,                "18 09"],  #EXT-IDX
-                              [$amod_idx_ext,           \&check_idx_ext,                "18 0D"],  #IDX-EXT
-                              [$amod_idx_idx,           \&check_idx_idx,                "18 0A"]], #IDX-IDX
-                 "MOVW"   => [[$amod_imm16_ext,         \&check_imm16_ext,              "18 03"],  #IMM-EXT
-                              [$amod_imm16_idx,         \&check_imm16_idx,              "18 00"],  #IMM-IDX
-                              [$amod_ext_ext,           \&check_ext_ext,                "18 04"],  #EXT-EXT
-                              [$amod_ext_idx,           \&check_ext_idx,                "18 01"],  #EXT-IDX
-                              [$amod_idx_ext,           \&check_idx_ext,                "18 05"],  #IDX-EXT
-                              [$amod_idx_idx,           \&check_idx_idx,                "18 02"]], #IDX-IDX
-                 "MUL"    => [[$amod_inh,               \&check_inh,                    "12"   ]], #INH
-                 "NEG"    => [[$amod_ext,               \&check_ext,                    "70"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "60"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "60"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "60"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "60"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "60"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "60"   ]], #[EXT]
-                 "NEGA"   => [[$amod_inh,               \&check_inh,                    "40"   ]], #INH
-                 "NEGB"   => [[$amod_inh,               \&check_inh,                    "50"   ]], #INH
-                 "NOP"    => [[$amod_inh,               \&check_inh,                    "A7"   ]], #INH
-                 "ORAA"   => [[$amod_imm8,              \&check_imm8,                   "8A"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "9A"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "BA"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "AA"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "AA"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "AA"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "AA"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "AA"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "AA"   ]], #[EXT]
-                 "ORAB"   => [[$amod_imm8,              \&check_imm8,                   "CA"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "DA"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "FA"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "EA"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "EA"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "EA"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "EA"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "EA"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "EA"   ]], #[EXT]
-                 "ORCC"   => [[$amod_imm8,              \&check_imm8,                   "14"   ]], #INH
-                 "PSHA"   => [[$amod_inh,               \&check_inh,                    "36"   ]], #INH
-                 "PSHB"   => [[$amod_inh,               \&check_inh,                    "37"   ]], #INH
-                 "PSHC"   => [[$amod_inh,               \&check_inh,                    "39"   ]], #INH
-                 "PSHD"   => [[$amod_inh,               \&check_inh,                    "3B"   ]], #INH
-                 "PSHX"   => [[$amod_inh,               \&check_inh,                    "34"   ]], #INH
-                 "PSHY"   => [[$amod_inh,               \&check_inh,                    "35"   ]], #INH
-                 "PULA"   => [[$amod_inh,               \&check_inh,                    "32"   ]], #INH
-                 "PULB"   => [[$amod_inh,               \&check_inh,                    "33"   ]], #INH
-                 "PULC"   => [[$amod_inh,               \&check_inh,                    "38"   ]], #INH
-                 "PULD"   => [[$amod_inh,               \&check_inh,                    "3A"   ]], #INH
-                 "PULX"   => [[$amod_inh,               \&check_inh,                    "30"   ]], #INH
-                 "PULY"   => [[$amod_inh,               \&check_inh,                    "31"   ]], #INH
-                 "REV"    => [[$amod_inh,               \&check_inh,                    "18 3A"]], #INH
-                 "REVW"   => [[$amod_inh,               \&check_inh,                    "18 3B"]], #INH
-                 "ROL"    => [[$amod_ext,               \&check_ext,                    "75"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "65"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "65"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "65"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "65"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "65"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "65"   ]], #[EXT]
-                 "ROLA"   => [[$amod_inh,               \&check_inh,                    "45"   ]], #INH
-                 "ROLB"   => [[$amod_inh,               \&check_inh,                    "55"   ]], #INH
-                 "ROR"    => [[$amod_ext,               \&check_ext,                    "76"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "66"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "66"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "66"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "66"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "66"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "66"   ]], #[EXT]
-                 "RORA"   => [[$amod_inh,               \&check_inh,                    "46"   ]], #INH
-                 "RORB"   => [[$amod_inh,               \&check_inh,                    "56"   ]], #INH
-                 "RTC"    => [[$amod_inh,               \&check_inh,                    "0A"   ]], #INH
-                 "RTI"    => [[$amod_inh,               \&check_inh,                    "0B"   ]], #INH
-                 "RTS"    => [[$amod_inh,               \&check_inh,                    "3D"   ]], #INH
-                 "SBA"    => [[$amod_inh,               \&check_inh,                    "18 16"]], #INH
-                 "SBCA"   => [[$amod_imm8,              \&check_imm8,                   "82"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "92"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "B2"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "A2"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "A2"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "A2"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "A2"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "A2"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "A2"   ]], #[EXT]
-                 "SBCB"   => [[$amod_imm8,              \&check_imm8,                   "C2"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "D2"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "F2"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "E2"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "E2"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "E2"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "E2"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "E2"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "E2"   ]], #[EXT]
-                 "SEC"    => [[$amod_inh,               \&check_inh,                    "14 01"]], #INH
-                 "SEI"    => [[$amod_inh,               \&check_inh,                    "14 10"]], #INH
-                 "SEV"    => [[$amod_inh,               \&check_inh,                    "14 02"]], #INH
-                 "SEX"    => [[$amod_tfr,               \&check_sex,                    "B7"   ]], #INH
-                 "STAA"   => [[$amod_dir,               \&check_dir,                    "5A"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "7A"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "6A"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "6A"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "6A"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "6A"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "6A"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "6A"   ]], #[EXT]
-                 "STAB"   => [[$amod_dir,               \&check_dir,                    "5B"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "7B"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "6B"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "6B"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "6B"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "6B"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "6B"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "6B"   ]], #[EXT]
-                 "STD"    => [[$amod_dir,               \&check_dir,                    "5C"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "7C"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "6C"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "6C"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "6C"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "6C"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "6C"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "6C"   ]], #[EXT]
-                 "STOP"   => [[$amod_inh,               \&check_inh,                    "18 3E"]], #INH
-                 "STS"    => [[$amod_dir,               \&check_dir,                    "5F"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "7F"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "6F"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "6F"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "6F"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "6F"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "6F"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "6F"   ]], #[EXT]
-                 "STX"    => [[$amod_dir,               \&check_dir,                    "5E"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "7E"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "6E"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "6E"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "6E"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "6E"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "6E"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "6E"   ]], #[EXT]
-                 "STY"    => [[$amod_dir,               \&check_dir,                    "5D"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "7D"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "6D"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "6D"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "6D"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "6D"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "6D"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "6D"   ]], #[EXT]
-                 "SUBA"   => [[$amod_imm8,              \&check_imm8,                   "80"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "90"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "B0"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "A0"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "A0"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "A0"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "A0"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "A0"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "A0"   ]], #[EXT]
-                 "SUBB"   => [[$amod_imm8,              \&check_imm8,                   "C0"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "D0"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "F0"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "E0"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "E0"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "E0"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "E0"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "E0"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "E0"   ]], #[EXT]
-                 "SUBD"   => [[$amod_imm16,             \&check_imm16,                  "83"   ],  #IMM
-                              [$amod_dir,               \&check_dir,                    "93"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "B3"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "A3"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "A3"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "A3"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "A3"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "A3"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "A3"   ]], #[EXT]
-                 "SWI"    => [[$amod_inh,               \&check_inh,                    "3F"   ]], #INH
-                 "TAB"    => [[$amod_inh,               \&check_inh,                    "18 0E"]], #INH
-                 "TAP"    => [[$amod_inh,               \&check_inh,                    "B7 02"]], #INH
-                 "TBA"    => [[$amod_inh,               \&check_inh,                    "18 0F"]], #INH
-                 "TBEQ"   => [[$amod_tbeq,              \&check_tbeq,                   "04"   ]], #REL
-                 "TBL"    => [[$amod_idx,               \&check_idx,                    "18 3D"]], #IDX
-                 "TBNE"   => [[$amod_tbne,              \&check_tbne,                   "04"   ]], #REL
-                 "TFR"    => [[$amod_tfr,               \&check_tfr,                    "B7"   ]], #INH
-                 "TPA"    => [[$amod_inh,               \&check_inh,                    "B7 20"]], #INH
-                 "TRAP"   => [[$amod_trap,              \&check_trap,                   "18"   ]], #INH
-                 "TST"    => [[$amod_ext,               \&check_ext,                    "F7"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "E7"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "E7"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "E7"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "E7"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "E7"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "E7"   ]], #[EXT]
-                 "TSTA"   => [[$amod_inh,               \&check_inh,                    "97"   ]], #INH
-                 "TSTB"   => [[$amod_inh,               \&check_inh,                    "D7"   ]], #INH
-                 "TSX"    => [[$amod_inh,               \&check_inh,                    "B7 75"]], #INH
-                 "TSY"    => [[$amod_inh,               \&check_inh,                    "B7 76"]], #INH
-                 "TXS"    => [[$amod_inh,               \&check_inh,                    "B7 57"]], #INH
-                 "TYS"    => [[$amod_inh,               \&check_inh,                    "B7 67"]], #INH
-                 "WAI"    => [[$amod_inh,               \&check_inh,                    "3E"   ]], #INH
-                 "WAV"    => [[$amod_inh,               \&check_inh,                    "18 3C"]], #INH
-                 "WAVR"   => [[$amod_inh,               \&check_inh,                    "3C"   ]], #INH
-                 "XGDX"   => [[$amod_inh,               \&check_inh,                    "B7 C5"]], #INH
-                 "XGDY"   => [[$amod_inh,               \&check_inh,                    "B7 C6"]]};#INH
+Readonly our $OPCTAB_S12 =>  {
+                 "ABA"    => [[$AMOD_INH,               \&check_inh,                    "18 06"]], #INH
+                 "ABX"    => [[$AMOD_INH,               \&check_inh,                    "1A E5"]], #INH
+                 "ABY"    => [[$AMOD_INH,               \&check_inh,                    "19 ED"]], #INH
+                 "ADCA"   => [[$AMOD_IMM8,              \&check_imm8,                   "89"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "99"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "B9"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "A9"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "A9"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "A9"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "A9"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "A9"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "A9"   ]], #[EXT]
+                 "ADCB"   => [[$AMOD_IMM8,              \&check_imm8,                   "C9"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "D9"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "F9"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "E9"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "E9"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "E9"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "E9"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "E9"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "E9"   ]], #[EXT]
+                 "ADDA"   => [[$AMOD_IMM8,              \&check_imm8,                   "8B"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "9B"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "BB"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "AB"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "AB"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "AB"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "AB"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "AB"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "AB"   ]], #[EXT]
+                 "ADDB"   => [[$AMOD_IMM8,              \&check_imm8,                   "CB"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "DB"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "FB"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "EB"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "EB"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "EB"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "EB"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "EB"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "EB"   ]], #[EXT]
+                 "ADDD"   => [[$AMOD_IMM16,             \&check_imm16,                  "C3"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "D3"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "F3"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "E3"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "E3"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "E3"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "E3"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "E3"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "E3"   ]], #[EXT]
+                 "ANDA"   => [[$AMOD_IMM8,              \&check_imm8,                   "84"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "94"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "B4"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "A4"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "A4"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "A4"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "A4"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "A4"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "A4"   ]], #[EXT]
+                 "ANDB"   => [[$AMOD_IMM8,              \&check_imm8,                   "C4"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "D4"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "F4"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "E4"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "E4"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "E4"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "E4"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "E4"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "E4"   ]], #[EXT]
+                 "ANDCC"  => [[$AMOD_IMM8,              \&check_imm8,                   "10"   ]], #IMM
+                 "ASL"    => [[$AMOD_EXT,               \&check_ext,                    "78"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "68"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "68"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "68"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "68"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "68"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "68"   ]], #[EXT]
+                 "ASLA"   => [[$AMOD_INH,               \&check_inh,                    "48"   ]], #INH
+                 "ASLB"   => [[$AMOD_INH,               \&check_inh,                    "58"   ]], #INH
+                 "ASLD"   => [[$AMOD_INH,               \&check_inh,                    "59"   ]], #INH
+                 "ASR"    => [[$AMOD_EXT,               \&check_ext,                    "77"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "67"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "67"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "67"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "67"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "67"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "67"   ]], #[EXT]
+                 "ASRA"   => [[$AMOD_INH,               \&check_inh,                    "47"   ]], #INH
+                 "ASRB"   => [[$AMOD_INH,               \&check_inh,                    "57"   ]], #INH
+                 "BCC"    => [[$AMOD_REL8,              \&check_rel8,                   "24"   ],  #REL
+                              [$AMOD_REL16,             \&check_rel16,                  "18 24"],  #REL
+                              [$AMOD_REL8_FORCED,       \&check_rel8_forced,            "24"   ]], #REL
+                 "BCLR"   => [[$AMOD_DIR_MSK,           \&check_dir_msk,                "4D"   ],  #DIR
+                              [$AMOD_EXT_MSK,           \&check_ext_msk,                "1D"   ],  #EXT
+                              [$AMOD_IDX_MSK,           \&check_idx_msk,                "0D"   ],  #IDX
+                              [$AMOD_IDX1_MSK,          \&check_idx1_msk,               "0D"   ],  #IDX1
+                              [$AMOD_IDX2_MSK,          \&check_idx2_msk,               "0D"   ]], #IDX2
+                 "BCS"    => [[$AMOD_REL8,              \&check_rel8,                   "25"   ],  #REL
+                              [$AMOD_REL16,             \&check_rel16,                  "18 25"],  #REL
+                              [$AMOD_REL8_FORCED,       \&check_rel8_forced,            "25"   ]], #REL
+                 "BEQ"    => [[$AMOD_REL8,              \&check_rel8,                   "27"   ],  #REL
+                              [$AMOD_REL16,             \&check_rel16,                  "18 27"],  #REL
+                              [$AMOD_REL8_FORCED,       \&check_rel8_forced,            "27"   ]], #REL
+                 "BGE"    => [[$AMOD_REL8,              \&check_rel8,                   "2C"   ],  #REL
+                              [$AMOD_REL16,             \&check_rel16,                  "18 2C"],  #REL
+                              [$AMOD_REL8,              \&check_rel8,                   "2C"   ]], #REL
+                 "BGND"   => [[$AMOD_INH,               \&check_inh,                    "00"   ]], #INH
+                 "BGT"    => [[$AMOD_REL8,              \&check_rel8,                   "2E"   ],  #REL
+                              [$AMOD_REL16,             \&check_rel16,                  "18 2E"],  #REL
+                              [$AMOD_REL8_FORCED,       \&check_rel8_forced,            "2E"   ]], #REL
+                 "BHI"    => [[$AMOD_REL8,              \&check_rel8,                   "22"   ],  #REL
+                              [$AMOD_REL16,             \&check_rel16,                  "18 22"],  #REL
+                              [$AMOD_REL8_FORCED,       \&check_rel8_forced,            "22"   ]], #REL
+                 "BHS"    => [[$AMOD_REL8,              \&check_rel8,                   "24"   ],  #REL
+                              [$AMOD_REL16,             \&check_rel16,                  "18 24"],  #REL
+                              [$AMOD_REL8_FORCED,       \&check_rel8_forced,            "24"   ]], #REL
+                 "BITA"   => [[$AMOD_IMM8,              \&check_imm8,                   "85"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "95"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "B5"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "A5"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "A5"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "A5"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "A5"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "A5"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "A5"   ]], #[EXT]
+                 "BITB"   => [[$AMOD_IMM8,              \&check_imm8,                   "C5"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "D5"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "F5"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "E5"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "E5"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "E5"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "E5"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "E5"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "E5"   ]], #[EXT]
+                 "BLE"    => [[$AMOD_REL8,              \&check_rel8,                   "2F"   ],  #REL
+                              [$AMOD_REL16,             \&check_rel16,                  "18 2F"],  #REL
+                              [$AMOD_REL8_FORCED,       \&check_rel8_forced,            "2F"   ]], #REL
+                 "BLO"    => [[$AMOD_REL8,              \&check_rel8,                   "25"   ],  #REL
+                              [$AMOD_REL16,             \&check_rel16,                  "18 25"],  #REL
+                              [$AMOD_REL8_FORCED,       \&check_rel8_forced,            "25"   ]], #REL
+                 "BLS"    => [[$AMOD_REL8,              \&check_rel8,                   "23"   ],  #REL
+                              [$AMOD_REL16,             \&check_rel16,                  "18 23"],  #REL
+                              [$AMOD_REL8_FORCED,       \&check_rel8_forced,            "23"   ]], #REL
+                 "BLT"    => [[$AMOD_REL8,              \&check_rel8,                   "2D"   ],  #REL
+                              [$AMOD_REL16,             \&check_rel16,                  "18 2D"],  #REL
+                              [$AMOD_REL8_FORCED,       \&check_rel8_forced,            "2D"   ]], #REL
+                 "BMI"    => [[$AMOD_REL8,              \&check_rel8,                   "2B"   ],  #REL
+                              [$AMOD_REL16,             \&check_rel16,                  "18 2B"],  #REL
+                              [$AMOD_REL8_FORCED,       \&check_rel8_forced,            "2B"   ]], #REL
+                 "BNE"    => [[$AMOD_REL8,              \&check_rel8,                   "26"   ],  #REL
+                              [$AMOD_REL16,             \&check_rel16,                  "18 26"],  #REL
+                              [$AMOD_REL8_FORCED,       \&check_rel8_forced,            "26"   ]], #REL
+                 "BPL"    => [[$AMOD_REL8,              \&check_rel8,                   "2A"   ],  #REL
+                              [$AMOD_REL16,             \&check_rel16,                  "18 2A"],  #REL
+                              [$AMOD_REL8_FORCED,       \&check_rel8_forced,            "2A"   ]], #REL
+                 "BRA"    => [[$AMOD_REL8,              \&check_rel8,                   "20"   ],  #REL
+                              [$AMOD_REL16,             \&check_rel16,                  "18 20"],  #REL
+                              [$AMOD_REL8_FORCED,       \&check_rel8_forced,            "20"   ]], #REL
+                 "BRCLR"  => [[$AMOD_DIR_MSK_REL,       \&check_dir_msk_rel,            "4F"   ],  #DIR
+                              [$AMOD_EXT_MSK_REL,       \&check_ext_msk_rel,            "1F"   ],  #EXT
+                              [$AMOD_IDX_MSK_REL,       \&check_idx_msk_rel,            "0F"   ],  #IDX
+                              [$AMOD_IDX1_MSK_REL,      \&check_idx1_msk_rel,           "0F"   ],  #IDX1
+                              [$AMOD_IDX2_MSK_REL,      \&check_idx2_msk_rel,           "0F"   ]], #IDX2
+                 "BRN"    => [[$AMOD_REL8,              \&check_rel8,                   "21"   ],  #REL
+                              [$AMOD_REL16,             \&check_rel16,                  "18 21"],  #REL
+                              [$AMOD_REL8_FORCED,       \&check_rel8_forced,            "21"   ]], #REL
+                 "BRSET"  => [[$AMOD_DIR_MSK_REL,       \&check_dir_msk_rel,            "4E"   ],  #DIR
+                              [$AMOD_EXT_MSK_REL,       \&check_ext_msk_rel,            "1E"   ],  #EXT
+                              [$AMOD_IDX_MSK_REL,       \&check_idx_msk_rel,            "0E"   ],  #IDX
+                              [$AMOD_IDX1_MSK_REL,      \&check_idx1_msk_rel,           "0E"   ],  #IDX1
+                              [$AMOD_IDX2_MSK_REL,      \&check_idx2_msk_rel,           "0E"   ]], #IDX2
+                 "BSET"   => [[$AMOD_DIR_MSK,           \&check_dir_msk,                "4C"   ],  #DIR
+                              [$AMOD_EXT_MSK,           \&check_ext_msk,                "1C"   ],  #EXT
+                              [$AMOD_IDX_MSK,           \&check_idx_msk,                "0C"   ],  #IDX
+                              [$AMOD_IDX1_MSK,          \&check_idx1_msk,               "0C"   ],  #IDX1
+                              [$AMOD_IDX2_MSK,          \&check_idx2_msk,               "0C"   ]], #IDX2
+                 "BSR"    => [[$AMOD_REL8,              \&check_rel8,                   "07"   ]], #REL
+                 "BVC"    => [[$AMOD_REL8,              \&check_rel8,                   "28"   ],  #REL
+                              [$AMOD_REL16,             \&check_rel16,                  "18 28"]], #REL
+                 "BVS"    => [[$AMOD_REL8,              \&check_rel8,                   "29"   ],  #REL
+                              [$AMOD_REL16,             \&check_rel16,                  "18 29"]], #REL
+                 "CALL"   => [[$AMOD_EXT_PGIMPL,        \&check_ext_pgimpl,             "4A"   ],  #EXT
+                              [$AMOD_EXT_PG,            \&check_ext_pg,                 "4A"   ],  #EXT
+                              [$AMOD_IDX_PG,            \&check_idx_pg,                 "4B"   ],  #IDX
+                              [$AMOD_IDX1_PG,           \&check_idx1_pg,                "4B"   ],  #IDX1
+                              [$AMOD_IDX2_PG,           \&check_idx2_pg,                "4B"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "4B"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "4B"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "4B"   ]], #[EXT]
+                 "CBA"    => [[$AMOD_INH,               \&check_inh,                    "18 17"]], #INH
+                 "CLC"    => [[$AMOD_INH,               \&check_inh,                    "10 FE"]], #INH
+                 "CLI"    => [[$AMOD_INH,               \&check_inh,                    "10 EF"]], #INH
+                 "CLR"    => [[$AMOD_EXT,               \&check_ext,                    "79"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "69"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "69"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "69"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "69"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "69"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "69"   ]], #[EXT]
+                 "CLRA"   => [[$AMOD_INH,               \&check_inh,                    "87"   ]], #INH
+                 "CLRB"   => [[$AMOD_INH,               \&check_inh,                    "C7"   ]], #INH
+                 "CLRD"   => [[$AMOD_INH,               \&check_inh,                    "87 C7"]], #INH
+                 "CLV"    => [[$AMOD_INH,               \&check_inh,                    "10 FD"]], #INH
+                 "CMPA"   => [[$AMOD_IMM8,              \&check_imm8,                   "81"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "91"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "B1"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "A1"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "A1"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "A1"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "A1"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "A1"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "A1"   ]], #[EXT]
+                 "CMPB"   => [[$AMOD_IMM8,              \&check_imm8,                   "C1"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "D1"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "F1"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "E1"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "E1"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "E1"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "E1"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "E1"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "E1"   ]], #[EXT]
+                 "COM"    => [[$AMOD_EXT,               \&check_ext,                    "71"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "61"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "61"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "61"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "61"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "61"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "61"   ]], #[EXT]
+                 "COMA"   => [[$AMOD_INH,               \&check_inh,                    "41"   ]], #INH
+                 "COMB"   => [[$AMOD_INH,               \&check_inh,                    "51"   ]], #INH
+                 "CPD"    => [[$AMOD_IMM16,             \&check_imm16,                  "8C"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "9C"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "BC"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "AC"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "AC"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "AC"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "AC"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "AC"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "AC"   ]], #[EXT]
+                 "CPS"    => [[$AMOD_IMM16,             \&check_imm16,                  "8F"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "9F"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "BF"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "AF"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "AF"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "AF"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "AF"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "AF"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "AF"   ]], #[EXT]
+                 "CPX"    => [[$AMOD_IMM16,             \&check_imm16,                  "8E"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "9E"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "BE"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "AE"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "AE"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "AE"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "AE"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "AE"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "AE"   ]], #[EXT]
+                 "CPY"    => [[$AMOD_IMM16,             \&check_imm16,                  "8D"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "9D"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "BD"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "AD"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "AD"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "AD"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "AD"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "AD"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "AD"   ]], #[EXT]
+                 "DAA"    => [[$AMOD_INH,               \&check_inh,                    "18 07"]], #INH
+                 "DBEQ"   => [[$AMOD_DBEQ,              \&check_dbeq,                   "04"   ]], #REL
+                 "DBNE"   => [[$AMOD_DBNE,              \&check_dbne,                   "04"   ]], #REL
+                 "DEC"    => [[$AMOD_EXT,               \&check_ext,                    "73"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "63"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "63"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "63"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "63"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "63"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "63"   ]], #[EXT]
+                 "DECA"   => [[$AMOD_INH,               \&check_inh,                    "43"   ]], #INH
+                 "DECB"   => [[$AMOD_INH,               \&check_inh,                    "53"   ]], #INH
+                 "DES"    => [[$AMOD_INH,               \&check_inh,                    "1B 9F"]], #INH
+                 "DEX"    => [[$AMOD_INH,               \&check_inh,                    "09"   ]], #INH
+                 "DEY"    => [[$AMOD_INH,               \&check_inh,                    "03"   ]], #INH
+                 "EDIV"   => [[$AMOD_INH,               \&check_inh,                    "11"   ]], #INH
+                 "EDIVS"  => [[$AMOD_INH,               \&check_inh,                    "18 14"]], #INH
+                 "EMACS"  => [[$AMOD_EXT,               \&check_ext,                    "18 12"]], #EXT
+                 "EMAXD"  => [[$AMOD_IDX,               \&check_idx,                    "18 1A"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 1A"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 1A"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 1A"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 1A"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 1A"]], #[EXT]
+                 "EMAXM"  => [[$AMOD_IDX,               \&check_idx,                    "18 1E"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 1E"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 1E"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 1E"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 1E"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 1E"]], #[EXT]
+                 "EMIND"  => [[$AMOD_IDX,               \&check_idx,                    "18 1B"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 1B"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 1B"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 1B"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 1B"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 1B"]], #[EXT]
+                 "EMINM"  => [[$AMOD_IDX,               \&check_idx,                    "18 1F"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 1F"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 1F"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 1F"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 1F"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 1F"]], #[EXT]
+                 "EMUL"   => [[$AMOD_INH,               \&check_inh,                    "13"   ]], #INH
+                 "EMULS"  => [[$AMOD_INH,               \&check_inh,                    "18 13"]], #INH
+                 "EORA"   => [[$AMOD_IMM8,              \&check_imm8,                   "88"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "98"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "B8"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "A8"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "A8"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "A8"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "A8"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "A8"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "A8"   ]], #[EXT]
+                 "EORB"   => [[$AMOD_IMM8,              \&check_imm8,                   "C8"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "D8"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "F8"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "E8"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "E8"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "E8"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "E8"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "E8"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "E8"   ]], #[EXT]
+                 "ETBL"   => [[$AMOD_IDX,               \&check_idx,                    "18 3F"]], #IDX
+                 "EXG"    => [[$AMOD_EXG,               \&check_exg,                    "B7"   ]], #INH
+                 "FDIV"   => [[$AMOD_INH,               \&check_inh,                    "18 11"]], #INH
+                 "IBEQ"   => [[$AMOD_IBEQ,              \&check_ibeq,                   "04"   ]], #REL
+                 "IBNE"   => [[$AMOD_IBNE,              \&check_ibne,                   "04"   ]], #REL
+                 "IDIV"   => [[$AMOD_INH,               \&check_inh,                    "18 10"]], #INH
+                 "IDIVS"  => [[$AMOD_INH,               \&check_inh,                    "18 15"]], #INH
+                 "INC"    => [[$AMOD_EXT,               \&check_ext,                    "72"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "62"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "62"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "62"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "62"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "62"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "62"   ]], #[EXT]
+                 "INCA"   => [[$AMOD_INH,               \&check_inh,                    "42"   ]], #INH
+                 "INCB"   => [[$AMOD_INH,               \&check_inh,                    "52"   ]], #INH
+                 "INS"    => [[$AMOD_INH,               \&check_inh,                    "1B 81"]], #INH
+                 "INX"    => [[$AMOD_INH,               \&check_inh,                    "08"   ]], #INH
+                 "INY"    => [[$AMOD_INH,               \&check_inh,                    "02"   ]], #INH
+                 "JMP"    => [[$AMOD_EXT,               \&check_ext,                    "06"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "05"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "05"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "05"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "05"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "05"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "05"   ]], #[EXT]
+                 "JOB"    => [[$AMOD_REL8,              \&check_rel8,                   "20"   ],  #REL
+                              [$AMOD_EXT,               \&check_ext,                    "06"   ]], #EXT
+                 "JOBSR"  => [[$AMOD_REL8,              \&check_rel8,                   "07"   ],  #REL
+                              [$AMOD_EXT,               \&check_ext,                    "16"   ]], #EXT
+                 "JSR"    => [[$AMOD_DIR,               \&check_dir,                    "17"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "16"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "15"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "15"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "15"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "15"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "15"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "15"   ]], #[EXT]
+                 "LBCC"   => [[$AMOD_REL16,             \&check_rel16,                  "18 24"]], #REL
+                 "LBCS"   => [[$AMOD_REL16,             \&check_rel16,                  "18 25"]], #REL
+                 "LBEQ"   => [[$AMOD_REL16,             \&check_rel16,                  "18 27"]], #REL
+                 "LBGE"   => [[$AMOD_REL16,             \&check_rel16,                  "18 2C"]], #REL
+                 "LBGT"   => [[$AMOD_REL16,             \&check_rel16,                  "18 2E"]], #REL
+                 "LBHI"   => [[$AMOD_REL16,             \&check_rel16,                  "18 22"]], #REL
+                 "LBHS"   => [[$AMOD_REL16,             \&check_rel16,                  "18 24"]], #REL
+                 "LBLE"   => [[$AMOD_REL16,             \&check_rel16,                  "18 2F"]], #REL
+                 "LBLO"   => [[$AMOD_REL16,             \&check_rel16,                  "18 25"]], #REL
+                 "LBLS"   => [[$AMOD_REL16,             \&check_rel16,                  "18 23"]], #REL
+                 "LBLT"   => [[$AMOD_REL16,             \&check_rel16,                  "18 2D"]], #REL
+                 "LBMI"   => [[$AMOD_REL16,             \&check_rel16,                  "18 2B"]], #REL
+                 "LBNE"   => [[$AMOD_REL16,             \&check_rel16,                  "18 26"]], #REL
+                 "LBPL"   => [[$AMOD_REL16,             \&check_rel16,                  "18 2A"]], #REL
+                 "LBRA"   => [[$AMOD_REL16,             \&check_rel16,                  "18 20"]], #REL
+                 "LBRN"   => [[$AMOD_REL16,             \&check_rel16,                  "18 21"]], #REL
+                 "LBVC"   => [[$AMOD_REL16,             \&check_rel16,                  "18 28"]], #REL
+                 "LBVS"   => [[$AMOD_REL16,             \&check_rel16,                  "18 29"]], #REL
+                 "LDAA"   => [[$AMOD_IMM8,              \&check_imm8,                   "86"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "96"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "B6"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "A6"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "A6"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "A6"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "A6"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "A6"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "A6"   ]], #[EXT]
+                 "LDAB"   => [[$AMOD_IMM8,              \&check_imm8,                   "C6"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "D6"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "F6"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "E6"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "E6"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "E6"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "E6"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "E6"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "E6"   ]], #[EXT]
+                 "LDD"    => [[$AMOD_IMM16,             \&check_imm16,                  "CC"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "DC"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "FC"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "EC"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "EC"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "EC"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "EC"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "EC"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "EC"   ]], #[EXT]
+                 "LDS"    => [[$AMOD_IMM16,             \&check_imm16,                  "CF"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "DF"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "FF"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "EF"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "EF"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "EF"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "EF"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "EF"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "EF"   ]], #[EXT]
+                 "LDX"    => [[$AMOD_IMM16,             \&check_imm16,                  "CE"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "DE"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "FE"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "EE"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "EE"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "EE"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "EE"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "EE"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "EE"   ]], #[EXT]
+                 "LDY"    => [[$AMOD_IMM16,             \&check_imm16,                  "CD"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "DD"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "FD"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "ED"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "ED"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "ED"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "ED"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "ED"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "ED"   ]], #[EXT]
+                 "LEAS"   => [[$AMOD_IDX,               \&check_idx,                    "1B"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "1B"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "1B"   ]], #IDX2
+                 "LEAX"   => [[$AMOD_IDX,               \&check_idx,                    "1A"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "1A"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "1A"   ]], #IDX2
+                 "LEAY"   => [[$AMOD_IDX,               \&check_idx,                    "19"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "19"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "19"   ]], #IDX2
+                 "LSL"    => [[$AMOD_EXT,               \&check_ext,                    "78"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "68"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "68"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "68"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "68"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "68"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "68"   ]], #[EXT]
+                 "LSLA"   => [[$AMOD_INH,               \&check_inh,                    "48"   ]], #INH
+                 "LSLB"   => [[$AMOD_INH,               \&check_inh,                    "58"   ]], #INH
+                 "LSLD"   => [[$AMOD_INH,               \&check_inh,                    "59"   ]], #INH
+                 "LSR"    => [[$AMOD_EXT,               \&check_ext,                    "74"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "64"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "64"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "64"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "64"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "64"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "64"   ]], #[EXT]
+                 "LSRA"   => [[$AMOD_INH,               \&check_inh,                    "44"   ]], #INH
+                 "LSRB"   => [[$AMOD_INH,               \&check_inh,                    "54"   ]], #INH
+                 "LSRD"   => [[$AMOD_INH,               \&check_inh,                    "49"   ]], #INH
+                 "MAXA"   => [[$AMOD_IDX,               \&check_idx,                    "18 18"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 18"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 18"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 18"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 18"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 18"]], #[EXT]
+                 "MAXM"   => [[$AMOD_IDX,               \&check_idx,                    "18 1C"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 1C"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 1C"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 1C"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 1C"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 1C"]], #[EXT]
+                 "MEM"    => [[$AMOD_INH,               \&check_inh,                    "01"   ]], #INH
+                 "MINA"   => [[$AMOD_IDX,               \&check_idx,                    "18 19"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 19"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 19"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 19"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 19"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 19"]], #[EXT]
+                 "MINM"   => [[$AMOD_IDX,               \&check_idx,                    "18 1D"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 1D"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 1D"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 1D"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 1D"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 1D"]], #[EXT]
+                 "MOVB"   => [[$AMOD_IMM8_EXT,          \&check_imm8_ext,               "18 0B"],  #IMM-EXT
+                              [$AMOD_IMM8_IDX,          \&check_imm8_idx,               "18 08"],  #IMM-IDX
+                              [$AMOD_EXT_EXT,           \&check_ext_ext,                "18 0C"],  #EXT-EXT
+                              [$AMOD_EXT_IDX,           \&check_ext_idx,                "18 09"],  #EXT-IDX
+                              [$AMOD_IDX_EXT,           \&check_idx_ext,                "18 0D"],  #IDX-EXT
+                              [$AMOD_IDX_IDX,           \&check_idx_idx,                "18 0A"]], #IDX-IDX
+                 "MOVW"   => [[$AMOD_IMM16_EXT,         \&check_imm16_ext,              "18 03"],  #IMM-EXT
+                              [$AMOD_IMM16_IDX,         \&check_imm16_idx,              "18 00"],  #IMM-IDX
+                              [$AMOD_EXT_EXT,           \&check_ext_ext,                "18 04"],  #EXT-EXT
+                              [$AMOD_EXT_IDX,           \&check_ext_idx,                "18 01"],  #EXT-IDX
+                              [$AMOD_IDX_EXT,           \&check_idx_ext,                "18 05"],  #IDX-EXT
+                              [$AMOD_IDX_IDX,           \&check_idx_idx,                "18 02"]], #IDX-IDX
+                 "MUL"    => [[$AMOD_INH,               \&check_inh,                    "12"   ]], #INH
+                 "NEG"    => [[$AMOD_EXT,               \&check_ext,                    "70"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "60"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "60"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "60"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "60"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "60"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "60"   ]], #[EXT]
+                 "NEGA"   => [[$AMOD_INH,               \&check_inh,                    "40"   ]], #INH
+                 "NEGB"   => [[$AMOD_INH,               \&check_inh,                    "50"   ]], #INH
+                 "NOP"    => [[$AMOD_INH,               \&check_inh,                    "A7"   ]], #INH
+                 "ORAA"   => [[$AMOD_IMM8,              \&check_imm8,                   "8A"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "9A"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "BA"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "AA"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "AA"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "AA"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "AA"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "AA"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "AA"   ]], #[EXT]
+                 "ORAB"   => [[$AMOD_IMM8,              \&check_imm8,                   "CA"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "DA"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "FA"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "EA"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "EA"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "EA"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "EA"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "EA"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "EA"   ]], #[EXT]
+                 "ORCC"   => [[$AMOD_IMM8,              \&check_imm8,                   "14"   ]], #INH
+                 "PSHA"   => [[$AMOD_INH,               \&check_inh,                    "36"   ]], #INH
+                 "PSHB"   => [[$AMOD_INH,               \&check_inh,                    "37"   ]], #INH
+                 "PSHC"   => [[$AMOD_INH,               \&check_inh,                    "39"   ]], #INH
+                 "PSHD"   => [[$AMOD_INH,               \&check_inh,                    "3B"   ]], #INH
+                 "PSHX"   => [[$AMOD_INH,               \&check_inh,                    "34"   ]], #INH
+                 "PSHY"   => [[$AMOD_INH,               \&check_inh,                    "35"   ]], #INH
+                 "PULA"   => [[$AMOD_INH,               \&check_inh,                    "32"   ]], #INH
+                 "PULB"   => [[$AMOD_INH,               \&check_inh,                    "33"   ]], #INH
+                 "PULC"   => [[$AMOD_INH,               \&check_inh,                    "38"   ]], #INH
+                 "PULD"   => [[$AMOD_INH,               \&check_inh,                    "3A"   ]], #INH
+                 "PULX"   => [[$AMOD_INH,               \&check_inh,                    "30"   ]], #INH
+                 "PULY"   => [[$AMOD_INH,               \&check_inh,                    "31"   ]], #INH
+                 "REV"    => [[$AMOD_INH,               \&check_inh,                    "18 3A"]], #INH
+                 "REVW"   => [[$AMOD_INH,               \&check_inh,                    "18 3B"]], #INH
+                 "ROL"    => [[$AMOD_EXT,               \&check_ext,                    "75"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "65"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "65"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "65"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "65"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "65"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "65"   ]], #[EXT]
+                 "ROLA"   => [[$AMOD_INH,               \&check_inh,                    "45"   ]], #INH
+                 "ROLB"   => [[$AMOD_INH,               \&check_inh,                    "55"   ]], #INH
+                 "ROR"    => [[$AMOD_EXT,               \&check_ext,                    "76"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "66"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "66"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "66"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "66"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "66"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "66"   ]], #[EXT]
+                 "RORA"   => [[$AMOD_INH,               \&check_inh,                    "46"   ]], #INH
+                 "RORB"   => [[$AMOD_INH,               \&check_inh,                    "56"   ]], #INH
+                 "RTC"    => [[$AMOD_INH,               \&check_inh,                    "0A"   ]], #INH
+                 "RTI"    => [[$AMOD_INH,               \&check_inh,                    "0B"   ]], #INH
+                 "RTS"    => [[$AMOD_INH,               \&check_inh,                    "3D"   ]], #INH
+                 "SBA"    => [[$AMOD_INH,               \&check_inh,                    "18 16"]], #INH
+                 "SBCA"   => [[$AMOD_IMM8,              \&check_imm8,                   "82"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "92"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "B2"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "A2"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "A2"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "A2"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "A2"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "A2"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "A2"   ]], #[EXT]
+                 "SBCB"   => [[$AMOD_IMM8,              \&check_imm8,                   "C2"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "D2"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "F2"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "E2"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "E2"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "E2"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "E2"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "E2"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "E2"   ]], #[EXT]
+                 "SEC"    => [[$AMOD_INH,               \&check_inh,                    "14 01"]], #INH
+                 "SEI"    => [[$AMOD_INH,               \&check_inh,                    "14 10"]], #INH
+                 "SEV"    => [[$AMOD_INH,               \&check_inh,                    "14 02"]], #INH
+                 "SEX"    => [[$AMOD_TFR,               \&check_sex,                    "B7"   ]], #INH
+                 "STAA"   => [[$AMOD_DIR,               \&check_dir,                    "5A"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "7A"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "6A"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "6A"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "6A"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "6A"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "6A"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "6A"   ]], #[EXT]
+                 "STAB"   => [[$AMOD_DIR,               \&check_dir,                    "5B"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "7B"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "6B"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "6B"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "6B"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "6B"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "6B"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "6B"   ]], #[EXT]
+                 "STD"    => [[$AMOD_DIR,               \&check_dir,                    "5C"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "7C"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "6C"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "6C"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "6C"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "6C"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "6C"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "6C"   ]], #[EXT]
+                 "STOP"   => [[$AMOD_INH,               \&check_inh,                    "18 3E"]], #INH
+                 "STS"    => [[$AMOD_DIR,               \&check_dir,                    "5F"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "7F"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "6F"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "6F"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "6F"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "6F"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "6F"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "6F"   ]], #[EXT]
+                 "STX"    => [[$AMOD_DIR,               \&check_dir,                    "5E"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "7E"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "6E"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "6E"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "6E"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "6E"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "6E"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "6E"   ]], #[EXT]
+                 "STY"    => [[$AMOD_DIR,               \&check_dir,                    "5D"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "7D"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "6D"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "6D"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "6D"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "6D"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "6D"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "6D"   ]], #[EXT]
+                 "SUBA"   => [[$AMOD_IMM8,              \&check_imm8,                   "80"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "90"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "B0"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "A0"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "A0"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "A0"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "A0"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "A0"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "A0"   ]], #[EXT]
+                 "SUBB"   => [[$AMOD_IMM8,              \&check_imm8,                   "C0"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "D0"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "F0"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "E0"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "E0"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "E0"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "E0"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "E0"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "E0"   ]], #[EXT]
+                 "SUBD"   => [[$AMOD_IMM16,             \&check_imm16,                  "83"   ],  #IMM
+                              [$AMOD_DIR,               \&check_dir,                    "93"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "B3"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "A3"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "A3"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "A3"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "A3"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "A3"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "A3"   ]], #[EXT]
+                 "SWI"    => [[$AMOD_INH,               \&check_inh,                    "3F"   ]], #INH
+                 "TAB"    => [[$AMOD_INH,               \&check_inh,                    "18 0E"]], #INH
+                 "TAP"    => [[$AMOD_INH,               \&check_inh,                    "B7 02"]], #INH
+                 "TBA"    => [[$AMOD_INH,               \&check_inh,                    "18 0F"]], #INH
+                 "TBEQ"   => [[$AMOD_TBEQ,              \&check_tbeq,                   "04"   ]], #REL
+                 "TBL"    => [[$AMOD_IDX,               \&check_idx,                    "18 3D"]], #IDX
+                 "TBNE"   => [[$AMOD_TBNE,              \&check_tbne,                   "04"   ]], #REL
+                 "TFR"    => [[$AMOD_TFR,               \&check_tfr,                    "B7"   ]], #INH
+                 "TPA"    => [[$AMOD_INH,               \&check_inh,                    "B7 20"]], #INH
+                 "TRAP"   => [[$AMOD_TRAP,              \&check_trap,                   "18"   ]], #INH
+                 "TST"    => [[$AMOD_EXT,               \&check_ext,                    "F7"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "E7"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "E7"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "E7"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "E7"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "E7"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "E7"   ]], #[EXT]
+                 "TSTA"   => [[$AMOD_INH,               \&check_inh,                    "97"   ]], #INH
+                 "TSTB"   => [[$AMOD_INH,               \&check_inh,                    "D7"   ]], #INH
+                 "TSX"    => [[$AMOD_INH,               \&check_inh,                    "B7 75"]], #INH
+                 "TSY"    => [[$AMOD_INH,               \&check_inh,                    "B7 76"]], #INH
+                 "TXS"    => [[$AMOD_INH,               \&check_inh,                    "B7 57"]], #INH
+                 "TYS"    => [[$AMOD_INH,               \&check_inh,                    "B7 67"]], #INH
+                 "WAI"    => [[$AMOD_INH,               \&check_inh,                    "3E"   ]], #INH
+                 "WAV"    => [[$AMOD_INH,               \&check_inh,                    "18 3C"]], #INH
+                 "WAVR"   => [[$AMOD_INH,               \&check_inh,                    "3C"   ]], #INH
+                 "XGDX"   => [[$AMOD_INH,               \&check_inh,                    "B7 C5"]], #INH
+                 "XGDY"   => [[$AMOD_INH,               \&check_inh,                    "B7 C6"]]};#INH
 
 #S12X:           MNEMONIC     ADDRESS MODE                                               OPCODE
-*opctab_s12x = \{"ABA"    => [[$amod_inh,               \&check_inh,                    "18 06"]], #INH
-                 "ABX"    => [[$amod_inh,               \&check_inh,                    "1A E5"]], #INH
-                 "ABY"    => [[$amod_inh,               \&check_inh,                    "19 ED"]], #INH
-                 "ADCA"   => [[$amod_imm8,              \&check_imm8,                   "89"   ],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "99"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "B9"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "A9"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "A9"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "A9"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "A9"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "A9"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "A9"   ]], #[EXT]
-                 "ADCB"   => [[$amod_imm8,              \&check_imm8,                   "C9"   ],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "D9"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "F9"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "E9"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "E9"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "E9"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "E9"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "E9"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "E9"   ]], #[EXT]
-                 "ADED"   => [[$amod_imm16,             \&check_imm16,                  "18 C3"],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "18 D3"],  #DIR
-                              [$amod_ext,               \&check_ext,                    "18 F3"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 E3"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 E3"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 E3"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 E3"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 E3"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 E3"]], #[EXT]
-                 "ADEX"   => [[$amod_imm16,             \&check_imm16,                  "18 89"],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "18 99"],  #DIR
-                              [$amod_ext,               \&check_ext,                    "18 B9"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 A9"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 A9"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 A9"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 A9"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 E3"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 E3"]], #[EXT]
-                 "ADEY"   => [[$amod_imm16,             \&check_imm16,                  "18 C9"],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "18 D9"],  #DIR
-                              [$amod_ext,               \&check_ext,                    "18 F9"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 E9"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 E9"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 E9"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 E9"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 E9"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 E9"]], #[EXT]
-                 "ADDA"   => [[$amod_imm8,              \&check_imm8,                   "8B"   ],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "9B"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "BB"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "AB"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "AB"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "AB"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "AB"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "AB"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "AB"   ]], #[EXT]
-                 "ADDB"   => [[$amod_imm8,              \&check_imm8,                   "CB"   ],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "DB"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "FB"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "EB"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "EB"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "EB"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "EB"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "EB"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "EB"   ]], #[EXT]
-                 "ADDD"   => [[$amod_imm16,             \&check_imm16,                  "C3"   ],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "D3"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "F3"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "E3"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "E3"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "E3"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "E3"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "E3"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "E3"   ]], #[EXT]
-                 "ADDX"   => [[$amod_imm16,             \&check_imm16,                  "18 8B"],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "18 9B"],  #DIR
-                              [$amod_ext,               \&check_ext,                    "18 BB"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 AB"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 AB"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 AB"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 AB"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 AB"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 AB"]], #[EXT]
-                 "ADDY"   => [[$amod_imm16,             \&check_imm16,                  "18 CB"],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "18 DB"],  #DIR
-                              [$amod_ext,               \&check_ext,                    "18 FB"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 EB"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 EB"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 EB"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 EB"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 EB"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 EB"]], #[EXT]
-                 "ANDA"   => [[$amod_imm8,              \&check_imm8,                   "84"   ],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "94"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "B4"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "A4"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "A4"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "A4"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "A4"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "A4"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "A4"   ]], #[EXT]
-                 "ANDB"   => [[$amod_imm8,              \&check_imm8,                   "C4"   ],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "D4"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "F4"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "E4"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "E4"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "E4"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "E4"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "E4"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "E4"   ]], #[EXT]
-                 "ANDX"   => [[$amod_imm16,             \&check_imm16,                  "18 84"],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "18 94"],  #DIR
-                              [$amod_ext,               \&check_ext,                    "18 B4"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 A4"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 A4"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 A4"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 A4"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 A4"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 A4"]], #[EXT]
-                 "ANDY"   => [[$amod_imm16,             \&check_imm16,                  "18 C4"],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "18 D4"],  #DIR
-                              [$amod_ext,               \&check_ext,                    "18 F4"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 E4"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 E4"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 E4"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 E4"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 E4"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 E4"]], #[EXT]
-                 "ANDCC"  => [[$amod_imm8,              \&check_imm8,                   "10"   ]], #IMM
-                 "ASL"    => [[$amod_ext,               \&check_ext,                    "78"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "68"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "68"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "68"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "68"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "68"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "68"   ]], #[EXT]
-                 "ASLA"   => [[$amod_inh,               \&check_inh,                    "48"   ]], #INH
-                 "ASLB"   => [[$amod_inh,               \&check_inh,                    "58"   ]], #INH
-                 "ANDCC"  => [[$amod_imm8,              \&check_imm8,                   "10"   ]], #IMM
-                 "ASLW"   => [[$amod_ext,               \&check_ext,                    "18 78"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 68"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 68"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 68"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 68"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 68"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 68"]], #[EXT]
-                 "ASLX"   => [[$amod_inh,               \&check_inh,                    "18 48"]], #INH
-                 "ASLY"   => [[$amod_inh,               \&check_inh,                    "18 58"]], #INH
-                 "ASLD"   => [[$amod_inh,               \&check_inh,                    "59"   ]], #INH
-                 "ASR"    => [[$amod_ext,               \&check_ext,                    "77"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "67"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "67"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "67"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "67"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "67"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "67"   ]], #[EXT]
-                 "ASRA"   => [[$amod_inh,               \&check_inh,                    "47"   ]], #INH
-                 "ASRB"   => [[$amod_inh,               \&check_inh,                    "57"   ]], #INH
-                 "ASRW"   => [[$amod_ext,               \&check_ext,                    "18 77"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 67"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 67"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 67"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 67"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 67"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 67"]], #[EXT]
-                 "ASRX"   => [[$amod_inh,               \&check_inh,                    "18 47"]], #INH
-                 "ASRY"   => [[$amod_inh,               \&check_inh,                    "18 57"]], #INH
-                 "BCC"    => [[$amod_rel8,              \&check_rel8,                   "24"   ],  #REL
-                              [$amod_rel16,             \&check_rel16,                  "18 24"],  #REL
-                              [$amod_rel8_forced,       \&check_rel8_forced,            "24"   ]], #REL
-                 "BCLR"   => [[$amod_s12x_dir_msk,      \&check_s12x_dir_msk,           "4D"   ],  #DIR
-                              [$amod_ext_msk,           \&check_ext_msk,                "1D"   ],  #EXT
-                              [$amod_idx_msk,           \&check_idx_msk,                "0D"   ],  #IDX
-                              [$amod_idx1_msk,          \&check_idx1_msk,               "0D"   ],  #IDX1
-                              [$amod_idx2_msk,          \&check_idx2_msk,               "0D"   ]], #IDX2
-                 "BCS"    => [[$amod_rel8,              \&check_rel8,                   "25"   ],  #REL
-                              [$amod_rel16,             \&check_rel16,                  "18 25"],  #REL
-                              [$amod_rel8_forced,       \&check_rel8_forced,            "25"   ]], #REL
-                 "BEQ"    => [[$amod_rel8,              \&check_rel8,                   "27"   ],  #REL
-                              [$amod_rel16,             \&check_rel16,                  "18 27"],  #REL
-                              [$amod_rel8_forced,       \&check_rel8_forced,            "27"   ]], #REL
-                 "BGE"    => [[$amod_rel8,              \&check_rel8,                   "2C"   ],  #REL
-                              [$amod_rel16,             \&check_rel16,                  "18 2C"],  #REL
-                              [$amod_rel8,              \&check_rel8,                   "2C"   ]], #REL
-                 "BGND"   => [[$amod_inh,               \&check_inh,                    "00"   ]], #INH
-                 "BGT"    => [[$amod_rel8,              \&check_rel8,                   "2E"   ],  #REL
-                              [$amod_rel16,             \&check_rel16,                  "18 2E"],  #REL
-                              [$amod_rel8_forced,       \&check_rel8_forced,            "2E"   ]], #REL
-                 "BHI"    => [[$amod_rel8,              \&check_rel8,                   "22"   ],  #REL
-                              [$amod_rel16,             \&check_rel16,                  "18 22"],  #REL
-                              [$amod_rel8_forced,       \&check_rel8_forced,            "22"   ]], #REL
-                 "BHS"    => [[$amod_rel8,              \&check_rel8,                   "24"   ],  #REL
-                              [$amod_rel16,             \&check_rel16,                  "18 24"],  #REL
-                              [$amod_rel8_forced,       \&check_rel8_forced,            "24"   ]], #REL
-                 "BITA"   => [[$amod_imm8,              \&check_imm8,                   "85"   ],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "95"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "B5"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "A5"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "A5"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "A5"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "A5"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "A5"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "A5"   ]], #[EXT]
-                 "BITB"   => [[$amod_imm8,              \&check_imm8,                   "C5"   ],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "D5"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "F5"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "E5"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "E5"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "E5"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "E5"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "E5"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "E5"   ]], #[EXT]
-                 "BITX"   => [[$amod_imm16,             \&check_imm16,                  "18 85"],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "18 95"],  #DIR
-                              [$amod_ext,               \&check_ext,                    "18 B5"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 A5"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 A5"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 A5"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 A5"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 A5"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 A5"]], #[EXT]
-                 "BITY"   => [[$amod_imm16,             \&check_imm16,                  "18 C5"],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "18 D5"],  #DIR
-                              [$amod_ext,               \&check_ext,                    "18 F5"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 E5"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 E5"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 E5"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 E5"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 E5"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 E5"]], #[EXT]
-                 "BLE"    => [[$amod_rel8,              \&check_rel8,                   "2F"   ],  #REL
-                              [$amod_rel16,             \&check_rel16,                  "18 2F"],  #REL
-                              [$amod_rel8_forced,       \&check_rel8_forced,            "2F"   ]], #REL
-                 "BLO"    => [[$amod_rel8,              \&check_rel8,                   "25"   ],  #REL
-                              [$amod_rel16,             \&check_rel16,                  "18 25"],  #REL
-                              [$amod_rel8_forced,       \&check_rel8_forced,            "25"   ]], #REL
-                 "BLS"    => [[$amod_rel8,              \&check_rel8,                   "23"   ],  #REL
-                              [$amod_rel16,             \&check_rel16,                  "18 23"],  #REL
-                              [$amod_rel8_forced,       \&check_rel8_forced,            "23"   ]], #REL
-                 "BLT"    => [[$amod_rel8,              \&check_rel8,                   "2D"   ],  #REL
-                              [$amod_rel16,             \&check_rel16,                  "18 2D"],  #REL
-                              [$amod_rel8_forced,       \&check_rel8_forced,            "2D"   ]], #REL
-                 "BMI"    => [[$amod_rel8,              \&check_rel8,                   "2B"   ],  #REL
-                              [$amod_rel16,             \&check_rel16,                  "18 2B"],  #REL
-                              [$amod_rel8_forced,       \&check_rel8_forced,            "2B"   ]], #REL
-                 "BNE"    => [[$amod_rel8,              \&check_rel8,                   "26"   ],  #REL
-                              [$amod_rel16,             \&check_rel16,                  "18 26"],  #REL
-                              [$amod_rel8_forced,       \&check_rel8_forced,            "26"   ]], #REL
-                 "BPL"    => [[$amod_rel8,              \&check_rel8,                   "2A"   ],  #REL
-                              [$amod_rel16,             \&check_rel16,                  "18 2A"],  #REL
-                              [$amod_rel8_forced,       \&check_rel8_forced,            "2A"   ]], #REL
-                 "BRA"    => [[$amod_rel8,              \&check_rel8,                   "20"   ],  #REL
-                              [$amod_rel16,             \&check_rel16,                  "18 20"],  #REL
-                              [$amod_rel8_forced,       \&check_rel8_forced,            "20"   ]], #REL
-                 "BRCLR"  => [[$amod_s12x_dir_msk_rel,  \&check_s12x_dir_msk_rel,       "4F"   ],  #DIR
-                              [$amod_ext_msk_rel,       \&check_ext_msk_rel,            "1F"   ],  #EXT
-                              [$amod_idx_msk_rel,       \&check_idx_msk_rel,            "0F"   ],  #IDX
-                              [$amod_idx1_msk_rel,      \&check_idx1_msk_rel,           "0F"   ],  #IDX1
-                              [$amod_idx2_msk_rel,      \&check_idx2_msk_rel,           "0F"   ]], #IDX2
-                 "BRN"    => [[$amod_rel8,              \&check_rel8,                   "21"   ],  #REL
-                              [$amod_rel16,             \&check_rel16,                  "18 21"],  #REL
-                              [$amod_rel8_forced,       \&check_rel8_forced,            "21"   ]], #REL
-                 "BRSET"  => [[$amod_s12x_dir_msk_rel,  \&check_s12x_dir_msk_rel,       "4E"   ],  #DIR
-                              [$amod_ext_msk_rel,       \&check_ext_msk_rel,            "1E"   ],  #EXT
-                              [$amod_idx_msk_rel,       \&check_idx_msk_rel,            "0E"   ],  #IDX
-                              [$amod_idx1_msk_rel,      \&check_idx1_msk_rel,           "0E"   ],  #IDX1
-                              [$amod_idx2_msk_rel,      \&check_idx2_msk_rel,           "0E"   ]], #IDX2
-                 "BSET"   => [[$amod_s12x_dir_msk,      \&check_s12x_dir_msk,           "4C"   ],  #DIR
-                              [$amod_ext_msk,           \&check_ext_msk,                "1C"   ],  #EXT
-                              [$amod_idx_msk,           \&check_idx_msk,                "0C"   ],  #IDX
-                              [$amod_idx1_msk,          \&check_idx1_msk,               "0C"   ],  #IDX1
-                              [$amod_idx2_msk,          \&check_idx2_msk,               "0C"   ]], #IDX2
-                 "BSR"    => [[$amod_rel8,              \&check_rel8,                   "07"   ]], #REL
-                 "BVC"    => [[$amod_rel8,              \&check_rel8,                   "28"   ],  #REL
-                              [$amod_rel16,             \&check_rel16,                  "18 28"],  #REL
-                              [$amod_rel8_forced,       \&check_rel8_forced,            "28"   ]], #REL
-                 "BVS"    => [[$amod_rel8,              \&check_rel8,                   "29"   ],  #REL
-                              [$amod_rel16,             \&check_rel16,                  "18 29"],  #REL
-                              [$amod_rel8_forced,       \&check_rel8_forced,            "29"   ]], #REL
-                 "BTAS"   => [[$amod_s12x_dir_msk,      \&check_s12x_dir_msk,           "18 35"],  #DIR
-                              [$amod_ext_msk,           \&check_ext_msk,                "18 36"],  #EXT
-                              [$amod_idx_msk,           \&check_idx_msk,                "18 37"],  #IDX
-                              [$amod_idx1_msk,          \&check_idx1_msk,               "18 37"],  #IDX1
-                              [$amod_idx2_msk,          \&check_idx2_msk,               "18 37"]], #IDX2
-                 "CALL"   => [[$amod_ext_pgimpl,        \&check_ext_pgimpl,             "4A"   ],  #EXT
-                              [$amod_ext_pg,            \&check_ext_pg,                 "4A"   ],  #EXT
-                              [$amod_idx_pg,            \&check_idx_pg,                 "4B"   ],  #IDX
-                              [$amod_idx1_pg,           \&check_idx1_pg,                "4B"   ],  #IDX1
-                              [$amod_idx2_pg,           \&check_idx2_pg,                "4B"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "4B"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "4B"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "4B"   ]], #[EXT]
-                 "CBA"    => [[$amod_inh,               \&check_inh,                    "18 17"]], #INH
-                 "CLC"    => [[$amod_inh,               \&check_inh,                    "10 FE"]], #INH
-                 "CLI"    => [[$amod_inh,               \&check_inh,                    "10 EF"]], #INH
-                 "CLR"    => [[$amod_ext,               \&check_ext,                    "79"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "69"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "69"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "69"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "69"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "69"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "69"   ]], #[EXT]
-                 "CLRA"   => [[$amod_inh,               \&check_inh,                    "87"   ]], #INH
-                 "CLRB"   => [[$amod_inh,               \&check_inh,                    "C7"   ]], #INH
-                 "CLRD"   => [[$amod_inh,               \&check_inh,                    "87 C7"]], #INH
-                 "CLRW"   => [[$amod_ext,               \&check_ext,                    "18 79"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 69"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 69"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 69"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 69"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 69"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 69"]], #[EXT]
-                 "CLRX"   => [[$amod_inh,               \&check_inh,                    "18 87"]], #INH
-                 "CLRY"   => [[$amod_inh,               \&check_inh,                    "18 C7"]], #INH
-                 "CLV"    => [[$amod_inh,               \&check_inh,                    "10 FD"]], #INH
-                 "CMPA"   => [[$amod_imm8,              \&check_imm8,                   "81"   ],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "91"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "B1"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "A1"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "A1"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "A1"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "A1"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "A1"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "A1"   ]], #[EXT]
-                 "CMPB"   => [[$amod_imm8,              \&check_imm8,                   "C1"   ],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "D1"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "F1"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "E1"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "E1"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "E1"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "E1"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "E1"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "E1"   ]], #[EXT]
-                 "COM"    => [[$amod_ext,               \&check_ext,                    "71"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "61"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "61"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "61"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "61"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "61"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "61"   ]], #[EXT]
-                 "COMA"   => [[$amod_inh,               \&check_inh,                    "41"   ]], #INH
-                 "COMB"   => [[$amod_inh,               \&check_inh,                    "51"   ]], #INH
-                 "COMW"   => [[$amod_ext,               \&check_ext,                    "18 71"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 61"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 61"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 61"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 61"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 61"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 61"]], #[EXT]
-                 "COMX"   => [[$amod_inh,               \&check_inh,                    "18 41"]], #INH
-                 "COMY"   => [[$amod_inh,               \&check_inh,                    "18 51"]], #INH
-                 "CPED"   => [[$amod_imm16,             \&check_imm16,                  "18 8C"],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "18 9C"],  #DIR
-                              [$amod_ext,               \&check_ext,                    "18 BC"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 AC"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 AC"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 AC"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 AC"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 AC"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 AC"]], #[EXT]
-                 "CPES"   => [[$amod_imm16,             \&check_imm16,                  "18 8F"],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "18 9F"],  #DIR
-                              [$amod_ext,               \&check_ext,                    "18 BF"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 AF"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 AF"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 AF"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 AF"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 AF"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 AF"]], #[EXT]
-                 "CPEX"   => [[$amod_imm16,             \&check_imm16,                  "18 8E"],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "18 9E"],  #DIR
-                              [$amod_ext,               \&check_ext,                    "18 BE"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 AE"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 AE"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 AE"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 AE"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 AE"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 AE"]], #[EXT]
-                 "CPEY"   => [[$amod_imm16,             \&check_imm16,                  "18 8D"],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "18 9D"],  #DIR
-                              [$amod_ext,               \&check_ext,                    "18 BD"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 AD"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 AD"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 AD"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 AD"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 AD"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 AD"]], #[EXT]
-                 "CPD"    => [[$amod_imm16,             \&check_imm16,                  "8C"   ],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "9C"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "BC"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "AC"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "AC"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "AC"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "AC"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "AC"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "AC"   ]], #[EXT]
-                 "CPS"    => [[$amod_imm16,             \&check_imm16,                  "8F"   ],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "9F"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "BF"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "AF"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "AF"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "AF"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "AF"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "AF"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "AF"   ]], #[EXT]
-                 "CPX"    => [[$amod_imm16,             \&check_imm16,                  "8E"   ],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "9E"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "BE"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "AE"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "AE"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "AE"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "AE"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "AE"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "AE"   ]], #[EXT]
-                 "CPY"    => [[$amod_imm16,             \&check_imm16,                  "8D"   ],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "9D"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "BD"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "AD"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "AD"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "AD"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "AD"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "AD"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "AD"   ]], #[EXT]
-                 "DAA"    => [[$amod_inh,               \&check_inh,                    "18 07"]], #INH
-                 "DBEQ"   => [[$amod_dbeq,              \&check_dbeq,                   "04"   ]], #REL
-                 "DBNE"   => [[$amod_dbne,              \&check_dbne,                   "04"   ]], #REL
-                 "DEC"    => [[$amod_ext,               \&check_ext,                    "73"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "63"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "63"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "63"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "63"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "63"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "63"   ]], #[EXT]
-                 "DECA"   => [[$amod_inh,               \&check_inh,                    "43"   ]], #INH
-                 "DECB"   => [[$amod_inh,               \&check_inh,                    "53"   ]], #INH
-                 "DECW"   => [[$amod_ext,               \&check_ext,                    "18 73"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 63"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 63"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 63"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 63"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 63"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 63"]], #[EXT]
-                 "DECX"   => [[$amod_inh,               \&check_inh,                    "18 43"]], #INH
-                 "DECY"   => [[$amod_inh,               \&check_inh,                    "18 53"]], #INH
-                 "DES"    => [[$amod_inh,               \&check_inh,                    "1B 9F"]], #INH
-                 "DEX"    => [[$amod_inh,               \&check_inh,                    "09"   ]], #INH
-                 "DEY"    => [[$amod_inh,               \&check_inh,                    "03"   ]], #INH
-                 "EDIV"   => [[$amod_inh,               \&check_inh,                    "11"   ]], #INH
-                 "EDIVS"  => [[$amod_inh,               \&check_inh,                    "18 14"]], #INH
-                 "EMACS"  => [[$amod_ext,               \&check_ext,                    "18 12"]], #EXT
-                 "EMAXD"  => [[$amod_idx,               \&check_idx,                    "18 1A"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 1A"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 1A"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 1A"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 1A"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 1A"]], #[EXT]
-                 "EMAXM"  => [[$amod_idx,               \&check_idx,                    "18 1E"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 1E"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 1E"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 1E"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 1E"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 1E"]], #[EXT]
-                 "EMIND"  => [[$amod_idx,               \&check_idx,                    "18 1B"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 1B"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 1B"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 1B"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 1B"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 1B"]], #[EXT]
-                 "EMINM"  => [[$amod_idx,               \&check_idx,                    "18 1F"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 1F"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 1F"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 1F"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 1F"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 1F"]], #[EXT]
-                 "EMUL"   => [[$amod_inh,               \&check_inh,                    "13"   ]], #INH
-                 "EMULS"  => [[$amod_inh,               \&check_inh,                    "18 13"]], #INH
-                 "EORA"   => [[$amod_imm8,              \&check_imm8,                   "88"   ],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "98"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "B8"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "A8"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "A8"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "A8"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "A8"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "A8"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "A8"   ]], #[EXT]
-                 "EORB"   => [[$amod_imm8,              \&check_imm8,                   "C8"   ],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "D8"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "F8"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "E8"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "E8"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "E8"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "E8"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "E8"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "e8"   ]], #[EXT]
-                 "EORX"   => [[$amod_imm16,             \&check_imm16,                  "18 88"],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "18 98"],  #DIR
-                              [$amod_ext,               \&check_ext,                    "18 B8"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 A8"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 A8"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 A8"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 A8"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 A8"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 A8"]], #[EXT]
-                 "EORY"   => [[$amod_imm16,             \&check_imm16,                  "18 C8"],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "18 D8"],  #DIR
-                              [$amod_ext,               \&check_ext,                    "18 F8"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 E8"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 E8"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 E8"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 E8"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 E8"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 E8"]], #[EXT]
-                 "ETBL"   => [[$amod_idx,               \&check_idx,                    "18 3F"]], #IDX
-                 "EXG"    => [[$amod_s12x_exg,          \&check_s12x_exg,               "B7"   ]], #INH
-                 "FDIV"   => [[$amod_inh,               \&check_inh,                    "18 11"]], #INH
-                 "GLDAA"  => [[$amod_s12x_dir,          \&check_s12x_dir,               "18 96"],  #DIR
-                              [$amod_ext,               \&check_ext,                    "18 B6"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 A6"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 A6"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 A6"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 A6"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 A6"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 A6"]], #[EXT]
-                 "GLDAB"  => [[$amod_s12x_dir,          \&check_s12x_dir,               "18 D6"],  #DIR
-                              [$amod_ext,               \&check_ext,                    "18 F6"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 E6"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 E6"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 E6"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 E6"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 E6"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 E6"]], #[EXT]
-                 "GLDD"   => [[$amod_s12x_dir,          \&check_s12x_dir,               "18 DC"],  #DIR
-                              [$amod_ext,               \&check_ext,                    "18 FC"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 EC"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 EC"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 EC"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 EC"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 EC"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 EC"]], #[EXT]
-                 "GLDS"   => [[$amod_s12x_dir,          \&check_s12x_dir,               "18 DF"],  #DIR
-                              [$amod_ext,               \&check_ext,                    "18 FF"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 EF"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 EF"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 EF"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 EF"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 EF"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 EF"]], #[EXT]
-                 "GLDX"   => [[$amod_s12x_dir,          \&check_s12x_dir,               "18 DE"],  #DIR
-                              [$amod_ext,               \&check_ext,                    "18 FE"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 EE"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 EE"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 EE"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 EE"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 EE"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 EE"]], #[EXT]
-                 "GLDY"   => [[$amod_s12x_dir,          \&check_s12x_dir,               "18 DD"],  #DIR
-                              [$amod_ext,               \&check_ext,                    "18 FD"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 ED"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 ED"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 ED"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 ED"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 ED"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 ED"]], #[EXT]
-                 "GSTAA"  => [[$amod_s12x_dir,          \&check_s12x_dir,               "18 5A"],  #DIR
-                              [$amod_ext,               \&check_ext,                    "18 7A"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 6A"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 6A"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 6A"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 6A"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 6A"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 6A"]], #[EXT]
-                 "GSTAB"  => [[$amod_s12x_dir,          \&check_s12x_dir,               "18 5B"],  #DIR
-                              [$amod_ext,               \&check_ext,                    "18 7B"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 6B"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 6B"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 6B"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 6B"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 6B"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 6B"]], #[EXT]
-                 "GSTD"   => [[$amod_s12x_dir,          \&check_s12x_dir,               "18 5C"],  #DIR
-                              [$amod_ext,               \&check_ext,                    "18 7C"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 6C"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 6C"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 6C"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 6C"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 6C"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 6C"]], #[EXT]
-                 "GSTS"   => [[$amod_s12x_dir,          \&check_s12x_dir,               "18 5F"],  #DIR
-                              [$amod_ext,               \&check_ext,                    "18 7F"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 6F"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 6F"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 6F"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 6F"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 6F"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 6F"]], #[EXT]
-                 "GSTX"   => [[$amod_s12x_dir,          \&check_s12x_dir,               "18 5E"],  #DIR
-                              [$amod_ext,               \&check_ext,                    "18 7E"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 6E"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 6E"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 6E"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 6E"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 6E"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 6E"]], #[EXT]
-                 "GSTY"   => [[$amod_s12x_dir,          \&check_s12x_dir,               "18 5D"],  #DIR
-                              [$amod_ext,               \&check_ext,                    "18 7D"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 6D"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 6D"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 6D"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 6D"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 6D"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 6D"]], #[EXT]
-                 "IBEQ"   => [[$amod_ibeq,              \&check_ibeq,                   "04"   ]], #REL
-                 "IBNE"   => [[$amod_ibne,              \&check_ibne,                   "04"   ]], #REL
-                 "IDIV"   => [[$amod_inh,               \&check_inh,                    "18 10"]], #INH
-                 "IDIVS"  => [[$amod_inh,               \&check_inh,                    "18 15"]], #INH
-                 "INC"    => [[$amod_ext,               \&check_ext,                    "72"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "62"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "62"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "62"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "62"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "62"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "62"   ]], #[EXT]
-                 "INCA"   => [[$amod_inh,               \&check_inh,                    "42"   ]], #INH
-                 "INCB"   => [[$amod_inh,               \&check_inh,                    "52"   ]], #INH
-                 "INCW"   => [[$amod_ext,               \&check_ext,                    "18 72"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 62"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 62"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 62"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 62"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 62"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 62"]], #[EXT]
-                 "INCX"   => [[$amod_inh,               \&check_inh,                    "18 42"]], #INH
-                 "INCY"   => [[$amod_inh,               \&check_inh,                    "18 52"]], #INH
-                 "INS"    => [[$amod_inh,               \&check_inh,                    "1B 81"]], #INH
-                 "INX"    => [[$amod_inh,               \&check_inh,                    "08"   ]], #INH
-                 "INY"    => [[$amod_inh,               \&check_inh,                    "02"   ]], #INH
-                 "JMP"    => [[$amod_ext,               \&check_ext,                    "06"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "05"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "05"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "05"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "05"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "05"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "05"   ]], #[EXT]
-                 "JOB"    => [[$amod_rel8,              \&check_rel8,                   "20"   ],  #REL
-                              [$amod_ext,               \&check_ext,                    "06"   ]], #EXT
-                 "JOBSR"  => [[$amod_rel8,              \&check_rel8,                   "07"   ],  #REL
-                              [$amod_ext,               \&check_ext,                    "16"   ]], #EXT
-                 "JSR"    => [[$amod_s12x_dir,          \&check_s12x_dir,               "17"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "16"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "15"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "15"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "15"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "15"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "15"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "15"   ]], #[EXT]
-                 "LBCC"   => [[$amod_rel16,             \&check_rel16,                  "18 24"]], #REL
-                 "LBCS"   => [[$amod_rel16,             \&check_rel16,                  "18 25"]], #REL
-                 "LBEQ"   => [[$amod_rel16,             \&check_rel16,                  "18 27"]], #REL
-                 "LBGE"   => [[$amod_rel16,             \&check_rel16,                  "18 2C"]], #REL
-                 "LBGT"   => [[$amod_rel16,             \&check_rel16,                  "18 2E"]], #REL
-                 "LBHI"   => [[$amod_rel16,             \&check_rel16,                  "18 22"]], #REL
-                 "LBHS"   => [[$amod_rel16,             \&check_rel16,                  "18 24"]], #REL
-                 "LBLE"   => [[$amod_rel16,             \&check_rel16,                  "18 2F"]], #REL
-                 "LBLO"   => [[$amod_rel16,             \&check_rel16,                  "18 25"]], #REL
-                 "LBLS"   => [[$amod_rel16,             \&check_rel16,                  "18 23"]], #REL
-                 "LBLT"   => [[$amod_rel16,             \&check_rel16,                  "18 2D"]], #REL
-                 "LBMI"   => [[$amod_rel16,             \&check_rel16,                  "18 2B"]], #REL
-                 "LBNE"   => [[$amod_rel16,             \&check_rel16,                  "18 26"]], #REL
-                 "LBPL"   => [[$amod_rel16,             \&check_rel16,                  "18 2A"]], #REL
-                 "LBRA"   => [[$amod_rel16,             \&check_rel16,                  "18 20"]], #REL
-                 "LBRN"   => [[$amod_rel16,             \&check_rel16,                  "18 21"]], #REL
-                 "LBVC"   => [[$amod_rel16,             \&check_rel16,                  "18 28"]], #REL
-                 "LBVS"   => [[$amod_rel16,             \&check_rel16,                  "18 29"]], #REL
-                 "LDAA"   => [[$amod_imm8,              \&check_imm8,                   "86"   ],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "96"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "B6"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "A6"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "A6"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "A6"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "A6"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "A6"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "A6"   ]], #[EXT]
-                 "LDAB"   => [[$amod_imm8,              \&check_imm8,                   "C6"   ],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "D6"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "F6"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "E6"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "E6"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "E6"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "E6"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "E6"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "E6"   ]], #[EXT]
-                 "LDD"    => [[$amod_imm16,             \&check_imm16,                  "CC"   ],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "DC"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "FC"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "EC"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "EC"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "EC"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "EC"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "EC"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "EC"   ]], #[EXT]
-                 "LDS"    => [[$amod_imm16,             \&check_imm16,                  "CF"   ],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "DF"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "FF"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "EF"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "EF"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "EF"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "EF"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "EF"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "EF"   ]], #[EXT]
-                 "LDX"    => [[$amod_imm16,             \&check_imm16,                  "CE"   ],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "DE"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "FE"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "EE"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "EE"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "EE"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "EE"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "EE"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "EE"   ]], #[EXT]
-                 "LDY"    => [[$amod_imm16,             \&check_imm16,                  "CD"   ],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "DD"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "FD"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "ED"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "ED"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "ED"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "ED"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "ED"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "ED"   ]], #[EXT]
-                 "LEAS"   => [[$amod_idx,               \&check_idx,                    "1B"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "1B"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "1B"   ]], #IDX2
-                 "LEAX"   => [[$amod_idx,               \&check_idx,                    "1A"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "1A"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "1A"   ]], #IDX2
-                 "LEAY"   => [[$amod_idx,               \&check_idx,                    "19"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "19"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "19"   ]], #IDX2
-                 "LSL"    => [[$amod_ext,               \&check_ext,                    "78"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "68"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "68"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "68"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "68"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "68"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "68"   ]], #[EXT]
-                 "LSLA"   => [[$amod_inh,               \&check_inh,                    "48"   ]], #INH
-                 "LSLB"   => [[$amod_inh,               \&check_inh,                    "58"   ]], #INH
-                 "LSLW"   => [[$amod_ext,               \&check_ext,                    "18 78"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 68"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 68"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 68"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 68"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 68"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 68"]], #[EXT]
-                 "LSLX"   => [[$amod_inh,               \&check_inh,                    "18 48"]], #INH
-                 "LSLY"   => [[$amod_inh,               \&check_inh,                    "18 58"]], #INH
-                 "LSLD"   => [[$amod_inh,               \&check_inh,                    "59"   ]], #INH
-                 "LSR"    => [[$amod_ext,               \&check_ext,                    "74"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "64"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "64"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "64"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "64"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "64"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "64"   ]], #[EXT]
-                 "LSRA"   => [[$amod_inh,               \&check_inh,                    "44"   ]], #INH
-                 "LSRB"   => [[$amod_inh,               \&check_inh,                    "54"   ]], #INH
-                 "LSRW"   => [[$amod_ext,               \&check_ext,                    "18 74"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 64"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 64"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 64"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 64"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 64"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 64"]], #[EXT]
-                 "LSRX"   => [[$amod_inh,               \&check_inh,                    "18 44"]], #INH
-                 "LSRY"   => [[$amod_inh,               \&check_inh,                    "18 54"]], #INH
-                 "LSRD"   => [[$amod_inh,               \&check_inh,                    "49"   ]], #INH
-                 "MAXA"   => [[$amod_idx,               \&check_idx,                    "18 18"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 18"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 18"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 18"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 18"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 18"]], #[EXT]
-                 "MAXM"   => [[$amod_idx,               \&check_idx,                    "18 1C"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 1C"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 1C"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 1C"],  #[D,IDX]
-                              [$amod_iext,              \&check_iext,                   "18 1C"]], #[EXT]
-                 "MEM"    => [[$amod_inh,               \&check_inh,                    "01"   ]], #INH
-                 "MINA"   => [[$amod_idx,               \&check_idx,                    "18 19"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 19"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 19"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 19"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 19"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 19"]], #[EXT]
-                 "MINM"   => [[$amod_idx,               \&check_idx,                    "18 1D"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 1D"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 1D"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 1D"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 1D"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 1D"]], #[EXT]
-                 "MOVB"   => [[$amod_imm8_ext,          \&check_imm8_ext,               "18 0B"],  #IMM-EXT
-                              [$amod_imm8_idx,          \&check_imm8_idx,               "18 08"],  #IMM-IDX
-                              [$amod_imm8_idx1,         \&check_imm8_idx1,              "18 08"],  #IMM-IDX1
-                              [$amod_imm8_idx2,         \&check_imm8_idx2,              "18 08"],  #IMM-IDX2
-                              [$amod_imm8_ididx,        \&check_imm8_ididx,             "18 08"],  #IMM-[D,IDX]
-                              [$amod_imm8_iidx2,        \&check_imm8_iidx2,             "18 08"],  #IMM-[IDX2]
-                              [$amod_imm8_iext,         \&check_imm8_iext,              "18 08"],  #IMM-[EXT]
-                              [$amod_ext_ext,           \&check_ext_ext,                "18 0C"],  #EXT-EXT
-                              [$amod_ext_idx,           \&check_ext_idx,                "18 09"],  #EXT-IDX
-                              [$amod_ext_idx1,          \&check_ext_idx1,               "18 09"],  #EXT-IDX1
-                              [$amod_ext_idx2,          \&check_ext_idx2,               "18 09"],  #EXT-IDX2
-                              [$amod_ext_ididx,         \&check_ext_ididx,              "18 09"],  #EXT-[D,IDX]
-                              [$amod_ext_iidx2,         \&check_ext_iidx2,              "18 09"],  #EXT-[IDX2]
-                              [$amod_ext_iext,          \&check_ext_iext,               "18 09"],  #EXT-[EXT]
-                              [$amod_idx_ext,           \&check_idx_ext,                "18 0D"],  #IDX-EXT
-                              [$amod_idx_idx,           \&check_idx_idx,                "18 0A"],  #IDX-IDX
-                              [$amod_idx_idx1,          \&check_idx_idx1,               "18 0A"],  #IDX-IDX1
-                              [$amod_idx_idx2,          \&check_idx_idx2,               "18 0A"],  #IDX-IDX2
-                              [$amod_idx_ididx,         \&check_idx_ididx,              "18 0A"],  #IDX-[D,IDX]
-                              [$amod_idx_iidx2,         \&check_idx_iidx2,              "18 0A"],  #IDX-[IDX2]
-                              [$amod_idx_iext,          \&check_idx_iext,               "18 0A"],  #IDX-[EXT]
-                              [$amod_idx1_ext,          \&check_idx1_ext,               "18 0D"],  #IDX1-EXT
-                              [$amod_idx1_idx,          \&check_idx1_idx,               "18 0A"],  #IDX1-IDX
-                              [$amod_idx1_idx1,         \&check_idx1_idx1,              "18 0A"],  #IDX1-IDX1
-                              [$amod_idx1_idx2,         \&check_idx1_idx2,              "18 0A"],  #IDX1-IDX2
-                              [$amod_idx1_ididx,        \&check_idx1_ididx,             "18 0A"],  #IDX1-[D,IDX]
-                              [$amod_idx1_iidx2,        \&check_idx1_iidx2,             "18 0A"],  #IDX1-[IDX2]
-                              [$amod_idx1_iext,         \&check_idx1_iext,              "18 0A"],  #IDX1-[EXT]
-                              [$amod_idx2_ext,          \&check_idx2_ext,               "18 0D"],  #IDX2-EXT
-                              [$amod_idx2_idx,          \&check_idx2_idx,               "18 0A"],  #IDX2-IDX
-                              [$amod_idx2_idx1,         \&check_idx2_idx1,              "18 0A"],  #IDX2-IDX1
-                              [$amod_idx2_idx2,         \&check_idx2_idx2,              "18 0A"],  #IDX2-IDX2
-                              [$amod_idx2_ididx,        \&check_idx2_ididx,             "18 0A"],  #IDX2-[D,IDX]
-                              [$amod_idx2_iidx2,        \&check_idx2_iidx2,             "18 0A"],  #IDX2-[IDX2]
-                              [$amod_idx2_iext,         \&check_idx2_iext,              "18 0A"],  #IDX2-[EXT]
-                              [$amod_ididx_ext,         \&check_ididx_ext,              "18 0D"],  #[D,IDX]-EXT
-                              [$amod_ididx_idx,         \&check_ididx_idx,              "18 0A"],  #[D,IDX]-IDX
-                              [$amod_ididx_idx1,        \&check_ididx_idx1,             "18 0A"],  #[D,IDX]-IDX1
-                              [$amod_ididx_idx2,        \&check_ididx_idx2,             "18 0A"],  #[D,IDX]-IDX2
-                              [$amod_ididx_ididx,       \&check_ididx_ididx,            "18 0A"],  #[D,IDX]-[D,IDX]
-                              [$amod_ididx_iidx2,       \&check_ididx_iidx2,            "18 0A"],  #[D,IDX]-[IDX2]
-                              [$amod_ididx_iext,        \&check_ididx_iext,             "18 0A"],  #[D,IDX]-[EXT]
-                              [$amod_iidx2_ext,         \&check_iidx2_ext,              "18 0D"],  #[IDX2]-EXT
-                              [$amod_iidx2_idx,         \&check_iidx2_idx,              "18 0A"],  #[IDX2]-IDX
-                              [$amod_iidx2_idx1,        \&check_iidx2_idx1,             "18 0A"],  #[IDX2]-IDX1
-                              [$amod_iidx2_idx2,        \&check_iidx2_idx2,             "18 0A"],  #[IDX2]-IDX2
-                              [$amod_iidx2_ididx,       \&check_iidx2_ididx,            "18 0A"],  #[IDX2]-[D,IDX]
-                              [$amod_iidx2_iidx2,       \&check_iidx2_iidx2,            "18 0A"],  #[IDX2]-[IDX2]
-                              [$amod_iidx2_iext,        \&check_iidx2_iext,             "18 0A"],  #[IDX2]-[EXT]
-                              [$amod_iext_ext,          \&check_iext_ext,               "18 0D"],  #[EXT]-EXT
-                              [$amod_iext_idx,          \&check_iext_idx,               "18 0A"],  #[EXT]-IDX
-                              [$amod_iext_idx1,         \&check_iext_idx1,              "18 0A"],  #[EXT]-IDX1
-                              [$amod_iext_idx2,         \&check_iext_idx2,              "18 0A"],  #[EXT]-IDX2
-                              [$amod_iext_ididx,        \&check_iext_ididx,             "18 0A"],  #[EXT]-[D,IDX]
-                              [$amod_iext_iidx2,        \&check_iext_iidx2,             "18 0A"],  #[EXT]-[IDX2]
-                              [$amod_iext_iext,         \&check_iext_iext,              "18 0A"]], #[EXT]-[EXT]
-                "MOVW"    => [[$amod_imm16_ext,         \&check_imm16_ext,              "18 03"],  #IMM-EXT
-                              [$amod_imm16_idx,         \&check_imm16_idx,              "18 00"],  #IMM-IDX
-                              [$amod_imm16_idx1,        \&check_imm16_idx1,             "18 00"],  #IMM-IDX1
-                              [$amod_imm16_idx2,        \&check_imm16_idx2,             "18 00"],  #IMM-IDX2
-                              [$amod_imm16_ididx,       \&check_imm16_ididx,            "18 00"],  #IMM-[D,IDX]
-                              [$amod_imm16_iidx2,       \&check_imm16_iidx2,            "18 00"],  #IMM-[IDX2]
-                              [$amod_imm16_iext,        \&check_imm16_iext,             "18 00"],  #IMM-[EXT]
-                              [$amod_ext_ext,           \&check_ext_ext,                "18 04"],  #EXT-EXT
-                              [$amod_ext_idx,           \&check_ext_idx,                "18 01"],  #EXT-IDX
-                              [$amod_ext_idx1,          \&check_ext_idx1,               "18 01"],  #EXT-IDX1
-                              [$amod_ext_idx2,          \&check_ext_idx2,               "18 01"],  #EXT-IDX2
-                              [$amod_ext_ididx,         \&check_ext_ididx,              "18 01"],  #EXT-[D,IDX]
-                              [$amod_ext_iidx2,         \&check_ext_iidx2,              "18 01"],  #EXT-[IDX2]
-                              [$amod_ext_iext,          \&check_ext_iext,               "18 01"],  #EXT-[EXT]
-                              [$amod_idx_ext,           \&check_idx_ext,                "18 05"],  #IDX-EXT
-                              [$amod_idx_idx,           \&check_idx_idx,                "18 02"],  #IDX-IDX
-                              [$amod_idx_idx1,          \&check_idx_idx1,               "18 02"],  #IDX-IDX1
-                              [$amod_idx_idx2,          \&check_idx_idx2,               "18 02"],  #IDX-IDX2
-                              [$amod_idx_ididx,         \&check_idx_ididx,              "18 02"],  #IDX-[D,IDX]
-                              [$amod_idx_iidx2,         \&check_idx_iidx2,              "18 02"],  #IDX-[IDX2]
-                              [$amod_idx_iext,          \&check_idx_iext,               "18 02"],  #IDX-[EXT]
-                              [$amod_idx1_ext,          \&check_idx1_ext,               "18 05"],  #IDX1-EXT
-                              [$amod_idx1_idx,          \&check_idx1_idx,               "18 02"],  #IDX1-IDX
-                              [$amod_idx1_idx1,         \&check_idx1_idx1,              "18 02"],  #IDX1-IDX1
-                              [$amod_idx1_idx2,         \&check_idx1_idx2,              "18 02"],  #IDX1-IDX2
-                              [$amod_idx1_ididx,        \&check_idx1_ididx,             "18 02"],  #IDX1-[D,IDX]
-                              [$amod_idx1_iidx2,        \&check_idx1_iidx2,             "18 02"],  #IDX1-[IDX2]
-                              [$amod_idx1_iext,         \&check_idx1_iext,              "18 02"],  #IDX1-[EXT]
-                              [$amod_idx2_ext,          \&check_idx2_ext,               "18 05"],  #IDX2-EXT
-                              [$amod_idx2_idx,          \&check_idx2_idx,               "18 02"],  #IDX2-IDX
-                              [$amod_idx2_idx1,         \&check_idx2_idx1,              "18 02"],  #IDX2-IDX1
-                              [$amod_idx2_idx2,         \&check_idx2_idx2,              "18 02"],  #IDX2-IDX2
-                              [$amod_idx2_ididx,        \&check_idx2_ididx,             "18 02"],  #IDX2-[D,IDX]
-                              [$amod_idx2_iidx2,        \&check_idx2_iidx2,             "18 02"],  #IDX2-[IDX2]
-                              [$amod_idx2_iext,         \&check_idx2_iext,              "18 02"],  #IDX2-[EXT]
-                              [$amod_ididx_ext,         \&check_ididx_ext,              "18 05"],  #[D,IDX]-EXT
-                              [$amod_ididx_idx,         \&check_ididx_idx,              "18 02"],  #[D,IDX]-IDX
-                              [$amod_ididx_idx1,        \&check_ididx_idx1,             "18 02"],  #[D,IDX]-IDX1
-                              [$amod_ididx_idx2,        \&check_ididx_idx2,             "18 02"],  #[D,IDX]-IDX2
-                              [$amod_ididx_ididx,       \&check_ididx_ididx,            "18 02"],  #[D,IDX]-[D,IDX]
-                              [$amod_ididx_iidx2,       \&check_ididx_iidx2,            "18 02"],  #[D,IDX]-[IDX2]
-                              [$amod_ididx_iext,        \&check_ididx_iext,             "18 02"],  #[D,IDX]-[EXT]
-                              [$amod_iidx2_ext,         \&check_iidx2_ext,              "18 05"],  #[IDX2]-EXT
-                              [$amod_iidx2_idx,         \&check_iidx2_idx,              "18 02"],  #[IDX2]-IDX
-                              [$amod_iidx2_idx1,        \&check_iidx2_idx1,             "18 02"],  #[IDX2]-IDX1
-                              [$amod_iidx2_idx2,        \&check_iidx2_idx2,             "18 02"],  #[IDX2]-IDX2
-                              [$amod_iidx2_ididx,       \&check_iidx2_ididx,            "18 02"],  #[IDX2]-[D,IDX]
-                              [$amod_iidx2_iidx2,       \&check_iidx2_iidx2,            "18 02"],  #[IDX2]-[IDX2]
-                              [$amod_iidx2_iext,        \&check_iidx2_iext,             "18 02"],  #[IDX2]-[EXT]
-                              [$amod_iext_ext,          \&check_iext_ext,               "18 05"],  #[EXT]-EXT
-                              [$amod_iext_idx,          \&check_iext_idx,               "18 02"],  #[EXT]-IDX
-                              [$amod_iext_idx1,         \&check_iext_idx1,              "18 02"],  #[EXT]-IDX1
-                              [$amod_iext_idx2,         \&check_iext_idx2,              "18 02"],  #[EXT]-IDX2
-                              [$amod_iext_ididx,        \&check_iext_ididx,             "18 02"],  #[EXT]-[D,IDX]
-                              [$amod_iext_iidx2,        \&check_iext_iidx2,             "18 02"],  #[EXT]-[IDX2]
-                              [$amod_iext_iext,         \&check_iext_iext,              "18 02"]], #[EXT]-[EXT]
-                 "MUL"    => [[$amod_inh,               \&check_inh,                    "12"   ]], #INH
-                 "NEG"    => [[$amod_ext,               \&check_ext,                    "70"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "60"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "60"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "60"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "60"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "60"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "60"   ]], #[EXT]
-                 "NEGA"   => [[$amod_inh,               \&check_inh,                    "40"   ]], #INH
-                 "NEGB"   => [[$amod_inh,               \&check_inh,                    "50"   ]], #INH
-                 "NEGW"   => [[$amod_ext,               \&check_ext,                    "18 70"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 60"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 60"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 60"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 60"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 60"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 60"]], #[EXT]
-                 "NEGX"   => [[$amod_inh,               \&check_inh,                    "18 40"]], #INH
-                 "NEGY"   => [[$amod_inh,               \&check_inh,                    "18 50"]], #INH
-                 "NOP"    => [[$amod_inh,               \&check_inh,                    "A7"   ]], #INH
-                 "ORAA"   => [[$amod_imm8,              \&check_imm8,                   "8A"   ],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "9A"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "BA"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "AA"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "AA"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "AA"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "AA"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "AA"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "AA"   ]], #[EXT]
-                 "ORAB"   => [[$amod_imm8,              \&check_imm8,                   "CA"   ],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "DA"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "FA"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "EA"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "EA"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "EA"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "EA"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "EA"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "EA"   ]], #[EXT]
-                 "ORX"    => [[$amod_imm16,             \&check_imm16,                  "18 8A"],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "18 9A"],  #DIR
-                              [$amod_ext,               \&check_ext,                    "18 BA"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 AA"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 AA"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 AA"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 AA"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 AA"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 AA"]], #[EXT]
-                 "ORY"    => [[$amod_imm16,             \&check_imm16,                  "18 CA"],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "18 DA"],  #DIR
-                              [$amod_ext,               \&check_ext,                    "18 FA"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 EA"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 EA"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 EA"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 EA"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 EA"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 EA"]], #[EXT]
-                 "ORCC"   => [[$amod_imm8,              \&check_imm8,                   "14"   ]], #INH
-                 "PSHA"   => [[$amod_inh,               \&check_inh,                    "36"   ]], #INH
-                 "PSHB"   => [[$amod_inh,               \&check_inh,                    "37"   ]], #INH
-                 "PSHC"   => [[$amod_inh,               \&check_inh,                    "39"   ]], #INH
-                 "PSHCW"  => [[$amod_inh,               \&check_inh,                    "18 39"]], #INH
-                 "PSHD"   => [[$amod_inh,               \&check_inh,                    "3B"   ]], #INH
-                 "PSHX"   => [[$amod_inh,               \&check_inh,                    "34"   ]], #INH
-                 "PSHY"   => [[$amod_inh,               \&check_inh,                    "35"   ]], #INH
-                 "PULA"   => [[$amod_inh,               \&check_inh,                    "32"   ]], #INH
-                 "PULB"   => [[$amod_inh,               \&check_inh,                    "33"   ]], #INH
-                 "PULC"   => [[$amod_inh,               \&check_inh,                    "38"   ]], #INH
-                 "PULCW"  => [[$amod_inh,               \&check_inh,                    "18 38"]], #INH
-                 "PULD"   => [[$amod_inh,               \&check_inh,                    "3A"   ]], #INH
-                 "PULX"   => [[$amod_inh,               \&check_inh,                    "30"   ]], #INH
-                 "PULY"   => [[$amod_inh,               \&check_inh,                    "31"   ]], #INH
-                 "REV"    => [[$amod_inh,               \&check_inh,                    "18 3A"]], #INH
-                 "REVW"   => [[$amod_inh,               \&check_inh,                    "18 3B"]], #INH
-                 "ROL"    => [[$amod_ext,               \&check_ext,                    "75"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "65"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "65"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "65"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "65"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "65"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "65"   ]], #[EXT]
-                 "ROLA"   => [[$amod_inh,               \&check_inh,                    "45"   ]], #INH
-                 "ROLB"   => [[$amod_inh,               \&check_inh,                    "55"   ]], #INH
-                 "ROLW"   => [[$amod_ext,               \&check_ext,                    "18 75"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 65"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 65"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 65"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 65"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 65"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 65"]], #[EXT]
-                 "ROLX"   => [[$amod_inh,               \&check_inh,                    "18 45"]], #INH
-                 "ROLY"   => [[$amod_inh,               \&check_inh,                    "18 55"]], #INH
-                 "ROR"    => [[$amod_ext,               \&check_ext,                    "76"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "66"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "66"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "66"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "66"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "66"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "66"   ]], #[EXT]
-                 "RORA"   => [[$amod_inh,               \&check_inh,                    "46"   ]], #INH
-                 "RORB"   => [[$amod_inh,               \&check_inh,                    "56"   ]], #INH
-                 "RORW"   => [[$amod_ext,               \&check_ext,                    "18 76"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 66"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 66"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 66"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 66"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 66"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 66"]], #[EXT]
-                 "RORX"   => [[$amod_inh,               \&check_inh,                    "18 46"]], #INH
-                 "RORY"   => [[$amod_inh,               \&check_inh,                    "18 56"]], #INH
-                 "RTC"    => [[$amod_inh,               \&check_inh,                    "0A"   ]], #INH
-                 "RTI"    => [[$amod_inh,               \&check_inh,                    "0B"   ]], #INH
-                 "RTS"    => [[$amod_inh,               \&check_inh,                    "3D"   ]], #INH
-                 "SBA"    => [[$amod_inh,               \&check_inh,                    "18 16"]], #INH
-                 "SBCA"   => [[$amod_imm8,              \&check_imm8,                   "82"   ],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "92"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "B2"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "A2"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "A2"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "A2"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "A2"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "A2"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "A2"   ]], #[EXT]
-                 "SBCB"   => [[$amod_imm8,              \&check_imm8,                   "C2"   ],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "D2"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "F2"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "E2"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "E2"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "E2"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "E2"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "E2"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "E2"   ]], #[EXT]
-                 "SBED"   => [[$amod_imm16,             \&check_imm16,                  "18 83"],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "18 93"],  #DIR
-                              [$amod_ext,               \&check_ext,                    "18 B3"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 A3"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 A3"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 A3"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 A3"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 A3"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 A3"]], #[EXT]
-                 "SBEX"   => [[$amod_imm16,             \&check_imm16,                  "18 82"],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "18 92"],  #DIR
-                              [$amod_ext,               \&check_ext,                    "18 B2"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 A2"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 A2"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 A2"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 A2"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 A2"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 A2"]], #[EXT]
-                 "SBEY"   => [[$amod_imm16,             \&check_imm16,                  "18 C2"],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "18 D2"],  #DIR
-                              [$amod_ext,               \&check_ext,                    "18 F2"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 E2"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 E2"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 E2"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 E2"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 E2"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 E2"]], #[EXT]
-                 "SEC"    => [[$amod_inh,               \&check_inh,                    "14 01"]], #INH
-                 "SEI"    => [[$amod_inh,               \&check_inh,                    "14 10"]], #INH
-                 "SEV"    => [[$amod_inh,               \&check_inh,                    "14 02"]], #INH
-                 "SEX"    => [[$amod_s12x_tfr,          \&check_s12x_sex,               "B7"   ]], #INH
-                 "STAA"   => [[$amod_s12x_dir,          \&check_s12x_dir,               "5A"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "7A"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "6A"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "6A"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "6A"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "6A"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "6A"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "6A"   ]], #[EXT]
-                 "STAB"   => [[$amod_s12x_dir,          \&check_s12x_dir,               "5B"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "7B"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "6B"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "6B"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "6B"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "6B"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "6B"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "6B"   ]], #[EXT]
-                 "STD"    => [[$amod_s12x_dir,          \&check_s12x_dir,               "5C"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "7C"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "6C"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "6C"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "6C"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "6C"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "6C"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "6C"   ]], #[EXT]
-                 "STOP"   => [[$amod_inh,               \&check_inh,                    "18 3E"]], #INH
-                 "STS"    => [[$amod_s12x_dir,          \&check_s12x_dir,               "5F"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "7F"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "6F"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "6F"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "6F"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "6F"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "6F"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "6F"   ]], #[EXT]
-                 "STX"    => [[$amod_s12x_dir,          \&check_s12x_dir,               "5E"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "7E"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "6E"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "6E"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "6E"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "6E"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "6E"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "6E"   ]], #[EXT]
-                 "STY"    => [[$amod_s12x_dir,          \&check_s12x_dir,               "5D"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "7D"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "6D"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "6D"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "6D"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "6D"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "6D"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "6D"   ]], #[EXT]
-                 "SUBA"   => [[$amod_imm8,              \&check_imm8,                   "80"   ],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "90"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "B0"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "A0"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "A0"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "A0"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "A0"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "A0"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "A0"   ]], #[EXT]
-                 "SUBB"   => [[$amod_imm8,              \&check_imm8,                   "C0"   ],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "D0"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "F0"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "E0"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "E0"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "E0"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "E0"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "E0"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "E0"   ]], #[EXT]
-                 "SUBD"   => [[$amod_imm16,             \&check_imm16,                  "83"   ],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "93"   ],  #DIR
-                              [$amod_ext,               \&check_ext,                    "B3"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "A3"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "A3"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "A3"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "A3"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "A3"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "A3"   ]], #[EXT]
-                 "SUBX"   => [[$amod_imm16,             \&check_imm16,                  "18 80"],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "18 90"],  #DIR
-                              [$amod_ext,               \&check_ext,                    "18 B0"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 A0"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 A0"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 A0"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 A0"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 A0"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 A0"]], #[EXT]
-                 "SUBY"   => [[$amod_imm16,             \&check_imm16,                  "18 C0"],  #IMM
-                              [$amod_s12x_dir,          \&check_s12x_dir,               "18 D0"],  #DIR
-                              [$amod_ext,               \&check_ext,                    "18 F0"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 E0"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 E0"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 E0"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 E0"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 E0"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 E0"]], #[EXT]
-                 "SWI"    => [[$amod_inh,               \&check_inh,                    "3F"   ]], #INH
-                 "TAB"    => [[$amod_inh,               \&check_inh,                    "18 0E"]], #INH
-                 "TAP"    => [[$amod_inh,               \&check_inh,                    "B7 02"]], #INH
-                 "TBA"    => [[$amod_inh,               \&check_inh,                    "18 0F"]], #INH
-                 "TBEQ"   => [[$amod_tbeq,              \&check_tbeq,                   "04"   ]], #REL
-                 "TBL"    => [[$amod_idx,               \&check_idx,                    "18 3D"]], #IDX
-                 "TBNE"   => [[$amod_tbne,              \&check_tbne,                   "04"   ]], #REL
-                 "TFR"    => [[$amod_s12x_tfr,          \&check_s12x_tfr,               "B7"   ]], #INH
-                 "TPA"    => [[$amod_inh,               \&check_inh,                    "B7 20"]], #INH
-                 "TRAP"   => [[$amod_s12x_trap,         \&check_s12x_trap,              "18"   ]], #INH
-                 "TST"    => [[$amod_ext,               \&check_ext,                    "F7"   ],  #EXT
-                              [$amod_idx,               \&check_idx,                    "E7"   ],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "E7"   ],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "E7"   ],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "E7"   ],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "E7"   ],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "E7"   ]], #[EXT]
-                 "TSTA"   => [[$amod_inh,               \&check_inh,                    "97"   ]], #INH
-                 "TSTB"   => [[$amod_inh,               \&check_inh,                    "D7"   ]], #INH
-                 "TSTW"   => [[$amod_ext,               \&check_ext,                    "18 F7"],  #EXT
-                              [$amod_idx,               \&check_idx,                    "18 E7"],  #IDX
-                              [$amod_idx1,              \&check_idx1,                   "18 E7"],  #IDX1
-                              [$amod_idx2,              \&check_idx2,                   "18 E7"],  #IDX2
-                              [$amod_ididx,             \&check_ididx,                  "18 E7"],  #[D,IDX]
-                              [$amod_iidx2,             \&check_iidx2,                  "18 E7"],  #[IDX2]
-                              [$amod_iext,              \&check_iext,                   "18 E7"]], #[EXT]
-                 "TSTX"   => [[$amod_inh,               \&check_inh,                    "18 97"]], #INH
-                 "TSTY"   => [[$amod_inh,               \&check_inh,                    "18 D7"]], #INH
-                 "TSX"    => [[$amod_inh,               \&check_inh,                    "B7 75"]], #INH
-                 "TSY"    => [[$amod_inh,               \&check_inh,                    "B7 76"]], #INH
-                 "TXS"    => [[$amod_inh,               \&check_inh,                    "B7 57"]], #INH
-                 "TYS"    => [[$amod_inh,               \&check_inh,                    "B7 67"]], #INH
-                 "WAI"    => [[$amod_inh,               \&check_inh,                    "3E"   ]], #INH
-                 "WAV"    => [[$amod_inh,               \&check_inh,                    "18 3C"]], #INH
-                 "WAVR"   => [[$amod_inh,               \&check_inh,                    "3C"   ]], #INH
-                 "XGDX"   => [[$amod_inh,               \&check_inh,                    "B7 C5"]], #INH
-                 "XGDY"   => [[$amod_inh,               \&check_inh,                    "B7 C6"]]};#INH
+Readonly our $OPCTAB_S12X => {
+                 "ABA"    => [[$AMOD_INH,               \&check_inh,                    "18 06"]], #INH
+                 "ABX"    => [[$AMOD_INH,               \&check_inh,                    "1A E5"]], #INH
+                 "ABY"    => [[$AMOD_INH,               \&check_inh,                    "19 ED"]], #INH
+                 "ADCA"   => [[$AMOD_IMM8,              \&check_imm8,                   "89"   ],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "99"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "B9"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "A9"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "A9"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "A9"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "A9"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "A9"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "A9"   ]], #[EXT]
+                 "ADCB"   => [[$AMOD_IMM8,              \&check_imm8,                   "C9"   ],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "D9"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "F9"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "E9"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "E9"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "E9"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "E9"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "E9"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "E9"   ]], #[EXT]
+                 "ADED"   => [[$AMOD_IMM16,             \&check_imm16,                  "18 C3"],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "18 D3"],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "18 F3"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 E3"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 E3"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 E3"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 E3"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 E3"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 E3"]], #[EXT]
+                 "ADEX"   => [[$AMOD_IMM16,             \&check_imm16,                  "18 89"],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "18 99"],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "18 B9"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 A9"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 A9"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 A9"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 A9"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 E3"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 E3"]], #[EXT]
+                 "ADEY"   => [[$AMOD_IMM16,             \&check_imm16,                  "18 C9"],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "18 D9"],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "18 F9"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 E9"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 E9"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 E9"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 E9"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 E9"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 E9"]], #[EXT]
+                 "ADDA"   => [[$AMOD_IMM8,              \&check_imm8,                   "8B"   ],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "9B"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "BB"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "AB"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "AB"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "AB"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "AB"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "AB"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "AB"   ]], #[EXT]
+                 "ADDB"   => [[$AMOD_IMM8,              \&check_imm8,                   "CB"   ],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "DB"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "FB"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "EB"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "EB"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "EB"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "EB"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "EB"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "EB"   ]], #[EXT]
+                 "ADDD"   => [[$AMOD_IMM16,             \&check_imm16,                  "C3"   ],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "D3"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "F3"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "E3"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "E3"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "E3"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "E3"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "E3"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "E3"   ]], #[EXT]
+                 "ADDX"   => [[$AMOD_IMM16,             \&check_imm16,                  "18 8B"],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "18 9B"],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "18 BB"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 AB"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 AB"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 AB"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 AB"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 AB"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 AB"]], #[EXT]
+                 "ADDY"   => [[$AMOD_IMM16,             \&check_imm16,                  "18 CB"],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "18 DB"],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "18 FB"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 EB"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 EB"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 EB"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 EB"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 EB"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 EB"]], #[EXT]
+                 "ANDA"   => [[$AMOD_IMM8,              \&check_imm8,                   "84"   ],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "94"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "B4"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "A4"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "A4"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "A4"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "A4"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "A4"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "A4"   ]], #[EXT]
+                 "ANDB"   => [[$AMOD_IMM8,              \&check_imm8,                   "C4"   ],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "D4"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "F4"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "E4"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "E4"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "E4"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "E4"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "E4"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "E4"   ]], #[EXT]
+                 "ANDX"   => [[$AMOD_IMM16,             \&check_imm16,                  "18 84"],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "18 94"],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "18 B4"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 A4"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 A4"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 A4"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 A4"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 A4"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 A4"]], #[EXT]
+                 "ANDY"   => [[$AMOD_IMM16,             \&check_imm16,                  "18 C4"],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "18 D4"],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "18 F4"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 E4"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 E4"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 E4"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 E4"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 E4"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 E4"]], #[EXT]
+                 "ANDCC"  => [[$AMOD_IMM8,              \&check_imm8,                   "10"   ]], #IMM
+                 "ASL"    => [[$AMOD_EXT,               \&check_ext,                    "78"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "68"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "68"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "68"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "68"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "68"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "68"   ]], #[EXT]
+                 "ASLA"   => [[$AMOD_INH,               \&check_inh,                    "48"   ]], #INH
+                 "ASLB"   => [[$AMOD_INH,               \&check_inh,                    "58"   ]], #INH
+                 "ANDCC"  => [[$AMOD_IMM8,              \&check_imm8,                   "10"   ]], #IMM
+                 "ASLW"   => [[$AMOD_EXT,               \&check_ext,                    "18 78"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 68"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 68"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 68"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 68"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 68"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 68"]], #[EXT]
+                 "ASLX"   => [[$AMOD_INH,               \&check_inh,                    "18 48"]], #INH
+                 "ASLY"   => [[$AMOD_INH,               \&check_inh,                    "18 58"]], #INH
+                 "ASLD"   => [[$AMOD_INH,               \&check_inh,                    "59"   ]], #INH
+                 "ASR"    => [[$AMOD_EXT,               \&check_ext,                    "77"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "67"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "67"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "67"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "67"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "67"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "67"   ]], #[EXT]
+                 "ASRA"   => [[$AMOD_INH,               \&check_inh,                    "47"   ]], #INH
+                 "ASRB"   => [[$AMOD_INH,               \&check_inh,                    "57"   ]], #INH
+                 "ASRW"   => [[$AMOD_EXT,               \&check_ext,                    "18 77"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 67"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 67"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 67"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 67"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 67"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 67"]], #[EXT]
+                 "ASRX"   => [[$AMOD_INH,               \&check_inh,                    "18 47"]], #INH
+                 "ASRY"   => [[$AMOD_INH,               \&check_inh,                    "18 57"]], #INH
+                 "BCC"    => [[$AMOD_REL8,              \&check_rel8,                   "24"   ],  #REL
+                              [$AMOD_REL16,             \&check_rel16,                  "18 24"],  #REL
+                              [$AMOD_REL8_FORCED,       \&check_rel8_forced,            "24"   ]], #REL
+                 "BCLR"   => [[$AMOD_S12X_DIR_MSK,      \&check_s12x_dir_msk,           "4D"   ],  #DIR
+                              [$AMOD_EXT_MSK,           \&check_ext_msk,                "1D"   ],  #EXT
+                              [$AMOD_IDX_MSK,           \&check_idx_msk,                "0D"   ],  #IDX
+                              [$AMOD_IDX1_MSK,          \&check_idx1_msk,               "0D"   ],  #IDX1
+                              [$AMOD_IDX2_MSK,          \&check_idx2_msk,               "0D"   ]], #IDX2
+                 "BCS"    => [[$AMOD_REL8,              \&check_rel8,                   "25"   ],  #REL
+                              [$AMOD_REL16,             \&check_rel16,                  "18 25"],  #REL
+                              [$AMOD_REL8_FORCED,       \&check_rel8_forced,            "25"   ]], #REL
+                 "BEQ"    => [[$AMOD_REL8,              \&check_rel8,                   "27"   ],  #REL
+                              [$AMOD_REL16,             \&check_rel16,                  "18 27"],  #REL
+                              [$AMOD_REL8_FORCED,       \&check_rel8_forced,            "27"   ]], #REL
+                 "BGE"    => [[$AMOD_REL8,              \&check_rel8,                   "2C"   ],  #REL
+                              [$AMOD_REL16,             \&check_rel16,                  "18 2C"],  #REL
+                              [$AMOD_REL8,              \&check_rel8,                   "2C"   ]], #REL
+                 "BGND"   => [[$AMOD_INH,               \&check_inh,                    "00"   ]], #INH
+                 "BGT"    => [[$AMOD_REL8,              \&check_rel8,                   "2E"   ],  #REL
+                              [$AMOD_REL16,             \&check_rel16,                  "18 2E"],  #REL
+                              [$AMOD_REL8_FORCED,       \&check_rel8_forced,            "2E"   ]], #REL
+                 "BHI"    => [[$AMOD_REL8,              \&check_rel8,                   "22"   ],  #REL
+                              [$AMOD_REL16,             \&check_rel16,                  "18 22"],  #REL
+                              [$AMOD_REL8_FORCED,       \&check_rel8_forced,            "22"   ]], #REL
+                 "BHS"    => [[$AMOD_REL8,              \&check_rel8,                   "24"   ],  #REL
+                              [$AMOD_REL16,             \&check_rel16,                  "18 24"],  #REL
+                              [$AMOD_REL8_FORCED,       \&check_rel8_forced,            "24"   ]], #REL
+                 "BITA"   => [[$AMOD_IMM8,              \&check_imm8,                   "85"   ],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "95"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "B5"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "A5"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "A5"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "A5"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "A5"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "A5"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "A5"   ]], #[EXT]
+                 "BITB"   => [[$AMOD_IMM8,              \&check_imm8,                   "C5"   ],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "D5"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "F5"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "E5"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "E5"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "E5"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "E5"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "E5"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "E5"   ]], #[EXT]
+                 "BITX"   => [[$AMOD_IMM16,             \&check_imm16,                  "18 85"],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "18 95"],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "18 B5"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 A5"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 A5"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 A5"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 A5"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 A5"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 A5"]], #[EXT]
+                 "BITY"   => [[$AMOD_IMM16,             \&check_imm16,                  "18 C5"],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "18 D5"],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "18 F5"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 E5"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 E5"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 E5"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 E5"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 E5"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 E5"]], #[EXT]
+                 "BLE"    => [[$AMOD_REL8,              \&check_rel8,                   "2F"   ],  #REL
+                              [$AMOD_REL16,             \&check_rel16,                  "18 2F"],  #REL
+                              [$AMOD_REL8_FORCED,       \&check_rel8_forced,            "2F"   ]], #REL
+                 "BLO"    => [[$AMOD_REL8,              \&check_rel8,                   "25"   ],  #REL
+                              [$AMOD_REL16,             \&check_rel16,                  "18 25"],  #REL
+                              [$AMOD_REL8_FORCED,       \&check_rel8_forced,            "25"   ]], #REL
+                 "BLS"    => [[$AMOD_REL8,              \&check_rel8,                   "23"   ],  #REL
+                              [$AMOD_REL16,             \&check_rel16,                  "18 23"],  #REL
+                              [$AMOD_REL8_FORCED,       \&check_rel8_forced,            "23"   ]], #REL
+                 "BLT"    => [[$AMOD_REL8,              \&check_rel8,                   "2D"   ],  #REL
+                              [$AMOD_REL16,             \&check_rel16,                  "18 2D"],  #REL
+                              [$AMOD_REL8_FORCED,       \&check_rel8_forced,            "2D"   ]], #REL
+                 "BMI"    => [[$AMOD_REL8,              \&check_rel8,                   "2B"   ],  #REL
+                              [$AMOD_REL16,             \&check_rel16,                  "18 2B"],  #REL
+                              [$AMOD_REL8_FORCED,       \&check_rel8_forced,            "2B"   ]], #REL
+                 "BNE"    => [[$AMOD_REL8,              \&check_rel8,                   "26"   ],  #REL
+                              [$AMOD_REL16,             \&check_rel16,                  "18 26"],  #REL
+                              [$AMOD_REL8_FORCED,       \&check_rel8_forced,            "26"   ]], #REL
+                 "BPL"    => [[$AMOD_REL8,              \&check_rel8,                   "2A"   ],  #REL
+                              [$AMOD_REL16,             \&check_rel16,                  "18 2A"],  #REL
+                              [$AMOD_REL8_FORCED,       \&check_rel8_forced,            "2A"   ]], #REL
+                 "BRA"    => [[$AMOD_REL8,              \&check_rel8,                   "20"   ],  #REL
+                              [$AMOD_REL16,             \&check_rel16,                  "18 20"],  #REL
+                              [$AMOD_REL8_FORCED,       \&check_rel8_forced,            "20"   ]], #REL
+                 "BRCLR"  => [[$AMOD_S12X_DIR_MSK_REL,  \&check_s12x_dir_msk_rel,       "4F"   ],  #DIR
+                              [$AMOD_EXT_MSK_REL,       \&check_ext_msk_rel,            "1F"   ],  #EXT
+                              [$AMOD_IDX_MSK_REL,       \&check_idx_msk_rel,            "0F"   ],  #IDX
+                              [$AMOD_IDX1_MSK_REL,      \&check_idx1_msk_rel,           "0F"   ],  #IDX1
+                              [$AMOD_IDX2_MSK_REL,      \&check_idx2_msk_rel,           "0F"   ]], #IDX2
+                 "BRN"    => [[$AMOD_REL8,              \&check_rel8,                   "21"   ],  #REL
+                              [$AMOD_REL16,             \&check_rel16,                  "18 21"],  #REL
+                              [$AMOD_REL8_FORCED,       \&check_rel8_forced,            "21"   ]], #REL
+                 "BRSET"  => [[$AMOD_S12X_DIR_MSK_REL,  \&check_s12x_dir_msk_rel,       "4E"   ],  #DIR
+                              [$AMOD_EXT_MSK_REL,       \&check_ext_msk_rel,            "1E"   ],  #EXT
+                              [$AMOD_IDX_MSK_REL,       \&check_idx_msk_rel,            "0E"   ],  #IDX
+                              [$AMOD_IDX1_MSK_REL,      \&check_idx1_msk_rel,           "0E"   ],  #IDX1
+                              [$AMOD_IDX2_MSK_REL,      \&check_idx2_msk_rel,           "0E"   ]], #IDX2
+                 "BSET"   => [[$AMOD_S12X_DIR_MSK,      \&check_s12x_dir_msk,           "4C"   ],  #DIR
+                              [$AMOD_EXT_MSK,           \&check_ext_msk,                "1C"   ],  #EXT
+                              [$AMOD_IDX_MSK,           \&check_idx_msk,                "0C"   ],  #IDX
+                              [$AMOD_IDX1_MSK,          \&check_idx1_msk,               "0C"   ],  #IDX1
+                              [$AMOD_IDX2_MSK,          \&check_idx2_msk,               "0C"   ]], #IDX2
+                 "BSR"    => [[$AMOD_REL8,              \&check_rel8,                   "07"   ]], #REL
+                 "BVC"    => [[$AMOD_REL8,              \&check_rel8,                   "28"   ],  #REL
+                              [$AMOD_REL16,             \&check_rel16,                  "18 28"],  #REL
+                              [$AMOD_REL8_FORCED,       \&check_rel8_forced,            "28"   ]], #REL
+                 "BVS"    => [[$AMOD_REL8,              \&check_rel8,                   "29"   ],  #REL
+                              [$AMOD_REL16,             \&check_rel16,                  "18 29"],  #REL
+                              [$AMOD_REL8_FORCED,       \&check_rel8_forced,            "29"   ]], #REL
+                 "BTAS"   => [[$AMOD_S12X_DIR_MSK,      \&check_s12x_dir_msk,           "18 35"],  #DIR
+                              [$AMOD_EXT_MSK,           \&check_ext_msk,                "18 36"],  #EXT
+                              [$AMOD_IDX_MSK,           \&check_idx_msk,                "18 37"],  #IDX
+                              [$AMOD_IDX1_MSK,          \&check_idx1_msk,               "18 37"],  #IDX1
+                              [$AMOD_IDX2_MSK,          \&check_idx2_msk,               "18 37"]], #IDX2
+                 "CALL"   => [[$AMOD_EXT_PGIMPL,        \&check_ext_pgimpl,             "4A"   ],  #EXT
+                              [$AMOD_EXT_PG,            \&check_ext_pg,                 "4A"   ],  #EXT
+                              [$AMOD_IDX_PG,            \&check_idx_pg,                 "4B"   ],  #IDX
+                              [$AMOD_IDX1_PG,           \&check_idx1_pg,                "4B"   ],  #IDX1
+                              [$AMOD_IDX2_PG,           \&check_idx2_pg,                "4B"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "4B"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "4B"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "4B"   ]], #[EXT]
+                 "CBA"    => [[$AMOD_INH,               \&check_inh,                    "18 17"]], #INH
+                 "CLC"    => [[$AMOD_INH,               \&check_inh,                    "10 FE"]], #INH
+                 "CLI"    => [[$AMOD_INH,               \&check_inh,                    "10 EF"]], #INH
+                 "CLR"    => [[$AMOD_EXT,               \&check_ext,                    "79"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "69"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "69"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "69"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "69"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "69"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "69"   ]], #[EXT]
+                 "CLRA"   => [[$AMOD_INH,               \&check_inh,                    "87"   ]], #INH
+                 "CLRB"   => [[$AMOD_INH,               \&check_inh,                    "C7"   ]], #INH
+                 "CLRD"   => [[$AMOD_INH,               \&check_inh,                    "87 C7"]], #INH
+                 "CLRW"   => [[$AMOD_EXT,               \&check_ext,                    "18 79"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 69"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 69"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 69"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 69"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 69"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 69"]], #[EXT]
+                 "CLRX"   => [[$AMOD_INH,               \&check_inh,                    "18 87"]], #INH
+                 "CLRY"   => [[$AMOD_INH,               \&check_inh,                    "18 C7"]], #INH
+                 "CLV"    => [[$AMOD_INH,               \&check_inh,                    "10 FD"]], #INH
+                 "CMPA"   => [[$AMOD_IMM8,              \&check_imm8,                   "81"   ],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "91"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "B1"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "A1"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "A1"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "A1"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "A1"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "A1"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "A1"   ]], #[EXT]
+                 "CMPB"   => [[$AMOD_IMM8,              \&check_imm8,                   "C1"   ],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "D1"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "F1"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "E1"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "E1"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "E1"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "E1"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "E1"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "E1"   ]], #[EXT]
+                 "COM"    => [[$AMOD_EXT,               \&check_ext,                    "71"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "61"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "61"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "61"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "61"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "61"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "61"   ]], #[EXT]
+                 "COMA"   => [[$AMOD_INH,               \&check_inh,                    "41"   ]], #INH
+                 "COMB"   => [[$AMOD_INH,               \&check_inh,                    "51"   ]], #INH
+                 "COMW"   => [[$AMOD_EXT,               \&check_ext,                    "18 71"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 61"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 61"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 61"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 61"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 61"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 61"]], #[EXT]
+                 "COMX"   => [[$AMOD_INH,               \&check_inh,                    "18 41"]], #INH
+                 "COMY"   => [[$AMOD_INH,               \&check_inh,                    "18 51"]], #INH
+                 "CPED"   => [[$AMOD_IMM16,             \&check_imm16,                  "18 8C"],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "18 9C"],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "18 BC"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 AC"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 AC"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 AC"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 AC"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 AC"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 AC"]], #[EXT]
+                 "CPES"   => [[$AMOD_IMM16,             \&check_imm16,                  "18 8F"],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "18 9F"],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "18 BF"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 AF"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 AF"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 AF"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 AF"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 AF"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 AF"]], #[EXT]
+                 "CPEX"   => [[$AMOD_IMM16,             \&check_imm16,                  "18 8E"],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "18 9E"],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "18 BE"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 AE"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 AE"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 AE"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 AE"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 AE"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 AE"]], #[EXT]
+                 "CPEY"   => [[$AMOD_IMM16,             \&check_imm16,                  "18 8D"],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "18 9D"],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "18 BD"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 AD"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 AD"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 AD"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 AD"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 AD"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 AD"]], #[EXT]
+                 "CPD"    => [[$AMOD_IMM16,             \&check_imm16,                  "8C"   ],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "9C"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "BC"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "AC"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "AC"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "AC"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "AC"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "AC"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "AC"   ]], #[EXT]
+                 "CPS"    => [[$AMOD_IMM16,             \&check_imm16,                  "8F"   ],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "9F"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "BF"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "AF"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "AF"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "AF"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "AF"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "AF"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "AF"   ]], #[EXT]
+                 "CPX"    => [[$AMOD_IMM16,             \&check_imm16,                  "8E"   ],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "9E"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "BE"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "AE"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "AE"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "AE"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "AE"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "AE"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "AE"   ]], #[EXT]
+                 "CPY"    => [[$AMOD_IMM16,             \&check_imm16,                  "8D"   ],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "9D"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "BD"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "AD"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "AD"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "AD"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "AD"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "AD"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "AD"   ]], #[EXT]
+                 "DAA"    => [[$AMOD_INH,               \&check_inh,                    "18 07"]], #INH
+                 "DBEQ"   => [[$AMOD_DBEQ,              \&check_dbeq,                   "04"   ]], #REL
+                 "DBNE"   => [[$AMOD_DBNE,              \&check_dbne,                   "04"   ]], #REL
+                 "DEC"    => [[$AMOD_EXT,               \&check_ext,                    "73"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "63"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "63"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "63"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "63"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "63"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "63"   ]], #[EXT]
+                 "DECA"   => [[$AMOD_INH,               \&check_inh,                    "43"   ]], #INH
+                 "DECB"   => [[$AMOD_INH,               \&check_inh,                    "53"   ]], #INH
+                 "DECW"   => [[$AMOD_EXT,               \&check_ext,                    "18 73"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 63"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 63"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 63"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 63"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 63"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 63"]], #[EXT]
+                 "DECX"   => [[$AMOD_INH,               \&check_inh,                    "18 43"]], #INH
+                 "DECY"   => [[$AMOD_INH,               \&check_inh,                    "18 53"]], #INH
+                 "DES"    => [[$AMOD_INH,               \&check_inh,                    "1B 9F"]], #INH
+                 "DEX"    => [[$AMOD_INH,               \&check_inh,                    "09"   ]], #INH
+                 "DEY"    => [[$AMOD_INH,               \&check_inh,                    "03"   ]], #INH
+                 "EDIV"   => [[$AMOD_INH,               \&check_inh,                    "11"   ]], #INH
+                 "EDIVS"  => [[$AMOD_INH,               \&check_inh,                    "18 14"]], #INH
+                 "EMACS"  => [[$AMOD_EXT,               \&check_ext,                    "18 12"]], #EXT
+                 "EMAXD"  => [[$AMOD_IDX,               \&check_idx,                    "18 1A"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 1A"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 1A"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 1A"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 1A"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 1A"]], #[EXT]
+                 "EMAXM"  => [[$AMOD_IDX,               \&check_idx,                    "18 1E"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 1E"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 1E"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 1E"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 1E"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 1E"]], #[EXT]
+                 "EMIND"  => [[$AMOD_IDX,               \&check_idx,                    "18 1B"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 1B"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 1B"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 1B"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 1B"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 1B"]], #[EXT]
+                 "EMINM"  => [[$AMOD_IDX,               \&check_idx,                    "18 1F"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 1F"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 1F"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 1F"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 1F"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 1F"]], #[EXT]
+                 "EMUL"   => [[$AMOD_INH,               \&check_inh,                    "13"   ]], #INH
+                 "EMULS"  => [[$AMOD_INH,               \&check_inh,                    "18 13"]], #INH
+                 "EORA"   => [[$AMOD_IMM8,              \&check_imm8,                   "88"   ],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "98"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "B8"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "A8"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "A8"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "A8"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "A8"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "A8"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "A8"   ]], #[EXT]
+                 "EORB"   => [[$AMOD_IMM8,              \&check_imm8,                   "C8"   ],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "D8"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "F8"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "E8"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "E8"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "E8"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "E8"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "E8"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "e8"   ]], #[EXT]
+                 "EORX"   => [[$AMOD_IMM16,             \&check_imm16,                  "18 88"],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "18 98"],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "18 B8"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 A8"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 A8"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 A8"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 A8"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 A8"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 A8"]], #[EXT]
+                 "EORY"   => [[$AMOD_IMM16,             \&check_imm16,                  "18 C8"],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "18 D8"],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "18 F8"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 E8"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 E8"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 E8"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 E8"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 E8"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 E8"]], #[EXT]
+                 "ETBL"   => [[$AMOD_IDX,               \&check_idx,                    "18 3F"]], #IDX
+                 "EXG"    => [[$AMOD_S12X_EXG,          \&check_s12x_exg,               "B7"   ]], #INH
+                 "FDIV"   => [[$AMOD_INH,               \&check_inh,                    "18 11"]], #INH
+                 "GLDAA"  => [[$AMOD_S12X_DIR,          \&check_s12x_dir,               "18 96"],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "18 B6"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 A6"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 A6"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 A6"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 A6"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 A6"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 A6"]], #[EXT]
+                 "GLDAB"  => [[$AMOD_S12X_DIR,          \&check_s12x_dir,               "18 D6"],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "18 F6"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 E6"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 E6"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 E6"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 E6"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 E6"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 E6"]], #[EXT]
+                 "GLDD"   => [[$AMOD_S12X_DIR,          \&check_s12x_dir,               "18 DC"],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "18 FC"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 EC"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 EC"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 EC"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 EC"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 EC"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 EC"]], #[EXT]
+                 "GLDS"   => [[$AMOD_S12X_DIR,          \&check_s12x_dir,               "18 DF"],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "18 FF"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 EF"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 EF"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 EF"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 EF"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 EF"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 EF"]], #[EXT]
+                 "GLDX"   => [[$AMOD_S12X_DIR,          \&check_s12x_dir,               "18 DE"],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "18 FE"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 EE"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 EE"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 EE"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 EE"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 EE"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 EE"]], #[EXT]
+                 "GLDY"   => [[$AMOD_S12X_DIR,          \&check_s12x_dir,               "18 DD"],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "18 FD"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 ED"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 ED"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 ED"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 ED"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 ED"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 ED"]], #[EXT]
+                 "GSTAA"  => [[$AMOD_S12X_DIR,          \&check_s12x_dir,               "18 5A"],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "18 7A"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 6A"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 6A"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 6A"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 6A"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 6A"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 6A"]], #[EXT]
+                 "GSTAB"  => [[$AMOD_S12X_DIR,          \&check_s12x_dir,               "18 5B"],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "18 7B"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 6B"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 6B"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 6B"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 6B"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 6B"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 6B"]], #[EXT]
+                 "GSTD"   => [[$AMOD_S12X_DIR,          \&check_s12x_dir,               "18 5C"],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "18 7C"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 6C"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 6C"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 6C"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 6C"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 6C"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 6C"]], #[EXT]
+                 "GSTS"   => [[$AMOD_S12X_DIR,          \&check_s12x_dir,               "18 5F"],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "18 7F"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 6F"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 6F"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 6F"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 6F"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 6F"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 6F"]], #[EXT]
+                 "GSTX"   => [[$AMOD_S12X_DIR,          \&check_s12x_dir,               "18 5E"],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "18 7E"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 6E"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 6E"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 6E"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 6E"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 6E"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 6E"]], #[EXT]
+                 "GSTY"   => [[$AMOD_S12X_DIR,          \&check_s12x_dir,               "18 5D"],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "18 7D"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 6D"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 6D"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 6D"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 6D"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 6D"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 6D"]], #[EXT]
+                 "IBEQ"   => [[$AMOD_IBEQ,              \&check_ibeq,                   "04"   ]], #REL
+                 "IBNE"   => [[$AMOD_IBNE,              \&check_ibne,                   "04"   ]], #REL
+                 "IDIV"   => [[$AMOD_INH,               \&check_inh,                    "18 10"]], #INH
+                 "IDIVS"  => [[$AMOD_INH,               \&check_inh,                    "18 15"]], #INH
+                 "INC"    => [[$AMOD_EXT,               \&check_ext,                    "72"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "62"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "62"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "62"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "62"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "62"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "62"   ]], #[EXT]
+                 "INCA"   => [[$AMOD_INH,               \&check_inh,                    "42"   ]], #INH
+                 "INCB"   => [[$AMOD_INH,               \&check_inh,                    "52"   ]], #INH
+                 "INCW"   => [[$AMOD_EXT,               \&check_ext,                    "18 72"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 62"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 62"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 62"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 62"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 62"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 62"]], #[EXT]
+                 "INCX"   => [[$AMOD_INH,               \&check_inh,                    "18 42"]], #INH
+                 "INCY"   => [[$AMOD_INH,               \&check_inh,                    "18 52"]], #INH
+                 "INS"    => [[$AMOD_INH,               \&check_inh,                    "1B 81"]], #INH
+                 "INX"    => [[$AMOD_INH,               \&check_inh,                    "08"   ]], #INH
+                 "INY"    => [[$AMOD_INH,               \&check_inh,                    "02"   ]], #INH
+                 "JMP"    => [[$AMOD_EXT,               \&check_ext,                    "06"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "05"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "05"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "05"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "05"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "05"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "05"   ]], #[EXT]
+                 "JOB"    => [[$AMOD_REL8,              \&check_rel8,                   "20"   ],  #REL
+                              [$AMOD_EXT,               \&check_ext,                    "06"   ]], #EXT
+                 "JOBSR"  => [[$AMOD_REL8,              \&check_rel8,                   "07"   ],  #REL
+                              [$AMOD_EXT,               \&check_ext,                    "16"   ]], #EXT
+                 "JSR"    => [[$AMOD_S12X_DIR,          \&check_s12x_dir,               "17"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "16"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "15"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "15"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "15"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "15"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "15"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "15"   ]], #[EXT]
+                 "LBCC"   => [[$AMOD_REL16,             \&check_rel16,                  "18 24"]], #REL
+                 "LBCS"   => [[$AMOD_REL16,             \&check_rel16,                  "18 25"]], #REL
+                 "LBEQ"   => [[$AMOD_REL16,             \&check_rel16,                  "18 27"]], #REL
+                 "LBGE"   => [[$AMOD_REL16,             \&check_rel16,                  "18 2C"]], #REL
+                 "LBGT"   => [[$AMOD_REL16,             \&check_rel16,                  "18 2E"]], #REL
+                 "LBHI"   => [[$AMOD_REL16,             \&check_rel16,                  "18 22"]], #REL
+                 "LBHS"   => [[$AMOD_REL16,             \&check_rel16,                  "18 24"]], #REL
+                 "LBLE"   => [[$AMOD_REL16,             \&check_rel16,                  "18 2F"]], #REL
+                 "LBLO"   => [[$AMOD_REL16,             \&check_rel16,                  "18 25"]], #REL
+                 "LBLS"   => [[$AMOD_REL16,             \&check_rel16,                  "18 23"]], #REL
+                 "LBLT"   => [[$AMOD_REL16,             \&check_rel16,                  "18 2D"]], #REL
+                 "LBMI"   => [[$AMOD_REL16,             \&check_rel16,                  "18 2B"]], #REL
+                 "LBNE"   => [[$AMOD_REL16,             \&check_rel16,                  "18 26"]], #REL
+                 "LBPL"   => [[$AMOD_REL16,             \&check_rel16,                  "18 2A"]], #REL
+                 "LBRA"   => [[$AMOD_REL16,             \&check_rel16,                  "18 20"]], #REL
+                 "LBRN"   => [[$AMOD_REL16,             \&check_rel16,                  "18 21"]], #REL
+                 "LBVC"   => [[$AMOD_REL16,             \&check_rel16,                  "18 28"]], #REL
+                 "LBVS"   => [[$AMOD_REL16,             \&check_rel16,                  "18 29"]], #REL
+                 "LDAA"   => [[$AMOD_IMM8,              \&check_imm8,                   "86"   ],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "96"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "B6"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "A6"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "A6"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "A6"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "A6"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "A6"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "A6"   ]], #[EXT]
+                 "LDAB"   => [[$AMOD_IMM8,              \&check_imm8,                   "C6"   ],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "D6"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "F6"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "E6"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "E6"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "E6"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "E6"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "E6"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "E6"   ]], #[EXT]
+                 "LDD"    => [[$AMOD_IMM16,             \&check_imm16,                  "CC"   ],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "DC"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "FC"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "EC"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "EC"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "EC"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "EC"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "EC"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "EC"   ]], #[EXT]
+                 "LDS"    => [[$AMOD_IMM16,             \&check_imm16,                  "CF"   ],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "DF"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "FF"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "EF"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "EF"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "EF"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "EF"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "EF"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "EF"   ]], #[EXT]
+                 "LDX"    => [[$AMOD_IMM16,             \&check_imm16,                  "CE"   ],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "DE"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "FE"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "EE"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "EE"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "EE"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "EE"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "EE"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "EE"   ]], #[EXT]
+                 "LDY"    => [[$AMOD_IMM16,             \&check_imm16,                  "CD"   ],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "DD"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "FD"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "ED"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "ED"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "ED"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "ED"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "ED"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "ED"   ]], #[EXT]
+                 "LEAS"   => [[$AMOD_IDX,               \&check_idx,                    "1B"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "1B"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "1B"   ]], #IDX2
+                 "LEAX"   => [[$AMOD_IDX,               \&check_idx,                    "1A"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "1A"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "1A"   ]], #IDX2
+                 "LEAY"   => [[$AMOD_IDX,               \&check_idx,                    "19"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "19"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "19"   ]], #IDX2
+                 "LSL"    => [[$AMOD_EXT,               \&check_ext,                    "78"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "68"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "68"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "68"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "68"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "68"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "68"   ]], #[EXT]
+                 "LSLA"   => [[$AMOD_INH,               \&check_inh,                    "48"   ]], #INH
+                 "LSLB"   => [[$AMOD_INH,               \&check_inh,                    "58"   ]], #INH
+                 "LSLW"   => [[$AMOD_EXT,               \&check_ext,                    "18 78"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 68"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 68"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 68"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 68"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 68"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 68"]], #[EXT]
+                 "LSLX"   => [[$AMOD_INH,               \&check_inh,                    "18 48"]], #INH
+                 "LSLY"   => [[$AMOD_INH,               \&check_inh,                    "18 58"]], #INH
+                 "LSLD"   => [[$AMOD_INH,               \&check_inh,                    "59"   ]], #INH
+                 "LSR"    => [[$AMOD_EXT,               \&check_ext,                    "74"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "64"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "64"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "64"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "64"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "64"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "64"   ]], #[EXT]
+                 "LSRA"   => [[$AMOD_INH,               \&check_inh,                    "44"   ]], #INH
+                 "LSRB"   => [[$AMOD_INH,               \&check_inh,                    "54"   ]], #INH
+                 "LSRW"   => [[$AMOD_EXT,               \&check_ext,                    "18 74"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 64"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 64"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 64"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 64"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 64"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 64"]], #[EXT]
+                 "LSRX"   => [[$AMOD_INH,               \&check_inh,                    "18 44"]], #INH
+                 "LSRY"   => [[$AMOD_INH,               \&check_inh,                    "18 54"]], #INH
+                 "LSRD"   => [[$AMOD_INH,               \&check_inh,                    "49"   ]], #INH
+                 "MAXA"   => [[$AMOD_IDX,               \&check_idx,                    "18 18"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 18"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 18"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 18"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 18"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 18"]], #[EXT]
+                 "MAXM"   => [[$AMOD_IDX,               \&check_idx,                    "18 1C"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 1C"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 1C"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 1C"],  #[D,IDX]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 1C"]], #[EXT]
+                 "MEM"    => [[$AMOD_INH,               \&check_inh,                    "01"   ]], #INH
+                 "MINA"   => [[$AMOD_IDX,               \&check_idx,                    "18 19"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 19"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 19"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 19"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 19"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 19"]], #[EXT]
+                 "MINM"   => [[$AMOD_IDX,               \&check_idx,                    "18 1D"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 1D"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 1D"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 1D"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 1D"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 1D"]], #[EXT]
+                 "MOVB"   => [[$AMOD_IMM8_EXT,          \&check_imm8_ext,               "18 0B"],  #IMM-EXT
+                              [$AMOD_IMM8_IDX,          \&check_imm8_idx,               "18 08"],  #IMM-IDX
+                              [$AMOD_IMM8_IDX1,         \&check_imm8_idx1,              "18 08"],  #IMM-IDX1
+                              [$AMOD_IMM8_IDX2,         \&check_imm8_idx2,              "18 08"],  #IMM-IDX2
+                              [$AMOD_IMM8_IDIDX,        \&check_imm8_ididx,             "18 08"],  #IMM-[D,IDX]
+                              [$AMOD_IMM8_IIDX2,        \&check_imm8_iidx2,             "18 08"],  #IMM-[IDX2]
+                              [$AMOD_IMM8_IEXT,         \&check_imm8_iext,              "18 08"],  #IMM-[EXT]
+                              [$AMOD_EXT_EXT,           \&check_ext_ext,                "18 0C"],  #EXT-EXT
+                              [$AMOD_EXT_IDX,           \&check_ext_idx,                "18 09"],  #EXT-IDX
+                              [$AMOD_EXT_IDX1,          \&check_ext_idx1,               "18 09"],  #EXT-IDX1
+                              [$AMOD_EXT_IDX2,          \&check_ext_idx2,               "18 09"],  #EXT-IDX2
+                              [$AMOD_EXT_IDIDX,         \&check_ext_ididx,              "18 09"],  #EXT-[D,IDX]
+                              [$AMOD_EXT_IIDX2,         \&check_ext_iidx2,              "18 09"],  #EXT-[IDX2]
+                              [$AMOD_EXT_IEXT,          \&check_ext_iext,               "18 09"],  #EXT-[EXT]
+                              [$AMOD_IDX_EXT,           \&check_idx_ext,                "18 0D"],  #IDX-EXT
+                              [$AMOD_IDX_IDX,           \&check_idx_idx,                "18 0A"],  #IDX-IDX
+                              [$AMOD_IDX_IDX1,          \&check_idx_idx1,               "18 0A"],  #IDX-IDX1
+                              [$AMOD_IDX_IDX2,          \&check_idx_idx2,               "18 0A"],  #IDX-IDX2
+                              [$AMOD_IDX_IDIDX,         \&check_idx_ididx,              "18 0A"],  #IDX-[D,IDX]
+                              [$AMOD_IDX_IIDX2,         \&check_idx_iidx2,              "18 0A"],  #IDX-[IDX2]
+                              [$AMOD_IDX_IEXT,          \&check_idx_iext,               "18 0A"],  #IDX-[EXT]
+                              [$AMOD_IDX1_EXT,          \&check_idx1_ext,               "18 0D"],  #IDX1-EXT
+                              [$AMOD_IDX1_IDX,          \&check_idx1_idx,               "18 0A"],  #IDX1-IDX
+                              [$AMOD_IDX1_IDX1,         \&check_idx1_idx1,              "18 0A"],  #IDX1-IDX1
+                              [$AMOD_IDX1_IDX2,         \&check_idx1_idx2,              "18 0A"],  #IDX1-IDX2
+                              [$AMOD_IDX1_IDIDX,        \&check_idx1_ididx,             "18 0A"],  #IDX1-[D,IDX]
+                              [$AMOD_IDX1_IIDX2,        \&check_idx1_iidx2,             "18 0A"],  #IDX1-[IDX2]
+                              [$AMOD_IDX1_IEXT,         \&check_idx1_iext,              "18 0A"],  #IDX1-[EXT]
+                              [$AMOD_IDX2_EXT,          \&check_idx2_ext,               "18 0D"],  #IDX2-EXT
+                              [$AMOD_IDX2_IDX,          \&check_idx2_idx,               "18 0A"],  #IDX2-IDX
+                              [$AMOD_IDX2_IDX1,         \&check_idx2_idx1,              "18 0A"],  #IDX2-IDX1
+                              [$AMOD_IDX2_IDX2,         \&check_idx2_idx2,              "18 0A"],  #IDX2-IDX2
+                              [$AMOD_IDX2_IDIDX,        \&check_idx2_ididx,             "18 0A"],  #IDX2-[D,IDX]
+                              [$AMOD_IDX2_IIDX2,        \&check_idx2_iidx2,             "18 0A"],  #IDX2-[IDX2]
+                              [$AMOD_IDX2_IEXT,         \&check_idx2_iext,              "18 0A"],  #IDX2-[EXT]
+                              [$AMOD_IDIDX_EXT,         \&check_ididx_ext,              "18 0D"],  #[D,IDX]-EXT
+                              [$AMOD_IDIDX_IDX,         \&check_ididx_idx,              "18 0A"],  #[D,IDX]-IDX
+                              [$AMOD_IDIDX_IDX1,        \&check_ididx_idx1,             "18 0A"],  #[D,IDX]-IDX1
+                              [$AMOD_IDIDX_IDX2,        \&check_ididx_idx2,             "18 0A"],  #[D,IDX]-IDX2
+                              [$AMOD_IDIDX_IDIDX,       \&check_ididx_ididx,            "18 0A"],  #[D,IDX]-[D,IDX]
+                              [$AMOD_IDIDX_IIDX2,       \&check_ididx_iidx2,            "18 0A"],  #[D,IDX]-[IDX2]
+                              [$AMOD_IDIDX_IEXT,        \&check_ididx_iext,             "18 0A"],  #[D,IDX]-[EXT]
+                              [$AMOD_IIDX2_EXT,         \&check_iidx2_ext,              "18 0D"],  #[IDX2]-EXT
+                              [$AMOD_IIDX2_IDX,         \&check_iidx2_idx,              "18 0A"],  #[IDX2]-IDX
+                              [$AMOD_IIDX2_IDX1,        \&check_iidx2_idx1,             "18 0A"],  #[IDX2]-IDX1
+                              [$AMOD_IIDX2_IDX2,        \&check_iidx2_idx2,             "18 0A"],  #[IDX2]-IDX2
+                              [$AMOD_IIDX2_IDIDX,       \&check_iidx2_ididx,            "18 0A"],  #[IDX2]-[D,IDX]
+                              [$AMOD_IIDX2_IIDX2,       \&check_iidx2_iidx2,            "18 0A"],  #[IDX2]-[IDX2]
+                              [$AMOD_IIDX2_IEXT,        \&check_iidx2_iext,             "18 0A"],  #[IDX2]-[EXT]
+                              [$AMOD_IEXT_EXT,          \&check_iext_ext,               "18 0D"],  #[EXT]-EXT
+                              [$AMOD_IEXT_IDX,          \&check_iext_idx,               "18 0A"],  #[EXT]-IDX
+                              [$AMOD_IEXT_IDX1,         \&check_iext_idx1,              "18 0A"],  #[EXT]-IDX1
+                              [$AMOD_IEXT_IDX2,         \&check_iext_idx2,              "18 0A"],  #[EXT]-IDX2
+                              [$AMOD_IEXT_IDIDX,        \&check_iext_ididx,             "18 0A"],  #[EXT]-[D,IDX]
+                              [$AMOD_IEXT_IIDX2,        \&check_iext_iidx2,             "18 0A"],  #[EXT]-[IDX2]
+                              [$AMOD_IEXT_IEXT,         \&check_iext_iext,              "18 0A"]], #[EXT]-[EXT]
+                "MOVW"    => [[$AMOD_IMM16_EXT,         \&check_imm16_ext,              "18 03"],  #IMM-EXT
+                              [$AMOD_IMM16_IDX,         \&check_imm16_idx,              "18 00"],  #IMM-IDX
+                              [$AMOD_IMM16_IDX1,        \&check_imm16_idx1,             "18 00"],  #IMM-IDX1
+                              [$AMOD_IMM16_IDX2,        \&check_imm16_idx2,             "18 00"],  #IMM-IDX2
+                              [$AMOD_IMM16_IDIDX,       \&check_imm16_ididx,            "18 00"],  #IMM-[D,IDX]
+                              [$AMOD_IMM16_IIDX2,       \&check_imm16_iidx2,            "18 00"],  #IMM-[IDX2]
+                              [$AMOD_IMM16_IEXT,        \&check_imm16_iext,             "18 00"],  #IMM-[EXT]
+                              [$AMOD_EXT_EXT,           \&check_ext_ext,                "18 04"],  #EXT-EXT
+                              [$AMOD_EXT_IDX,           \&check_ext_idx,                "18 01"],  #EXT-IDX
+                              [$AMOD_EXT_IDX1,          \&check_ext_idx1,               "18 01"],  #EXT-IDX1
+                              [$AMOD_EXT_IDX2,          \&check_ext_idx2,               "18 01"],  #EXT-IDX2
+                              [$AMOD_EXT_IDIDX,         \&check_ext_ididx,              "18 01"],  #EXT-[D,IDX]
+                              [$AMOD_EXT_IIDX2,         \&check_ext_iidx2,              "18 01"],  #EXT-[IDX2]
+                              [$AMOD_EXT_IEXT,          \&check_ext_iext,               "18 01"],  #EXT-[EXT]
+                              [$AMOD_IDX_EXT,           \&check_idx_ext,                "18 05"],  #IDX-EXT
+                              [$AMOD_IDX_IDX,           \&check_idx_idx,                "18 02"],  #IDX-IDX
+                              [$AMOD_IDX_IDX1,          \&check_idx_idx1,               "18 02"],  #IDX-IDX1
+                              [$AMOD_IDX_IDX2,          \&check_idx_idx2,               "18 02"],  #IDX-IDX2
+                              [$AMOD_IDX_IDIDX,         \&check_idx_ididx,              "18 02"],  #IDX-[D,IDX]
+                              [$AMOD_IDX_IIDX2,         \&check_idx_iidx2,              "18 02"],  #IDX-[IDX2]
+                              [$AMOD_IDX_IEXT,          \&check_idx_iext,               "18 02"],  #IDX-[EXT]
+                              [$AMOD_IDX1_EXT,          \&check_idx1_ext,               "18 05"],  #IDX1-EXT
+                              [$AMOD_IDX1_IDX,          \&check_idx1_idx,               "18 02"],  #IDX1-IDX
+                              [$AMOD_IDX1_IDX1,         \&check_idx1_idx1,              "18 02"],  #IDX1-IDX1
+                              [$AMOD_IDX1_IDX2,         \&check_idx1_idx2,              "18 02"],  #IDX1-IDX2
+                              [$AMOD_IDX1_IDIDX,        \&check_idx1_ididx,             "18 02"],  #IDX1-[D,IDX]
+                              [$AMOD_IDX1_IIDX2,        \&check_idx1_iidx2,             "18 02"],  #IDX1-[IDX2]
+                              [$AMOD_IDX1_IEXT,         \&check_idx1_iext,              "18 02"],  #IDX1-[EXT]
+                              [$AMOD_IDX2_EXT,          \&check_idx2_ext,               "18 05"],  #IDX2-EXT
+                              [$AMOD_IDX2_IDX,          \&check_idx2_idx,               "18 02"],  #IDX2-IDX
+                              [$AMOD_IDX2_IDX1,         \&check_idx2_idx1,              "18 02"],  #IDX2-IDX1
+                              [$AMOD_IDX2_IDX2,         \&check_idx2_idx2,              "18 02"],  #IDX2-IDX2
+                              [$AMOD_IDX2_IDIDX,        \&check_idx2_ididx,             "18 02"],  #IDX2-[D,IDX]
+                              [$AMOD_IDX2_IIDX2,        \&check_idx2_iidx2,             "18 02"],  #IDX2-[IDX2]
+                              [$AMOD_IDX2_IEXT,         \&check_idx2_iext,              "18 02"],  #IDX2-[EXT]
+                              [$AMOD_IDIDX_EXT,         \&check_ididx_ext,              "18 05"],  #[D,IDX]-EXT
+                              [$AMOD_IDIDX_IDX,         \&check_ididx_idx,              "18 02"],  #[D,IDX]-IDX
+                              [$AMOD_IDIDX_IDX1,        \&check_ididx_idx1,             "18 02"],  #[D,IDX]-IDX1
+                              [$AMOD_IDIDX_IDX2,        \&check_ididx_idx2,             "18 02"],  #[D,IDX]-IDX2
+                              [$AMOD_IDIDX_IDIDX,       \&check_ididx_ididx,            "18 02"],  #[D,IDX]-[D,IDX]
+                              [$AMOD_IDIDX_IIDX2,       \&check_ididx_iidx2,            "18 02"],  #[D,IDX]-[IDX2]
+                              [$AMOD_IDIDX_IEXT,        \&check_ididx_iext,             "18 02"],  #[D,IDX]-[EXT]
+                              [$AMOD_IIDX2_EXT,         \&check_iidx2_ext,              "18 05"],  #[IDX2]-EXT
+                              [$AMOD_IIDX2_IDX,         \&check_iidx2_idx,              "18 02"],  #[IDX2]-IDX
+                              [$AMOD_IIDX2_IDX1,        \&check_iidx2_idx1,             "18 02"],  #[IDX2]-IDX1
+                              [$AMOD_IIDX2_IDX2,        \&check_iidx2_idx2,             "18 02"],  #[IDX2]-IDX2
+                              [$AMOD_IIDX2_IDIDX,       \&check_iidx2_ididx,            "18 02"],  #[IDX2]-[D,IDX]
+                              [$AMOD_IIDX2_IIDX2,       \&check_iidx2_iidx2,            "18 02"],  #[IDX2]-[IDX2]
+                              [$AMOD_IIDX2_IEXT,        \&check_iidx2_iext,             "18 02"],  #[IDX2]-[EXT]
+                              [$AMOD_IEXT_EXT,          \&check_iext_ext,               "18 05"],  #[EXT]-EXT
+                              [$AMOD_IEXT_IDX,          \&check_iext_idx,               "18 02"],  #[EXT]-IDX
+                              [$AMOD_IEXT_IDX1,         \&check_iext_idx1,              "18 02"],  #[EXT]-IDX1
+                              [$AMOD_IEXT_IDX2,         \&check_iext_idx2,              "18 02"],  #[EXT]-IDX2
+                              [$AMOD_IEXT_IDIDX,        \&check_iext_ididx,             "18 02"],  #[EXT]-[D,IDX]
+                              [$AMOD_IEXT_IIDX2,        \&check_iext_iidx2,             "18 02"],  #[EXT]-[IDX2]
+                              [$AMOD_IEXT_IEXT,         \&check_iext_iext,              "18 02"]], #[EXT]-[EXT]
+                 "MUL"    => [[$AMOD_INH,               \&check_inh,                    "12"   ]], #INH
+                 "NEG"    => [[$AMOD_EXT,               \&check_ext,                    "70"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "60"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "60"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "60"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "60"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "60"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "60"   ]], #[EXT]
+                 "NEGA"   => [[$AMOD_INH,               \&check_inh,                    "40"   ]], #INH
+                 "NEGB"   => [[$AMOD_INH,               \&check_inh,                    "50"   ]], #INH
+                 "NEGW"   => [[$AMOD_EXT,               \&check_ext,                    "18 70"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 60"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 60"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 60"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 60"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 60"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 60"]], #[EXT]
+                 "NEGX"   => [[$AMOD_INH,               \&check_inh,                    "18 40"]], #INH
+                 "NEGY"   => [[$AMOD_INH,               \&check_inh,                    "18 50"]], #INH
+                 "NOP"    => [[$AMOD_INH,               \&check_inh,                    "A7"   ]], #INH
+                 "ORAA"   => [[$AMOD_IMM8,              \&check_imm8,                   "8A"   ],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "9A"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "BA"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "AA"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "AA"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "AA"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "AA"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "AA"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "AA"   ]], #[EXT]
+                 "ORAB"   => [[$AMOD_IMM8,              \&check_imm8,                   "CA"   ],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "DA"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "FA"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "EA"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "EA"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "EA"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "EA"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "EA"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "EA"   ]], #[EXT]
+                 "ORX"    => [[$AMOD_IMM16,             \&check_imm16,                  "18 8A"],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "18 9A"],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "18 BA"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 AA"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 AA"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 AA"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 AA"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 AA"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 AA"]], #[EXT]
+                 "ORY"    => [[$AMOD_IMM16,             \&check_imm16,                  "18 CA"],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "18 DA"],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "18 FA"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 EA"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 EA"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 EA"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 EA"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 EA"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 EA"]], #[EXT]
+                 "ORCC"   => [[$AMOD_IMM8,              \&check_imm8,                   "14"   ]], #INH
+                 "PSHA"   => [[$AMOD_INH,               \&check_inh,                    "36"   ]], #INH
+                 "PSHB"   => [[$AMOD_INH,               \&check_inh,                    "37"   ]], #INH
+                 "PSHC"   => [[$AMOD_INH,               \&check_inh,                    "39"   ]], #INH
+                 "PSHCW"  => [[$AMOD_INH,               \&check_inh,                    "18 39"]], #INH
+                 "PSHD"   => [[$AMOD_INH,               \&check_inh,                    "3B"   ]], #INH
+                 "PSHX"   => [[$AMOD_INH,               \&check_inh,                    "34"   ]], #INH
+                 "PSHY"   => [[$AMOD_INH,               \&check_inh,                    "35"   ]], #INH
+                 "PULA"   => [[$AMOD_INH,               \&check_inh,                    "32"   ]], #INH
+                 "PULB"   => [[$AMOD_INH,               \&check_inh,                    "33"   ]], #INH
+                 "PULC"   => [[$AMOD_INH,               \&check_inh,                    "38"   ]], #INH
+                 "PULCW"  => [[$AMOD_INH,               \&check_inh,                    "18 38"]], #INH
+                 "PULD"   => [[$AMOD_INH,               \&check_inh,                    "3A"   ]], #INH
+                 "PULX"   => [[$AMOD_INH,               \&check_inh,                    "30"   ]], #INH
+                 "PULY"   => [[$AMOD_INH,               \&check_inh,                    "31"   ]], #INH
+                 "REV"    => [[$AMOD_INH,               \&check_inh,                    "18 3A"]], #INH
+                 "REVW"   => [[$AMOD_INH,               \&check_inh,                    "18 3B"]], #INH
+                 "ROL"    => [[$AMOD_EXT,               \&check_ext,                    "75"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "65"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "65"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "65"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "65"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "65"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "65"   ]], #[EXT]
+                 "ROLA"   => [[$AMOD_INH,               \&check_inh,                    "45"   ]], #INH
+                 "ROLB"   => [[$AMOD_INH,               \&check_inh,                    "55"   ]], #INH
+                 "ROLW"   => [[$AMOD_EXT,               \&check_ext,                    "18 75"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 65"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 65"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 65"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 65"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 65"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 65"]], #[EXT]
+                 "ROLX"   => [[$AMOD_INH,               \&check_inh,                    "18 45"]], #INH
+                 "ROLY"   => [[$AMOD_INH,               \&check_inh,                    "18 55"]], #INH
+                 "ROR"    => [[$AMOD_EXT,               \&check_ext,                    "76"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "66"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "66"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "66"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "66"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "66"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "66"   ]], #[EXT]
+                 "RORA"   => [[$AMOD_INH,               \&check_inh,                    "46"   ]], #INH
+                 "RORB"   => [[$AMOD_INH,               \&check_inh,                    "56"   ]], #INH
+                 "RORW"   => [[$AMOD_EXT,               \&check_ext,                    "18 76"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 66"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 66"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 66"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 66"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 66"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 66"]], #[EXT]
+                 "RORX"   => [[$AMOD_INH,               \&check_inh,                    "18 46"]], #INH
+                 "RORY"   => [[$AMOD_INH,               \&check_inh,                    "18 56"]], #INH
+                 "RTC"    => [[$AMOD_INH,               \&check_inh,                    "0A"   ]], #INH
+                 "RTI"    => [[$AMOD_INH,               \&check_inh,                    "0B"   ]], #INH
+                 "RTS"    => [[$AMOD_INH,               \&check_inh,                    "3D"   ]], #INH
+                 "SBA"    => [[$AMOD_INH,               \&check_inh,                    "18 16"]], #INH
+                 "SBCA"   => [[$AMOD_IMM8,              \&check_imm8,                   "82"   ],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "92"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "B2"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "A2"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "A2"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "A2"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "A2"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "A2"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "A2"   ]], #[EXT]
+                 "SBCB"   => [[$AMOD_IMM8,              \&check_imm8,                   "C2"   ],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "D2"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "F2"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "E2"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "E2"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "E2"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "E2"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "E2"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "E2"   ]], #[EXT]
+                 "SBED"   => [[$AMOD_IMM16,             \&check_imm16,                  "18 83"],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "18 93"],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "18 B3"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 A3"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 A3"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 A3"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 A3"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 A3"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 A3"]], #[EXT]
+                 "SBEX"   => [[$AMOD_IMM16,             \&check_imm16,                  "18 82"],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "18 92"],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "18 B2"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 A2"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 A2"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 A2"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 A2"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 A2"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 A2"]], #[EXT]
+                 "SBEY"   => [[$AMOD_IMM16,             \&check_imm16,                  "18 C2"],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "18 D2"],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "18 F2"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 E2"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 E2"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 E2"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 E2"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 E2"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 E2"]], #[EXT]
+                 "SEC"    => [[$AMOD_INH,               \&check_inh,                    "14 01"]], #INH
+                 "SEI"    => [[$AMOD_INH,               \&check_inh,                    "14 10"]], #INH
+                 "SEV"    => [[$AMOD_INH,               \&check_inh,                    "14 02"]], #INH
+                 "SEX"    => [[$AMOD_S12X_TFR,          \&check_s12x_sex,               "B7"   ]], #INH
+                 "STAA"   => [[$AMOD_S12X_DIR,          \&check_s12x_dir,               "5A"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "7A"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "6A"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "6A"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "6A"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "6A"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "6A"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "6A"   ]], #[EXT]
+                 "STAB"   => [[$AMOD_S12X_DIR,          \&check_s12x_dir,               "5B"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "7B"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "6B"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "6B"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "6B"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "6B"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "6B"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "6B"   ]], #[EXT]
+                 "STD"    => [[$AMOD_S12X_DIR,          \&check_s12x_dir,               "5C"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "7C"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "6C"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "6C"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "6C"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "6C"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "6C"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "6C"   ]], #[EXT]
+                 "STOP"   => [[$AMOD_INH,               \&check_inh,                    "18 3E"]], #INH
+                 "STS"    => [[$AMOD_S12X_DIR,          \&check_s12x_dir,               "5F"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "7F"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "6F"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "6F"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "6F"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "6F"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "6F"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "6F"   ]], #[EXT]
+                 "STX"    => [[$AMOD_S12X_DIR,          \&check_s12x_dir,               "5E"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "7E"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "6E"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "6E"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "6E"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "6E"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "6E"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "6E"   ]], #[EXT]
+                 "STY"    => [[$AMOD_S12X_DIR,          \&check_s12x_dir,               "5D"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "7D"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "6D"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "6D"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "6D"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "6D"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "6D"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "6D"   ]], #[EXT]
+                 "SUBA"   => [[$AMOD_IMM8,              \&check_imm8,                   "80"   ],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "90"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "B0"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "A0"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "A0"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "A0"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "A0"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "A0"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "A0"   ]], #[EXT]
+                 "SUBB"   => [[$AMOD_IMM8,              \&check_imm8,                   "C0"   ],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "D0"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "F0"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "E0"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "E0"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "E0"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "E0"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "E0"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "E0"   ]], #[EXT]
+                 "SUBD"   => [[$AMOD_IMM16,             \&check_imm16,                  "83"   ],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "93"   ],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "B3"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "A3"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "A3"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "A3"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "A3"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "A3"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "A3"   ]], #[EXT]
+                 "SUBX"   => [[$AMOD_IMM16,             \&check_imm16,                  "18 80"],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "18 90"],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "18 B0"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 A0"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 A0"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 A0"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 A0"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 A0"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 A0"]], #[EXT]
+                 "SUBY"   => [[$AMOD_IMM16,             \&check_imm16,                  "18 C0"],  #IMM
+                              [$AMOD_S12X_DIR,          \&check_s12x_dir,               "18 D0"],  #DIR
+                              [$AMOD_EXT,               \&check_ext,                    "18 F0"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 E0"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 E0"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 E0"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 E0"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 E0"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 E0"]], #[EXT]
+                 "SWI"    => [[$AMOD_INH,               \&check_inh,                    "3F"   ]], #INH
+                 "TAB"    => [[$AMOD_INH,               \&check_inh,                    "18 0E"]], #INH
+                 "TAP"    => [[$AMOD_INH,               \&check_inh,                    "B7 02"]], #INH
+                 "TBA"    => [[$AMOD_INH,               \&check_inh,                    "18 0F"]], #INH
+                 "TBEQ"   => [[$AMOD_TBEQ,              \&check_tbeq,                   "04"   ]], #REL
+                 "TBL"    => [[$AMOD_IDX,               \&check_idx,                    "18 3D"]], #IDX
+                 "TBNE"   => [[$AMOD_TBNE,              \&check_tbne,                   "04"   ]], #REL
+                 "TFR"    => [[$AMOD_S12X_TFR,          \&check_s12x_tfr,               "B7"   ]], #INH
+                 "TPA"    => [[$AMOD_INH,               \&check_inh,                    "B7 20"]], #INH
+                 "TRAP"   => [[$AMOD_S12X_TRAP,         \&check_s12x_trap,              "18"   ]], #INH
+                 "TST"    => [[$AMOD_EXT,               \&check_ext,                    "F7"   ],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "E7"   ],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "E7"   ],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "E7"   ],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "E7"   ],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "E7"   ],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "E7"   ]], #[EXT]
+                 "TSTA"   => [[$AMOD_INH,               \&check_inh,                    "97"   ]], #INH
+                 "TSTB"   => [[$AMOD_INH,               \&check_inh,                    "D7"   ]], #INH
+                 "TSTW"   => [[$AMOD_EXT,               \&check_ext,                    "18 F7"],  #EXT
+                              [$AMOD_IDX,               \&check_idx,                    "18 E7"],  #IDX
+                              [$AMOD_IDX1,              \&check_idx1,                   "18 E7"],  #IDX1
+                              [$AMOD_IDX2,              \&check_idx2,                   "18 E7"],  #IDX2
+                              [$AMOD_IDIDX,             \&check_ididx,                  "18 E7"],  #[D,IDX]
+                              [$AMOD_IIDX2,             \&check_iidx2,                  "18 E7"],  #[IDX2]
+                              [$AMOD_IEXT,              \&check_iext,                   "18 E7"]], #[EXT]
+                 "TSTX"   => [[$AMOD_INH,               \&check_inh,                    "18 97"]], #INH
+                 "TSTY"   => [[$AMOD_INH,               \&check_inh,                    "18 D7"]], #INH
+                 "TSX"    => [[$AMOD_INH,               \&check_inh,                    "B7 75"]], #INH
+                 "TSY"    => [[$AMOD_INH,               \&check_inh,                    "B7 76"]], #INH
+                 "TXS"    => [[$AMOD_INH,               \&check_inh,                    "B7 57"]], #INH
+                 "TYS"    => [[$AMOD_INH,               \&check_inh,                    "B7 67"]], #INH
+                 "WAI"    => [[$AMOD_INH,               \&check_inh,                    "3E"   ]], #INH
+                 "WAV"    => [[$AMOD_INH,               \&check_inh,                    "18 3C"]], #INH
+                 "WAVR"   => [[$AMOD_INH,               \&check_inh,                    "3C"   ]], #INH
+                 "XGDX"   => [[$AMOD_INH,               \&check_inh,                    "B7 C5"]], #INH
+                 "XGDY"   => [[$AMOD_INH,               \&check_inh,                    "B7 C6"]]};#INH
 
 #XGATE:           MNEMONIC      ADDRESS MODE                                            OPCODE
-*opctab_xgate = \{"ADC"    => [[$amod_xgate_tri,        \&check_xgate_tri,              "18 03"]],       #TRI
-                  "ADD"    => [[$amod_xgate_tri,        \&check_xgate_tri,              "18 02"],        #TRI
-                               [$amod_xgate_imm16,      \&check_xgate_imm16,            "E0 00 E8 00"]], #IMM16 pseudo opcode
-                  "ADDH"   => [[$amod_xgate_imm8,       \&check_xgate_imm8,             "E8 00"]],       #IMM8
-                  "ADDL"   => [[$amod_xgate_imm8,       \&check_xgate_imm8,             "E0 00"]],       #IMM8
-                  "AND"    => [[$amod_xgate_tri,        \&check_xgate_tri,              "10 00"],        #TRI
-                               [$amod_xgate_imm16,      \&check_xgate_imm16,            "80 00 88 00"]], #IMM16 pseudo opcode
-                  "ANDH"   => [[$amod_xgate_imm8,       \&check_xgate_imm8,             "88 00"]],       #IMM8
-                  "ANDL"   => [[$amod_xgate_imm8,       \&check_xgate_imm8,             "80 00"]],       #IMM8
-                  "ASR"    => [[$amod_xgate_imm4,       \&check_xgate_imm4,             "08 09"],        #IMM4
-                               [$amod_xgate_dya,        \&check_xgate_dya,              "08 11"]],       #DYA
-                  "BCC"    => [[$amod_xgate_rel9,       \&check_xgate_rel9,             "20 00"]],       #REL9
-                  "BCS"    => [[$amod_xgate_rel9,       \&check_xgate_rel9,             "22 00"]],       #REL9
-                  "BEQ"    => [[$amod_xgate_rel9,       \&check_xgate_rel9,             "26 00"]],       #REL9
-                  "BFEXT"  => [[$amod_xgate_tri,        \&check_xgate_tri,              "60 03"]],       #TRI
-                  "BFFO"   => [[$amod_xgate_dya,        \&check_xgate_dya,              "08 10"]],       #DYA
-                  "BFINS"  => [[$amod_xgate_tri,        \&check_xgate_tri,              "68 03"]],       #TRI
-                  "BFINSI" => [[$amod_xgate_tri,        \&check_xgate_tri,              "70 03"]],       #TRI
-                  "BFINSX" => [[$amod_xgate_tri,        \&check_xgate_tri,              "78 03"]],       #TRI
-                  "BGE"    => [[$amod_xgate_rel9,       \&check_xgate_rel9,             "34 00"]],       #REL9
-                  "BGT"    => [[$amod_xgate_rel9,       \&check_xgate_rel9,             "38 00"]],       #REL9
-                  "BHI"    => [[$amod_xgate_rel9,       \&check_xgate_rel9,             "30 00"]],       #REL9
-                  "BHS"    => [[$amod_xgate_rel9,       \&check_xgate_rel9,             "20 00"]],       #REL9 pseudo opcode
-                  "BITH"   => [[$amod_xgate_imm8,       \&check_xgate_imm8,             "98 00"]],       #IMM8
-                  "BITL"   => [[$amod_xgate_imm8,       \&check_xgate_imm8,             "90 00"]],       #IMM8
-                  "BLE"    => [[$amod_xgate_rel9,       \&check_xgate_rel9,             "3A 00"]],       #REL9
-                  "BLO"    => [[$amod_xgate_rel9,       \&check_xgate_rel9,             "22 00"]],       #REL9 pseudo opcode
-                  "BLS"    => [[$amod_xgate_rel9,       \&check_xgate_rel9,             "32 00"]],       #REL9
-                  "BLT"    => [[$amod_xgate_rel9,       \&check_xgate_rel9,             "36 00"]],       #REL9
-                  "BMI"    => [[$amod_xgate_rel9,       \&check_xgate_rel9,             "2A 00"]],       #REL9
-                  "BNE"    => [[$amod_xgate_rel9,       \&check_xgate_rel9,             "24 00"]],       #REL9
-                  "BPL"    => [[$amod_xgate_rel9,       \&check_xgate_rel9,             "28 00"]],       #REL9
-                  "BRA"    => [[$amod_xgate_rel10,      \&check_xgate_rel10,            "3C 00"]],       #REL10
-                  "BRK"    => [[$amod_inh,              \&check_inh,                    "00 00"]],       #INH
-                  "BVC"    => [[$amod_xgate_rel9,       \&check_xgate_rel9,             "2C 00"]],       #REL9
-                  "BVS"    => [[$amod_xgate_rel9,       \&check_xgate_rel9,             "2E 00"]],       #REL9
-                  "COM"    => [[$amod_xgate_mon,        \&check_xgate_com_mon,          "10 03"],        #TRI pseudo opcode
-                               [$amod_xgate_dya,        \&check_xgate_com_dya,          "10 03"]],       #TRI pseudo opcode
-                  "CMP"    => [[$amod_xgate_dya,        \&check_xgate_cmp_dya,          "18 00"],        #TRI pseudo opcode
-                               [$amod_xgate_imm16,      \&check_xgate_imm16,            "D0 00 D8 00"]], #IMM16 pseudo opcode
-                  "CMPL"   => [[$amod_xgate_imm8,       \&check_xgate_imm8,             "D0 00"]],       #IMM8
-                  "CPC"    => [[$amod_xgate_dya,        \&check_xgate_cmp_dya,          "18 01"]],       #TRI pseudo opcode
-                  "CPCH"   => [[$amod_xgate_imm8,       \&check_xgate_imm8,             "D8 00"]],       #IMM8
-                  "CSEM"   => [[$amod_xgate_mon,        \&check_xgate_mon,              "00 F1"],        #MON
-                               [$amod_xgate_imm3,       \&check_xgate_imm3,             "00 F0"]],       #IMM3
-                  "CSL"    => [[$amod_xgate_imm4,       \&check_xgate_imm4,             "08 0A"],        #IMM4
-                               [$amod_xgate_dya,        \&check_xgate_dya,              "08 12"]],       #DYA
-                  "CSR"    => [[$amod_xgate_imm4,       \&check_xgate_imm4,             "08 0B"],        #IMM4
-                               [$amod_xgate_dya,        \&check_xgate_dya,              "08 13"]],       #DYA
-                  "JAL"    => [[$amod_xgate_mon,        \&check_xgate_mon,              "00 F6"]],       #MON
-                  "LDB"    => [[$amod_xgate_ido5,       \&check_xgate_ido5,             "40 00"],        #IDO5
-                               [$amod_xgate_idr,        \&check_xgate_idr,              "60 00"],        #IDR
-                               [$amod_xgate_idri,       \&check_xgate_idri,             "60 01"],        #IDR+
-                               [$amod_xgate_idrd,       \&check_xgate_idrd,             "60 02"]],       #-IDR
-                  "LDH"    => [[$amod_xgate_imm8,       \&check_xgate_imm8,             "F8 00"]],       #IMM8
-                  "LDL"    => [[$amod_xgate_imm8,       \&check_xgate_imm8,             "F0 00"]],       #IMM8
-                  "LDW"    => [[$amod_xgate_ido5,       \&check_xgate_ido5,             "48 00"],        #IDO5
-                               [$amod_xgate_idr,        \&check_xgate_idr,              "68 00"],        #IDR
-                               [$amod_xgate_idri,       \&check_xgate_idri,             "68 01"],        #IDR+
-                               [$amod_xgate_idrd,       \&check_xgate_idrd,             "68 02"],        #-IDR
-                               [$amod_xgate_imm16,      \&check_xgate_imm16,            "F0 00 F8 00"]], #IMM16 pseudo opcode
-                  "LSL"    => [[$amod_xgate_imm4,       \&check_xgate_imm4,             "08 0C"],        #IMM4
-                               [$amod_xgate_dya,        \&check_xgate_dya,              "08 14"]],       #DYA
-                  "LSR"    => [[$amod_xgate_imm4,       \&check_xgate_imm4,             "08 0D"],        #IMM4
-                               [$amod_xgate_dya,        \&check_xgate_dya,              "08 15"]],       #DYA
-                  "MOV"    => [[$amod_xgate_dya,        \&check_xgate_com_dya,          "10 02"]],       #TRI pseudo opcode
-                  "NEG"    => [[$amod_xgate_mon,        \&check_xgate_com_mon,          "18 00"],        #TRI pseudo opcode
-                               [$amod_xgate_dya,        \&check_xgate_com_dya,          "18 00"]],       #TRI pseudo opcode
-                  "NOP"    => [[$amod_inh,              \&check_inh,                    "01 00"]],       #INH
-                  "OR"     => [[$amod_xgate_tri,        \&check_xgate_tri,              "10 02"],        #TRI
-                               [$amod_xgate_imm16,      \&check_xgate_imm16,            "A0 00 A8 00"]], #IMM16 pseudo opcode
-                  "ORH"    => [[$amod_xgate_imm8,       \&check_xgate_imm8,             "A8 00"]],       #IMM8
-                  "ORL"    => [[$amod_xgate_imm8,       \&check_xgate_imm8,             "A0 00"]],       #IMM8
-                  "PAR"    => [[$amod_xgate_mon,        \&check_xgate_mon,              "00 F5"]],       #MON
-                  "ROL"    => [[$amod_xgate_imm4,       \&check_xgate_imm4,             "08 0E"],        #IMM4
-                               [$amod_xgate_dya,        \&check_xgate_dya,              "08 16"]],       #DYA
-                  "ROR"    => [[$amod_xgate_imm4,       \&check_xgate_imm4,             "08 0F"],        #IMM4
-                               [$amod_xgate_dya,        \&check_xgate_dya,              "08 17"]],       #DYA
-                  "RTS"    => [[$amod_inh,              \&check_inh,                    "02 00"]],       #INH
-                  "SBC"    => [[$amod_xgate_tri,        \&check_xgate_tri,              "18 01"]],       #TRI
-                  "SEX"    => [[$amod_xgate_mon,        \&check_xgate_mon,              "00 F4"]],       #MON
-                  "SIF"    => [[$amod_inh,              \&check_inh,                    "03 00"],        #INH
-                               [$amod_xgate_mon,        \&check_xgate_mon,              "00 F7"]],       #MON
-                  "SSSEM"  => [[$amod_xgate_mon,        \&check_xgate_mon,              "00 f3"],        #MON
-                  	       [$amod_xgate_imm3,       \&check_xgate_imm3,             "00 F2"]],       #IMM3
-                  "SSEM"   => [[$amod_xgate_mon,        \&check_xgate_mon_twice,        "00 f3"],        #MON
-                               [$amod_xgate_imm3,       \&check_xgate_imm3_twice,       "00 F2"]],       #IMM3
-                  "STB"    => [[$amod_xgate_ido5,       \&check_xgate_ido5,             "50 00"],        #IDO5
-                               [$amod_xgate_idr,        \&check_xgate_idr,              "70 00"],        #IDR
-                               [$amod_xgate_idri,       \&check_xgate_idri,             "70 01"],        #IDR+
-                               [$amod_xgate_idrd,       \&check_xgate_idrd,             "70 02"]],       #-IDR
-                  "STW"    => [[$amod_xgate_ido5,       \&check_xgate_ido5,             "58 00"],        #IDO5
-                               [$amod_xgate_idr,        \&check_xgate_idr,              "78 00"],        #IDR
-                               [$amod_xgate_idri,       \&check_xgate_idri,             "78 01"],        #IDR+
-                               [$amod_xgate_idrd,       \&check_xgate_idrd,             "78 02"]],       #-IDR
-                  "SUB"    => [[$amod_xgate_tri,        \&check_xgate_tri,              "18 00"],        #TRI
-                               [$amod_xgate_imm16,      \&check_xgate_imm16,            "C0 00 C8 00"]], #IMM16 opcode
-                  "SUBH"   => [[$amod_xgate_imm8,       \&check_xgate_imm8,             "C8 00"]],       #IMM8
-                  "SUBL"   => [[$amod_xgate_imm8,       \&check_xgate_imm8,             "C0 00"]],       #IMM8
-                  "TST"    => [[$amod_xgate_mon,        \&check_xgate_tst_mon,          "18 00"]],       #TRI pseudo opcode
-                  "TFR"    => [[$amod_xgate_tfr_rd_ccr, \&check_xgate_tfr_rd_ccr,       "00 F8"],        #MON
-                               [$amod_xgate_tfr_ccr_rs, \&check_xgate_tfr_ccr_rs,       "00 F9"],        #MON
-                               [$amod_xgate_tfr_rd_pc,  \&check_xgate_tfr_rd_pc,        "00 FA"]],       #MON
-                  "XNOR"   => [[$amod_xgate_tri,        \&check_xgate_tri,              "10 03"],        #TRI
-                               [$amod_xgate_imm16,      \&check_xgate_imm16,            "B0 00 B8 00"]], #IMM16 opcode
-                  "XNORH"  => [[$amod_xgate_imm8,       \&check_xgate_imm8,             "B8 00"]],       #IMM8
-                  "XNORL"  => [[$amod_xgate_imm8,       \&check_xgate_imm8,             "B0 00"]]};      #IMM8
+Readonly our $OPCTAB_XGATE => {
+                  "ADC"    => [[$AMOD_XGATE_TRI,        \&check_xgate_tri,              "18 03"]],       #TRI
+                  "ADD"    => [[$AMOD_XGATE_TRI,        \&check_xgate_tri,              "18 02"],        #TRI
+                               [$AMOD_XGATE_IMM16,      \&check_xgate_imm16,            "E0 00 E8 00"]], #IMM16 pseudo opcode
+                  "ADDH"   => [[$AMOD_XGATE_IMM8,       \&check_xgate_imm8,             "E8 00"]],       #IMM8
+                  "ADDL"   => [[$AMOD_XGATE_IMM8,       \&check_xgate_imm8,             "E0 00"]],       #IMM8
+                  "AND"    => [[$AMOD_XGATE_TRI,        \&check_xgate_tri,              "10 00"],        #TRI
+                               [$AMOD_XGATE_IMM16,      \&check_xgate_imm16,            "80 00 88 00"]], #IMM16 pseudo opcode
+                  "ANDH"   => [[$AMOD_XGATE_IMM8,       \&check_xgate_imm8,             "88 00"]],       #IMM8
+                  "ANDL"   => [[$AMOD_XGATE_IMM8,       \&check_xgate_imm8,             "80 00"]],       #IMM8
+                  "ASR"    => [[$AMOD_XGATE_IMM4,       \&check_xgate_imm4,             "08 09"],        #IMM4
+                               [$AMOD_XGATE_DYA,        \&check_xgate_dya,              "08 11"]],       #DYA
+                  "BCC"    => [[$AMOD_XGATE_REL9,       \&check_xgate_rel9,             "20 00"]],       #REL9
+                  "BCS"    => [[$AMOD_XGATE_REL9,       \&check_xgate_rel9,             "22 00"]],       #REL9
+                  "BEQ"    => [[$AMOD_XGATE_REL9,       \&check_xgate_rel9,             "26 00"]],       #REL9
+                  "BFEXT"  => [[$AMOD_XGATE_TRI,        \&check_xgate_tri,              "60 03"]],       #TRI
+                  "BFFO"   => [[$AMOD_XGATE_DYA,        \&check_xgate_dya,              "08 10"]],       #DYA
+                  "BFINS"  => [[$AMOD_XGATE_TRI,        \&check_xgate_tri,              "68 03"]],       #TRI
+                  "BFINSI" => [[$AMOD_XGATE_TRI,        \&check_xgate_tri,              "70 03"]],       #TRI
+                  "BFINSX" => [[$AMOD_XGATE_TRI,        \&check_xgate_tri,              "78 03"]],       #TRI
+                  "BGE"    => [[$AMOD_XGATE_REL9,       \&check_xgate_rel9,             "34 00"]],       #REL9
+                  "BGT"    => [[$AMOD_XGATE_REL9,       \&check_xgate_rel9,             "38 00"]],       #REL9
+                  "BHI"    => [[$AMOD_XGATE_REL9,       \&check_xgate_rel9,             "30 00"]],       #REL9
+                  "BHS"    => [[$AMOD_XGATE_REL9,       \&check_xgate_rel9,             "20 00"]],       #REL9 pseudo opcode
+                  "BITH"   => [[$AMOD_XGATE_IMM8,       \&check_xgate_imm8,             "98 00"]],       #IMM8
+                  "BITL"   => [[$AMOD_XGATE_IMM8,       \&check_xgate_imm8,             "90 00"]],       #IMM8
+                  "BLE"    => [[$AMOD_XGATE_REL9,       \&check_xgate_rel9,             "3A 00"]],       #REL9
+                  "BLO"    => [[$AMOD_XGATE_REL9,       \&check_xgate_rel9,             "22 00"]],       #REL9 pseudo opcode
+                  "BLS"    => [[$AMOD_XGATE_REL9,       \&check_xgate_rel9,             "32 00"]],       #REL9
+                  "BLT"    => [[$AMOD_XGATE_REL9,       \&check_xgate_rel9,             "36 00"]],       #REL9
+                  "BMI"    => [[$AMOD_XGATE_REL9,       \&check_xgate_rel9,             "2A 00"]],       #REL9
+                  "BNE"    => [[$AMOD_XGATE_REL9,       \&check_xgate_rel9,             "24 00"]],       #REL9
+                  "BPL"    => [[$AMOD_XGATE_REL9,       \&check_xgate_rel9,             "28 00"]],       #REL9
+                  "BRA"    => [[$AMOD_XGATE_REL10,      \&check_xgate_rel10,            "3C 00"]],       #REL10
+                  "BRK"    => [[$AMOD_INH,              \&check_inh,                    "00 00"]],       #INH
+                  "BVC"    => [[$AMOD_XGATE_REL9,       \&check_xgate_rel9,             "2C 00"]],       #REL9
+                  "BVS"    => [[$AMOD_XGATE_REL9,       \&check_xgate_rel9,             "2E 00"]],       #REL9
+                  "COM"    => [[$AMOD_XGATE_MON,        \&check_xgate_com_mon,          "10 03"],        #TRI pseudo opcode
+                               [$AMOD_XGATE_DYA,        \&check_xgate_com_dya,          "10 03"]],       #TRI pseudo opcode
+                  "CMP"    => [[$AMOD_XGATE_DYA,        \&check_xgate_cmp_dya,          "18 00"],        #TRI pseudo opcode
+                               [$AMOD_XGATE_IMM16,      \&check_xgate_imm16,            "D0 00 D8 00"]], #IMM16 pseudo opcode
+                  "CMPL"   => [[$AMOD_XGATE_IMM8,       \&check_xgate_imm8,             "D0 00"]],       #IMM8
+                  "CPC"    => [[$AMOD_XGATE_DYA,        \&check_xgate_cmp_dya,          "18 01"]],       #TRI pseudo opcode
+                  "CPCH"   => [[$AMOD_XGATE_IMM8,       \&check_xgate_imm8,             "D8 00"]],       #IMM8
+                  "CSEM"   => [[$AMOD_XGATE_MON,        \&check_xgate_mon,              "00 F1"],        #MON
+                               [$AMOD_XGATE_IMM3,       \&check_xgate_imm3,             "00 F0"]],       #IMM3
+                  "CSL"    => [[$AMOD_XGATE_IMM4,       \&check_xgate_imm4,             "08 0A"],        #IMM4
+                               [$AMOD_XGATE_DYA,        \&check_xgate_dya,              "08 12"]],       #DYA
+                  "CSR"    => [[$AMOD_XGATE_IMM4,       \&check_xgate_imm4,             "08 0B"],        #IMM4
+                               [$AMOD_XGATE_DYA,        \&check_xgate_dya,              "08 13"]],       #DYA
+                  "JAL"    => [[$AMOD_XGATE_MON,        \&check_xgate_mon,              "00 F6"]],       #MON
+                  "LDB"    => [[$AMOD_XGATE_IDO5,       \&check_xgate_ido5,             "40 00"],        #IDO5
+                               [$AMOD_XGATE_IDR,        \&check_xgate_idr,              "60 00"],        #IDR
+                               [$AMOD_XGATE_IDRI,       \&check_xgate_idri,             "60 01"],        #IDR+
+                               [$AMOD_XGATE_IDRD,       \&check_xgate_idrd,             "60 02"]],       #-IDR
+                  "LDH"    => [[$AMOD_XGATE_IMM8,       \&check_xgate_imm8,             "F8 00"]],       #IMM8
+                  "LDL"    => [[$AMOD_XGATE_IMM8,       \&check_xgate_imm8,             "F0 00"]],       #IMM8
+                  "LDW"    => [[$AMOD_XGATE_IDO5,       \&check_xgate_ido5,             "48 00"],        #IDO5
+                               [$AMOD_XGATE_IDR,        \&check_xgate_idr,              "68 00"],        #IDR
+                               [$AMOD_XGATE_IDRI,       \&check_xgate_idri,             "68 01"],        #IDR+
+                               [$AMOD_XGATE_IDRD,       \&check_xgate_idrd,             "68 02"],        #-IDR
+                               [$AMOD_XGATE_IMM16,      \&check_xgate_imm16,            "F0 00 F8 00"]], #IMM16 pseudo opcode
+                  "LSL"    => [[$AMOD_XGATE_IMM4,       \&check_xgate_imm4,             "08 0C"],        #IMM4
+                               [$AMOD_XGATE_DYA,        \&check_xgate_dya,              "08 14"]],       #DYA
+                  "LSR"    => [[$AMOD_XGATE_IMM4,       \&check_xgate_imm4,             "08 0D"],        #IMM4
+                               [$AMOD_XGATE_DYA,        \&check_xgate_dya,              "08 15"]],       #DYA
+                  "MOV"    => [[$AMOD_XGATE_DYA,        \&check_xgate_com_dya,          "10 02"]],       #TRI pseudo opcode
+                  "NEG"    => [[$AMOD_XGATE_MON,        \&check_xgate_com_mon,          "18 00"],        #TRI pseudo opcode
+                               [$AMOD_XGATE_DYA,        \&check_xgate_com_dya,          "18 00"]],       #TRI pseudo opcode
+                  "NOP"    => [[$AMOD_INH,              \&check_inh,                    "01 00"]],       #INH
+                  "OR"     => [[$AMOD_XGATE_TRI,        \&check_xgate_tri,              "10 02"],        #TRI
+                               [$AMOD_XGATE_IMM16,      \&check_xgate_imm16,            "A0 00 A8 00"]], #IMM16 pseudo opcode
+                  "ORH"    => [[$AMOD_XGATE_IMM8,       \&check_xgate_imm8,             "A8 00"]],       #IMM8
+                  "ORL"    => [[$AMOD_XGATE_IMM8,       \&check_xgate_imm8,             "A0 00"]],       #IMM8
+                  "PAR"    => [[$AMOD_XGATE_MON,        \&check_xgate_mon,              "00 F5"]],       #MON
+                  "ROL"    => [[$AMOD_XGATE_IMM4,       \&check_xgate_imm4,             "08 0E"],        #IMM4
+                               [$AMOD_XGATE_DYA,        \&check_xgate_dya,              "08 16"]],       #DYA
+                  "ROR"    => [[$AMOD_XGATE_IMM4,       \&check_xgate_imm4,             "08 0F"],        #IMM4
+                               [$AMOD_XGATE_DYA,        \&check_xgate_dya,              "08 17"]],       #DYA
+                  "RTS"    => [[$AMOD_INH,              \&check_inh,                    "02 00"]],       #INH
+                  "SBC"    => [[$AMOD_XGATE_TRI,        \&check_xgate_tri,              "18 01"]],       #TRI
+                  "SEX"    => [[$AMOD_XGATE_MON,        \&check_xgate_mon,              "00 F4"]],       #MON
+                  "SIF"    => [[$AMOD_INH,              \&check_inh,                    "03 00"],        #INH
+                               [$AMOD_XGATE_MON,        \&check_xgate_mon,              "00 F7"]],       #MON
+                  "SSSEM"  => [[$AMOD_XGATE_MON,        \&check_xgate_mon,              "00 f3"],        #MON
+                  	       [$AMOD_XGATE_IMM3,       \&check_xgate_imm3,             "00 F2"]],       #IMM3
+                  "SSEM"   => [[$AMOD_XGATE_MON,        \&check_xgate_mon_twice,        "00 f3"],        #MON
+                               [$AMOD_XGATE_IMM3,       \&check_xgate_imm3_twice,       "00 F2"]],       #IMM3
+                  "STB"    => [[$AMOD_XGATE_IDO5,       \&check_xgate_ido5,             "50 00"],        #IDO5
+                               [$AMOD_XGATE_IDR,        \&check_xgate_idr,              "70 00"],        #IDR
+                               [$AMOD_XGATE_IDRI,       \&check_xgate_idri,             "70 01"],        #IDR+
+                               [$AMOD_XGATE_IDRD,       \&check_xgate_idrd,             "70 02"]],       #-IDR
+                  "STW"    => [[$AMOD_XGATE_IDO5,       \&check_xgate_ido5,             "58 00"],        #IDO5
+                               [$AMOD_XGATE_IDR,        \&check_xgate_idr,              "78 00"],        #IDR
+                               [$AMOD_XGATE_IDRI,       \&check_xgate_idri,             "78 01"],        #IDR+
+                               [$AMOD_XGATE_IDRD,       \&check_xgate_idrd,             "78 02"]],       #-IDR
+                  "SUB"    => [[$AMOD_XGATE_TRI,        \&check_xgate_tri,              "18 00"],        #TRI
+                               [$AMOD_XGATE_IMM16,      \&check_xgate_imm16,            "C0 00 C8 00"]], #IMM16 opcode
+                  "SUBH"   => [[$AMOD_XGATE_IMM8,       \&check_xgate_imm8,             "C8 00"]],       #IMM8
+                  "SUBL"   => [[$AMOD_XGATE_IMM8,       \&check_xgate_imm8,             "C0 00"]],       #IMM8
+                  "TST"    => [[$AMOD_XGATE_MON,        \&check_xgate_tst_mon,          "18 00"]],       #TRI pseudo opcode
+                  "TFR"    => [[$AMOD_XGATE_TFR_RD_CCR, \&check_xgate_tfr_rd_ccr,       "00 F8"],        #MON
+                               [$AMOD_XGATE_TFR_CCR_RS, \&check_xgate_tfr_ccr_rs,       "00 F9"],        #MON
+                               [$AMOD_XGATE_TFR_RD_PC,  \&check_xgate_tfr_rd_pc,        "00 FA"]],       #MON
+                  "XNOR"   => [[$AMOD_XGATE_TRI,        \&check_xgate_tri,              "10 03"],        #TRI
+                               [$AMOD_XGATE_IMM16,      \&check_xgate_imm16,            "B0 00 B8 00"]], #IMM16 opcode
+                  "XNORH"  => [[$AMOD_XGATE_IMM8,       \&check_xgate_imm8,             "B8 00"]],       #IMM8
+                  "XNORL"  => [[$AMOD_XGATE_IMM8,       \&check_xgate_imm8,             "B0 00"]]};      #IMM8
 
 ##################
 # pseudo opcodes #
 ##################
 #                   MNEMONIC       SUBROUTINE
-*pseudo_opcodes = \{"ALIGN"    => \&psop_align,
+Readonly our $PSEUDO_OPCODES => {
+                    "ALIGN"    => \&psop_align,
                     "BSZ"      => \&psop_zmb,
                     "CPU"      => \&psop_cpu,
                     "DB"       => \&psop_db,
@@ -3135,7 +3142,7 @@ sub new {
     $self->{lin_addrspace}    = {};
     $self->{pag_addrspace}    = {};
     $self->{compile_count}    = 0;
-    $self->{opcode_table}     = $opctab_s12;
+    $self->{opcode_table}     = $OPCTAB_S12;
     $self->{dir_page}         = 0;
 
     #instantiate object
@@ -3143,7 +3150,7 @@ sub new {
     #printf STDERR "libs: %s\n", join(", ", @$library_list);
     
     #compile code
-    $self->compile($file_list, [@$library_list, sprintf(".%s", $path_del)], $symbols);
+    $self->compile($file_list, [@$library_list, sprintf(".%s", $PATH_DEL)], $symbols);
 
     return $self;
 }
@@ -3199,7 +3206,7 @@ sub compile {
     my $keep_compiling;
     my $result_ok;
     #compiler runs
-    #my $max_comp_runs = 200;
+    #my $MAX_COMP_RUNS = 200;
 
     ##############
     # precompile #
@@ -3264,13 +3271,13 @@ sub compile {
                 } else {
                     $self->{problems} = sprintf("%d compiler errors!", $error_count);
                 }
-            } elsif ($self->{compile_count} >= $max_comp_runs) {
+            } elsif ($self->{compile_count} >= $MAX_COMP_RUNS) {
                 ##########################
                 # too many compiler runs #
                 ##########################
                 $keep_compiling = 0;
                 $result_ok      = 0;
-                $self->{problems} = sprintf("%d assembler runs and no success!", $max_comp_runs);
+                $self->{problems} = sprintf("%d assembler runs and no success!", $MAX_COMP_RUNS);
             #} elsif (($new_undef_count > 0) &&
             #          ($new_undef_count >= $old_undef_count)) {
             #    ######################
@@ -3355,7 +3362,7 @@ sub precompile {
         ############################
         #printf "file_name: %s\n", $file_name;
         $error = 0;
-        if ($file_name =~ /$path_absolute/) {
+        if ($file_name =~ /$PATH_ABSOLUTE/) {
 	   #printf "absolute path: %s\n", $file_name;
            #absolute path
             $file = $file_name;
@@ -3462,7 +3469,7 @@ sub precompile {
                 ################
                 # comment line #
                 ################
-                /$precomp_comment_line/ && do {
+                /$PRECOMP_COMMENT_LINE/ && do {
                     #print " => is comment\n";
                     #check ifdef stack
                     if ($ifdef_stack->[$#$ifdef_stack]->[0]){
@@ -3473,9 +3480,9 @@ sub precompile {
                 ##########
                 # opcode #
                 ##########
-                /$precomp_opcode/ && do {
+                /$PRECOMP_OPCODE/ && do {
                     #print " => is opcode\n";
-                    #line =~  $precomp_opcode
+                    #line =~  $PRECOMP_OPCODE
                     $label     = $1;
                     $opcode    = $2;
                     $arguments = $3;
@@ -3544,7 +3551,7 @@ sub precompile {
                 ##############
                 # blanc line #
                 ##############
-                /$precomp_blanc_line/ && do {
+                /$PRECOMP_BLANC_LINE/ && do {
                     #print " => is blanc line\n";
                     #check ifdef stack
                     if ($ifdef_stack->[$#$ifdef_stack]->[0]){
@@ -3557,9 +3564,9 @@ sub precompile {
                 #########################
                 # precompiler directive #
                 #########################
-                /$precomp_directive/ && do {
+                /$PRECOMP_DIRECTIVE/ && do {
                     #print " => is precompiler directive\n";
-                    #line =~  $precomp_directive
+                    #line =~  $PRECOMP_DIRECTIVE
                     my $directive  = $1;
                     my $arg1       = $2;
                     my $arg2       = $3;
@@ -3569,7 +3576,7 @@ sub precompile {
                         ##########
                         # define #
                         ##########
-                        /$precomp_define/ && do {
+                        /$PRECOMP_DEFINE/ && do {
                             #print "   => define\n";
                             #print "       $arg1 $arg2\n";
                             #check ifdef stack
@@ -3581,7 +3588,7 @@ sub precompile {
                         #########
                         # undef #
                         #########
-                        /$precomp_undef/ && do {
+                        /$PRECOMP_UNDEF/ && do {
                             #print "   => undef\n";
                             #check ifdef stack
                             if ($ifdef_stack->[$#$ifdef_stack]->[0]){
@@ -3593,7 +3600,7 @@ sub precompile {
                         #########
                         # ifdef #
                         #########
-                        /$precomp_ifdef/ && do {
+                        /$PRECOMP_IFDEF/ && do {
                             #print "   => ifdef\n";
                             #printf "   => %s\n", join(", ", keys %{$self->{precomp_defs}});
                             #check ifdef stack
@@ -3610,7 +3617,7 @@ sub precompile {
                         ##########
                         # ifndef #
                         ##########
-                        /$precomp_ifndef/ && do {
+                        /$PRECOMP_IFNDEF/ && do {
                             #print "   => ifndef\n";
                             #printf "   => %s\n", join(", ", keys %{$self->{precomp_defs}});
                             #check ifdef stack
@@ -3627,7 +3634,7 @@ sub precompile {
                         #########
                         # ifmac #
                         #########
-                        /$precomp_ifmac/ && do {
+                        /$PRECOMP_IFMAC/ && do {
                             #print "   => ifmac\n";
                             #printf "   => %s\n", join(", ", keys %{$self->{macros}});
                             #check ifdef stack
@@ -3644,7 +3651,7 @@ sub precompile {
                         ##########
                         # ifnmac #
                         ##########
-                        /$precomp_ifnmac/ && do {
+                        /$PRECOMP_IFNMAC/ && do {
                             #print "   => ifnmac\n";
                             #printf "   => %s\n", join(", ", keys %{$self->{macros}});
                             #check ifdef stack
@@ -3661,7 +3668,7 @@ sub precompile {
                         #########
                         # ifcpu #
                         #########
-                        /$precomp_ifcpu/ && do {
+                        /$PRECOMP_IFCPU/ && do {
                             #print "   => ifcpu\n";
                             #check ifdef stack
                             if ($ifdef_stack->[$#$ifdef_stack]->[0]){
@@ -3677,7 +3684,7 @@ sub precompile {
                         ##########
                         # ifncpu #
                         ##########
-                        /$precomp_ifncpu/ && do {
+                        /$PRECOMP_IFNCPU/ && do {
                             #print "   => ifncpu\n";
                             #printf "   => %s\n", join(", ", keys %{$self->{macros}});
                             if ($ifdef_stack->[$#$ifdef_stack]->[0]){
@@ -3693,7 +3700,7 @@ sub precompile {
                         ########
                         # else #
                         ########
-                        /$precomp_else/ && do {
+                        /$PRECOMP_ELSE/ && do {
                             #print "   => else\n";
                             #check ifdef stack
                                 if ($ifdef_stack->[$#$ifdef_stack]->[1]){
@@ -3730,7 +3737,7 @@ sub precompile {
                         #########
                         # endif #
                         #########
-                        /$precomp_endif/ && do {
+                        /$PRECOMP_ENDIF/ && do {
                             #print "   => endif\n";
                             #check ifdef stack
                             if ($#$ifdef_stack <= 0){
@@ -3762,13 +3769,13 @@ sub precompile {
                         ###########
                         # include #
                         ###########
-                        /$precomp_include/ && do {
+                        /$PRECOMP_INCLUDE/ && do {
                             #print "   => include $arg1\n";
                             #check ifdef stack
                             if ($ifdef_stack->[$#$ifdef_stack]->[0]) {
                                 #precompile include file
                                 #printf STDERR "INCLUDE: %s\n", join(":", (@$library_list, dirname($file_list->[0])));
-                                $value = $self->precompile([$arg1], [@$library_list, sprintf("%s%s", dirname($file_list->[0]), $path_del)], $ifdef_stack, $macro);
+                                $value = $self->precompile([$arg1], [@$library_list, sprintf("%s%s", dirname($file_list->[0]), $PATH_DEL)], $ifdef_stack, $macro);
                                 if ($value) {
                                     $file_handle->close();
                                     return ($value + $error_count);
@@ -3778,7 +3785,7 @@ sub precompile {
                         #########
                         # macro #
                         #########
-                        /$precomp_macro/ && do {
+                        /$PRECOMP_MACRO/ && do {
 			    #print "   => macro\n";
                             #print "       $arg1 $arg2\n";
                             #check ifdef stack
@@ -3868,7 +3875,7 @@ sub precompile {
                         ########
                         # emac #
                         ########
-                        /$precomp_emac/ && do {
+                        /$PRECOMP_EMAC/ && do {
 			    #print "   => emac\n";
                             #check ifdef stack
                             if ($ifdef_stack->[$#$ifdef_stack]->[0]){
@@ -4050,6 +4057,7 @@ sub compile_run {
 
     #code
     my $code_entry;
+    my $code_entry_cnt;
     my $code_label;
     my $code_opcode;
     my $code_args;
@@ -4254,7 +4262,7 @@ sub compile_run {
                                     }
                                     #increment paged PC
                                     $pc_pag = $pc_pag + $code_entry->[9];
-                                    if ($result =~ $cmp_no_hexcode) {
+                                    if ($result =~ $CMP_NO_HEXCODE) {
                                         $undef_count++;
                                         #print "$opcode_hexargs\n";
                                     }
@@ -4281,12 +4289,12 @@ sub compile_run {
                 $code_entry->[10] = [@{$code_entry->[10]}, $error];
                 $error_count++;
             }
-        } elsif (exists $pseudo_opcodes->{uc($code_opcode)}) {
+        } elsif (exists $PSEUDO_OPCODES->{uc($code_opcode)}) {
             #######################
             # valid pseudo opcode #
             #######################
             #print "valid pseudo opcode: $code_opcode ($code_entry->[0])\n";
-            $pseudo_opcodes->{uc($code_opcode)}($self,
+            $PSEUDO_OPCODES->{uc($code_opcode)}($self,
                                                 \$pc_lin,
                                                 \$pc_pag,
                                                 \$loc_cnt,
@@ -4314,7 +4322,7 @@ sub compile_run {
 
 	    if ($result <= 0) {
 		#check macro_args
-		#@macro_args = split($del, $code_args);
+		#@macro_args = split($DEL, $code_args);
 	        @macro_args = ();
 		while ($code_args =~ /^[,\s]*(\([^\(\)]*?\)|\".*?\"|\'.*?\'|[^\s,]+)/) {
 		    #printf "macros args: \"%s\" (%d,%d) => %s\n", $code_args, $#macro_args, $self->{macro_argcs}->{$macro_name}, join(", ", @macro_args);
@@ -4535,7 +4543,7 @@ sub compile_run {
 				    ######################
 				    # label redefinition #
 				    ######################
-				    if ($self->{compile_count} >= ($max_comp_runs-5)) {
+				    if ($self->{compile_count} >= ($MAX_COMP_RUNS-5)) {
 				            printf STDOUT "Hint! Symbol redefinition: %s %X->%X (%s %s)\n", ($code_label,
 													     $self->{comp_symbols}->{$code_label},
 													     $label_value,
@@ -4549,7 +4557,7 @@ sub compile_run {
 				######################
 				# label redefinition #
 				######################
-				if ($self->{compile_count} >= ($max_comp_runs-5)) {
+				if ($self->{compile_count} >= ($MAX_COMP_RUNS-5)) {
 				    printf STDOUT "Hint! Symbol redefinition: %s %X->undef (%s %s)\n", ($code_label,
 													$self->{comp_symbols}->{$code_label},
 													${$code_entry->[1]},
@@ -4583,7 +4591,7 @@ sub compile_run {
 				    ######################
 				    # label redefinition #
 				    ######################
-				    if ($self->{compile_count} >= ($max_comp_runs-5)) {
+				    if ($self->{compile_count} >= ($MAX_COMP_RUNS-5)) {
 				            printf STDOUT "Hint! Symbol redefinition within a macro: %s %X->%X (%s %s)\n", ($code_label,
 															    $code_sym_tabs->[0]->{$code_label},
 															    $label_value,
@@ -4597,7 +4605,7 @@ sub compile_run {
 				######################
 				# label redefinition #
 				######################
-				if ($self->{compile_count} >= ($max_comp_runs-5)) {
+				if ($self->{compile_count} >= ($MAX_COMP_RUNS-5)) {
 				    printf STDOUT "Hint! Symbol redefinition within a macro: %s %X->undef (%s %s)\n", ($code_label,
 														       $code_sym_tabs->[0]->{$code_label},
 														       ${$code_entry->[1]},
@@ -4637,31 +4645,31 @@ sub set_opcode_table {
         ########
         # HC11 #
         ########
-        /$cpu_hc11/ && do {
-            $self->{opcode_table} = $opctab_hc11;
+        /$CPU_HC11/ && do {
+            $self->{opcode_table} = $OPCTAB_HC11;
             return 0; last;};
         ############
         # HC12/S12 #
         ############
-        /$cpu_s12/ && do {
-            $self->{opcode_table} = $opctab_s12;
+        /$CPU_S12/ && do {
+            $self->{opcode_table} = $OPCTAB_S12;
             return 0; last;};
         ########
         # S12X #
         ########
-        /$cpu_s12x/ && do {
-             $self->{opcode_table} = $opctab_s12x;
+        /$CPU_S12X/ && do {
+             $self->{opcode_table} = $OPCTAB_S12X;
             return 0; last;};
         #########
         # XGATE #
         #########
-        /$cpu_xgate/ && do {
-            $self->{opcode_table} = $opctab_xgate;
+        /$CPU_XGATE/ && do {
+            $self->{opcode_table} = $OPCTAB_XGATE;
             return 0; last;};
         ###############
         # DEFAULT CPU #
         ###############
-        $self->{opcode_table} = $opctab_s12;
+        $self->{opcode_table} = $OPCTAB_S12;
         return sprintf "invalid CPU \"%s\". Using S12 opcode map instead.", $cpu;
     }
 }
@@ -4710,7 +4718,7 @@ sub evaluate_expression {
             #################
             # binary number #
             #################
-            /$op_binery/ && do {
+            /$OP_BINERY/ && do {
                 $complement = $1;
                 $string     = $2;
                 #printf "terminal bin: \"%s\" \"%s\"\n", $complement, $string;
@@ -4743,7 +4751,7 @@ sub evaluate_expression {
             ##################
             # decimal number #
             ##################
-            /$op_dec/ && do {
+            /$OP_DEC/ && do {
                 $complement = $1;
                 $string     = $2;
                 $string =~ s/_//g;
@@ -4768,7 +4776,7 @@ sub evaluate_expression {
             ######################
             # hexadecimal number #
             ######################
-            /$op_hex/ && do {
+            /$OP_HEX/ && do {
                 $complement = $1;
                 $string     = $2;
                 $string =~ s/_//g;
@@ -4793,7 +4801,7 @@ sub evaluate_expression {
             ###################
             # ASCII character #
             ###################
-            /$op_ascii/ && do {
+            /$OP_ASCII/ && do {
                 $complement = $1;
                 $string     = $2;
                 #printf "terminal ascii: \"%s\" \"%s\"\n", $complement, $string;
@@ -4828,7 +4836,7 @@ sub evaluate_expression {
             ####################
             # current linear PC #
             ####################
-            /$op_curr_lin_pc/ && do {
+            /$OP_CURR_LIN_PC/ && do {
                 $complement = $1;
                 #printf "terminal addr: \"%s\" \"%s\"\n", $complement, $comp_pc_paged;
                 for ($complement) {
@@ -4851,7 +4859,7 @@ sub evaluate_expression {
             ####################
             # current paged PC #
             ####################
-            /$op_curr_pag_pc/ && do {
+            /$OP_CURR_PAG_PC/ && do {
                 $complement = $1;
                 #printf "terminal addr: \"%s\" \"%s\"\n", $complement, $comp_pc_paged;
                 for ($complement) {
@@ -4874,7 +4882,7 @@ sub evaluate_expression {
             ###################
             # compiler symbol #
             ###################
-            /$op_symbol/ && do {
+            /$OP_SYMBOL/ && do {
                 $complement = $1;
                 $string     = uc($2);
                 ########################
@@ -4886,7 +4894,7 @@ sub evaluate_expression {
                     $string = sprintf("%s%.4d", $1, $loc_cnt);
                 }
                 #printf "terminal symb: \"%s\" \"%s\"\n", $complement, $string;
-                if ($string !~ $op_keywords) {
+                if ($string !~ $OP_KEYWORDS) {
 		    if (defined $sym_tabs) {
 			@symbol_tabs = (@$sym_tabs, $self->{comp_symbols});
 			#printf "symbol_tabs: %d\n", ($#symbol_tabs+1);
@@ -4938,7 +4946,7 @@ sub evaluate_expression {
             ###############
             # parenthesis #
             ###############
-            /$op_formula_pars/ && do {
+            /$OP_FORMULA_PARS/ && do {
                 $formula_left   = $1;
                 $formula_middle = $2;
                 $formula_right  = $3;
@@ -4958,7 +4966,7 @@ sub evaluate_expression {
             #############################
             # double negation/invertion #
             #############################
-            /$op_formula_complement/ && do {
+            /$OP_FORMULA_COMPLEMENT/ && do {
                 $complement     = $1;
                 $formula_right  = $2;
                 ($formula_error, $formula_resolved_right) = @{$self->evaluate_expression($formula_right, $pc_lin, $pc_pag, $loc_cnt, $sym_tabs)};
@@ -4984,7 +4992,7 @@ sub evaluate_expression {
             #######
             # and #
             #######
-            /$op_formula_and/ && do {
+            /$OP_FORMULA_AND/ && do {
                 $formula_left   = $1;
                 $formula_right  = $2;
                 #printf "resolve ANDs: \"%s\" \"%s\"\n", $formula_left, $formula_right;
@@ -5010,7 +5018,7 @@ sub evaluate_expression {
             ######
             # or #
             ######
-            /$op_formula_or/ && do {
+            /$OP_FORMULA_OR/ && do {
                 $formula_left   = $1;
                 $formula_right  = $2;
                 #printf "resolve ORs: \"%s\" \"%s\"\n", $formula_left, $formula_right;
@@ -5036,7 +5044,7 @@ sub evaluate_expression {
             ########
             # exor #
             ########
-            /$op_formula_exor/ && do {
+            /$OP_FORMULA_EXOR/ && do {
                 $formula_left   = $1;
                 $formula_right  = $2;
                 #printf "resolve EXORs: \"%s\" \"%s\"\n", $formula_left, $formula_right;
@@ -5062,7 +5070,7 @@ sub evaluate_expression {
             ##############
             # rightshift #
             ##############
-            /$op_formula_rightshift/ && do {
+            /$OP_FORMULA_RIGHTSHIFT/ && do {
                 $formula_left   = $1;
                 $formula_right  = $2;
                 #printf "resolve RIGHTSHIFTSs: \"%s\" \"%s\"\n", $formula_left, $formula_right;
@@ -5088,7 +5096,7 @@ sub evaluate_expression {
             #############
             # leftshift #
             #############
-            /$op_formula_leftshift/ && do {
+            /$OP_FORMULA_LEFTSHIFT/ && do {
                 $formula_left   = $1;
                 $formula_right  = $2;
                 #printf "resolve LEFTSHIFTs: \"%s\" \"%s\"\n", $formula_left, $formula_right;
@@ -5114,7 +5122,7 @@ sub evaluate_expression {
             ##################
             # multiplication #
             ##################
-            /$op_formula_mul/ && do {
+            /$OP_FORMULA_MUL/ && do {
                 $formula_left   = $1;
                 $formula_right  = $2;
                 #printf "resolve MULs: \"%s\" \"%s\"\n", $formula_left, $formula_right;
@@ -5140,7 +5148,7 @@ sub evaluate_expression {
             ############
             # division #
             ############
-            /$op_formula_div/ && do {
+            /$OP_FORMULA_DIV/ && do {
                 $formula_left   = $1;
                 $formula_right  = $2;
                 #printf "resolve DIVs: \"%s\" \"%s\"\n", $formula_left, $formula_right;
@@ -5166,7 +5174,7 @@ sub evaluate_expression {
             ###########
             # modulus #
             ###########
-            /$op_formula_mod/ && do {
+            /$OP_FORMULA_MOD/ && do {
                 $formula_left   = $1;
                 $formula_right  = $2;
                 #printf "resolve MODs: \"%s\" \"%s\"\n", $formula_left, $formula_right;
@@ -5192,7 +5200,7 @@ sub evaluate_expression {
             ########
             # plus #
             ########
-            /$op_formula_plus/ && do {
+            /$OP_FORMULA_PLUS/ && do {
                 $formula_left   = $1;
                 $formula_right  = $2;
                 #printf "resolve PLUSes: \"%s\" \"%s\"\n", $formula_left, $formula_right;
@@ -5218,7 +5226,7 @@ sub evaluate_expression {
             #########
             # minus #
             #########
-            /$op_formula_minus/ && do {
+            /$OP_FORMULA_MINUS/ && do {
                 $formula_left   = $1;
                 $formula_right  = $2;
                 #printf "resolve MINUSes: \"%s\" \"%s\"\n", $formula_left, $formula_right;
@@ -5244,7 +5252,7 @@ sub evaluate_expression {
             ##############
             # whitespace #
             ##############
-            /$op_whitespace/ && do {
+            /$OP_WHITESPACE/ && do {
                 return [0, undef];
                 last;};
             ##################
@@ -5269,6 +5277,7 @@ sub determine_addrspaces {
     my $code_pc_lin;
     my $code_pc_pag;
     my $code_hex;
+    my $code_entry;
     #data
     my $address;
     my $byte;
@@ -5294,7 +5303,7 @@ sub determine_addrspaces {
         ########################
         if (defined $code_pc_lin) {
             $address = $code_pc_lin;
-            if (($code_hex !~ /$cmp_no_hexcode/) &&
+            if (($code_hex !~ /$CMP_NO_HEXCODE/) &&
                 ($code_hex !~ /^\s*$/)) {
 		$first_byte = 1;
                 foreach $byte (split /\s+/, $code_hex) {
@@ -5312,7 +5321,7 @@ sub determine_addrspaces {
         #######################
         if (defined $code_pc_pag) {
             $address = $code_pc_pag;
-            if (($code_hex !~ /$cmp_no_hexcode/) &&
+            if (($code_hex !~ /$CMP_NO_HEXCODE/) &&
                 ($code_hex !~ /^\s*$/)) {
 		$first_byte = 1;
                 foreach $byte (split /\s+/, $code_hex) {
@@ -5403,7 +5412,7 @@ sub print_listing {
                 #############################
                 # string instead of hexcode #
                 #############################
-                /$cmp_no_hexcode/ && do {
+                /$CMP_NO_HEXCODE/ && do {
                     @code_hex_strings = ($1);
                     last;};
                 ###########
@@ -5552,7 +5561,7 @@ sub print_lin_srec {
 		#add fill bytes
 		while (($srec_addr % $srec_alignment) > 0) {
 		    $srec_addr--;
-		    push @srec_bytes, $srec_def_fill_byte;
+		    push @srec_bytes, $SREC_DEF_FILL_BYTE;
 		}
 	    }
 	    push @srec_bytes, $mem_byte;
@@ -5571,7 +5580,7 @@ sub print_lin_srec {
             # add disjoined data byte to group of S-records #
             #################################################
 	    while ($mem_addr > ($srec_addr + $#srec_bytes + 1)) {
-		push @srec_bytes, $srec_def_fill_byte;
+		push @srec_bytes, $SREC_DEF_FILL_BYTE;
 	    }
 	    push @srec_bytes, $mem_byte;
         } else {
@@ -5584,7 +5593,7 @@ sub print_lin_srec {
                 # add fill byte at the end of the S-Record #
                 ############################################
                 #printf STDERR "  => add ending fill bytes (%X)\n", ($#srec_bytes + 1);
-                push @srec_bytes, $srec_def_fill_byte;
+                push @srec_bytes, $SREC_DEF_FILL_BYTE;
 	    }
             while ($#srec_bytes >= 0) {
                 if (($#srec_bytes + 1) <= $srec_data_length) {
@@ -5614,7 +5623,7 @@ sub print_lin_srec {
 		#add fill bytes
 		while (($srec_addr % $srec_alignment) > 0) {
 		    $srec_addr--;
-		    push @srec_bytes, $srec_def_fill_byte;
+		    push @srec_bytes, $SREC_DEF_FILL_BYTE;
 		}
 	    }
 	    push @srec_bytes, $mem_byte;
@@ -5629,7 +5638,7 @@ sub print_lin_srec {
 	# add fill byte at the end of the S-Record #
 	############################################
 	#printf STDERR "  => add ending fill bytes (%X)\n", ($#srec_bytes + 1);
-	push @srec_bytes, $srec_def_fill_byte;
+	push @srec_bytes, $SREC_DEF_FILL_BYTE;
     }
     while ($#srec_bytes >= 0) {
         if (($#srec_bytes + 1) <= $srec_data_length) {
@@ -5717,7 +5726,7 @@ sub print_pag_srec {
 		#add fill bytes
 		while (($srec_addr % $srec_alignment) > 0) {
 		    $srec_addr--;
-		    push @srec_bytes, $srec_def_fill_byte;
+		    push @srec_bytes, $SREC_DEF_FILL_BYTE;
 		}
 	    }
 	    push @srec_bytes, $mem_byte;
@@ -5736,7 +5745,7 @@ sub print_pag_srec {
             # add disjoined data byte to group of S-records #
             #################################################
 	    while ($mem_addr > ($srec_addr + $#srec_bytes + 1)) {
-		push @srec_bytes, $srec_def_fill_byte;
+		push @srec_bytes, $SREC_DEF_FILL_BYTE;
 	    }
 	    push @srec_bytes, $mem_byte;
         } else {
@@ -5749,7 +5758,7 @@ sub print_pag_srec {
                 # add fill byte at the end of the S-Record #
                 ############################################
                 #printf STDERR "  => add ending fill bytes (%X)\n", ($#srec_bytes + 1);
-                push @srec_bytes, $srec_def_fill_byte;
+                push @srec_bytes, $SREC_DEF_FILL_BYTE;
 	    }
             while ($#srec_bytes >= 0) {
                 if (($#srec_bytes + 1) <= $srec_data_length) {
@@ -5779,7 +5788,7 @@ sub print_pag_srec {
 		#add fill bytes
 		while (($srec_addr % $srec_alignment) > 0) {
 		    $srec_addr--;
-		    push @srec_bytes, $srec_def_fill_byte;
+		    push @srec_bytes, $SREC_DEF_FILL_BYTE;
 		}
 	    }
 	    push @srec_bytes, $mem_byte;
@@ -5794,7 +5803,7 @@ sub print_pag_srec {
 	# add fill byte at the end of the S-Record #
 	############################################
 	#printf STDERR "  => add ending fill bytes (%X)\n", ($#srec_bytes + 1);
-	push @srec_bytes, $srec_def_fill_byte;
+	push @srec_bytes, $SREC_DEF_FILL_BYTE;
     }
     while ($#srec_bytes >= 0) {
         if (($#srec_bytes + 1) <= $srec_data_length) {
@@ -6438,7 +6447,7 @@ sub psop_align {
         ############
         # bit mask #
         ############
-        /$psop_1_arg/ && do {
+        /$PSOP_1_ARG/ && do {
             $bit_mask        = $1;
             #printf STDERR "ALLIGN: \"%X\"\n", $bit_mask;
 
@@ -6499,7 +6508,7 @@ sub psop_align {
         #######################
         # bit mask, fill byte #
         #######################
-        /$psop_2_args/ && do {
+        /$PSOP_2_ARGS/ && do {
             $bit_mask  = $1;
             $fill_byte = $2;
             ######################
@@ -6600,6 +6609,7 @@ sub psop_cpu {
     my $code_entry      = shift @_;
 
     #arguments
+    my $code_label;
     my $code_args;
     #temporary
     my $error;
@@ -6614,7 +6624,7 @@ sub psop_cpu {
     ##################
     # check argument #
     ##################
-    if ($code_args =~ /$psop_1_arg/) {
+    if ($code_args =~ /$PSOP_1_ARG/) {
         ################
         # one argument #
         ################
@@ -6676,7 +6686,7 @@ sub psop_db {
     #####################
     @code_args_res     = ();
     $code_args_defined = 1;
-    foreach $code_arg (split $del, $code_args) {
+    foreach $code_arg (split $DEL, $code_args) {
         ($error, $value) = @{$self->evaluate_expression($code_arg,
                                                         $$pc_lin_ref,
                                                         $$pc_pag_ref,
@@ -6752,7 +6762,7 @@ sub psop_dw {
     #####################
     @code_args_res     = ();
     $code_args_defined = 1;
-    foreach $code_arg (split $del, $code_args) {
+    foreach $code_arg (split $DEL, $code_args) {
         ($error, $value) = @{$self->evaluate_expression($code_arg,
                                                         $$pc_lin_ref,
                                                         $$pc_pag_ref,
@@ -6824,7 +6834,7 @@ sub psop_dsb {
     ##################
     # check argument #
     ##################
-    if ($code_args =~ /$psop_1_arg/) {
+    if ($code_args =~ /$PSOP_1_ARG/) {
         ################
         # one argument #
         ################
@@ -6895,7 +6905,7 @@ sub psop_dsw {
     ##################
     # check argument #
     ##################
-    if ($code_args =~ /$psop_1_arg/) {
+    if ($code_args =~ /$PSOP_1_ARG/) {
         ################
         # one argument #
         ################
@@ -6960,6 +6970,7 @@ sub psop_error {
     my $char;
     my @hex_code;
     #temporary
+    my $error;
 
     ##################
     # read arguments #
@@ -6969,7 +6980,7 @@ sub psop_error {
     ##################
     # check argument #
     ##################
-    if ($code_args =~ /$psop_string/) {
+    if ($code_args =~ /$PSOP_STRING/) {
         $string = $1;
 
         #trim string
@@ -7027,7 +7038,7 @@ sub psop_equ {
     ##################
     # check argument #
     ##################
-    if ($code_args =~ /$psop_1_arg/) {
+    if ($code_args =~ /$PSOP_1_ARG/) {
         ################
         # one argument #
         ################
@@ -7087,6 +7098,7 @@ sub psop_fcc {
     my $char;
     my @hex_code;
     #temporary
+    my $error;
 
     ##################
     # read arguments #
@@ -7096,7 +7108,7 @@ sub psop_fcc {
     ##################
     # check argument #
     ##################
-    if ($code_args =~ /$psop_string/) {
+    if ($code_args =~ /$PSOP_STRING/) {
         $string = $1;
 
         #trim string
@@ -7149,10 +7161,12 @@ sub psop_fcs {
     my $code_args;
     my $string;
     my $first_char;
+    my $last_char;
     #hex code
     my $char;
     my @hex_code;
     #temporary
+    my $error;
 
     ##################
     # read arguments #
@@ -7162,7 +7176,7 @@ sub psop_fcs {
     ##################
     # check argument #
     ##################
-    if ($code_args =~ /$psop_string/) {
+    if ($code_args =~ /$PSOP_STRING/) {
         $string = $1;
 
         #trim string
@@ -7229,6 +7243,7 @@ sub psop_fcz {
     my $char;
     my @hex_code;
     #temporary
+    my $error;
 
     ##################
     # read arguments #
@@ -7238,7 +7253,7 @@ sub psop_fcz {
     ##################
     # check argument #
     ##################
-    if ($code_args =~ /$psop_string/) {
+    if ($code_args =~ /$PSOP_STRING/) {
         $string = $1;
 
         #trim string
@@ -7310,7 +7325,7 @@ sub psop_fill {
     # read arguments #
     ##################
     $code_args = $code_entry->[5];
-    if ($code_args =~ /$psop_2_args/) {
+    if ($code_args =~ /$PSOP_2_ARGS/) {
         $fill_byte  = $1;
         $byte_count = $2;
 
@@ -7413,11 +7428,14 @@ sub psop_flet16 {
     my $c0;
     my $c1;
 
+    #temporary
+    my $error;
+
     ##################
     # read arguments #
     ##################
     $code_args = $code_entry->[5];
-    if ($code_args =~ /$psop_2_args/) {
+    if ($code_args =~ /$PSOP_2_ARGS/) {
         $start_addr = $1;
         $end_addr   = $2;
 
@@ -7497,7 +7515,7 @@ sub psop_flet16 {
 			my $code_hex      = $code_entry->[8];
 			if (defined $code_pc_pag) {
 			    my $address = $code_pc_pag;
-			    if (($code_hex !~ /$cmp_no_hexcode/) &&
+			    if (($code_hex !~ /$CMP_NO_HEXCODE/) &&
 				($code_hex !~ /^\s*$/)) {
 				foreach my $byte (split /\s+/, $code_hex) {
 				    if ((($start_addr_res <= $end_addr_res) && ($address >= $start_addr_res) && ($address <= $end_addr_res)) ||
@@ -7571,6 +7589,8 @@ sub psop_loc {
 
     #arguments
     my $code_args;
+    #temporary
+    my $error;
 
     ##################
     # read arguments #
@@ -7580,7 +7600,7 @@ sub psop_loc {
     ##################
     # check argument #
     ##################
-    if ($code_args =~ /$psop_no_arg/) {
+    if ($code_args =~ /$PSOP_NO_ARG/) {
 
         #increment LOC count
         $$loc_cnt_ref++;
@@ -7630,7 +7650,7 @@ sub psop_org {
         ############
         # paged pc #
         ############
-        /$psop_1_arg/ && do {
+        /$PSOP_1_ARG/ && do {
             $pc_pag          = $1;
             $code_entry->[8] = "";
             ######################
@@ -7704,7 +7724,7 @@ sub psop_org {
         #######################
         # paged and linear PC #
         #######################
-        /$psop_2_args/ && do {
+        /$PSOP_2_ARGS/ && do {
             $pc_pag = $1;
             $pc_lin = $2;
             #printf STDERR "ORG %s ->\n",  $code_args;
@@ -7745,7 +7765,7 @@ sub psop_org {
             #######################
             # determine linear PC #
             #######################
-            if ($pc_lin =~ /$op_unmapped/) {
+            if ($pc_lin =~ /$OP_UNMAPPED/) {
                 #########################
                 # linear pc is unmapped #
                 #########################
@@ -7814,6 +7834,7 @@ sub psop_setdp {
     my $code_entry      = shift @_;
 
     #arguments
+    my $code_label;
     my $code_args;
     #temporary
     my $error;
@@ -7828,7 +7849,7 @@ sub psop_setdp {
     ##################
     # check argument #
     ##################
-    if ($code_args =~ /$psop_1_arg/) {
+    if ($code_args =~ /$PSOP_1_ARG/) {
         ################
         # one argument #
         ################
@@ -7895,7 +7916,7 @@ sub psop_unalign {
         ############
         # bit mask #
         ############
-        /$psop_1_arg/ && do {
+        /$PSOP_1_ARG/ && do {
             $bit_mask         = $1;
             ######################
             # determine bit mask #
@@ -7954,7 +7975,7 @@ sub psop_unalign {
         #######################
         # bit mask, fill byte #
         #######################
-        /$psop_2_args/ && do {
+        /$PSOP_2_ARGS/ && do {
             $bit_mask = $1;
             $fill_byte = $2;
             ######################
@@ -8073,7 +8094,7 @@ sub psop_zmb {
     ##################
     # check argument #
     ##################
-    if ($code_args =~ /$psop_1_arg/) {
+    if ($code_args =~ /$PSOP_1_ARG/) {
         ################
         # one argument #
         ################
@@ -8229,7 +8250,7 @@ sub check_dir {
     #temporary
     my $value;
 
-    if ($arg_ref->[0] =~ $op_keywords) {return 0;}
+    if ($arg_ref->[0] =~ $OP_KEYWORDS) {return 0;}
     if ($self->get_dir(0, \$arg_ref->[0], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$value)) {
         if (defined $value) {
             $$result_ref = join(" ", ($$hex_ref, $value));
@@ -8257,7 +8278,7 @@ sub check_s12x_dir {
     #temporary
     my $value;
 
-    if ($arg_ref->[0] =~ $op_keywords) {return 0;}
+    if ($arg_ref->[0] =~ $OP_KEYWORDS) {return 0;}
     if ($self->get_dir($self->{dir_page}, \$arg_ref->[0], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$value)) {
         if (defined $value) {
             $$result_ref = join(" ", ($$hex_ref, $value));
@@ -8285,7 +8306,7 @@ sub check_ext {
     #temporary
     my $value;
 
-    if ($arg_ref->[0] =~ $op_keywords) {return 0;}
+    if ($arg_ref->[0] =~ $OP_KEYWORDS) {return 0;}
     $self->get_word(\$arg_ref->[0], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$value);
     if (defined $value) {
         $$result_ref = join(" ", ($$hex_ref, $value));
@@ -8606,7 +8627,7 @@ sub check_dir_msk {
     my $mask;
     my $address;
 
-    if ($arg_ref->[0] =~ $op_keywords) {return 0;}
+    if ($arg_ref->[0] =~ $OP_KEYWORDS) {return 0;}
     $self->get_byte(\$arg_ref->[1], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$mask);
     if ($self->get_dir(0, \$arg_ref->[0], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$address)) {
         if ((defined $mask) && (defined $address)) {
@@ -8636,7 +8657,7 @@ sub check_s12x_dir_msk {
     my $mask;
     my $address;
 
-    if ($arg_ref->[0] =~ $op_keywords) {return 0;}
+    if ($arg_ref->[0] =~ $OP_KEYWORDS) {return 0;}
     $self->get_byte(\$arg_ref->[1], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$mask);
     if ($self->get_dir($self->{dir_page}, \$arg_ref->[0], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$address)) {
         if ((defined $mask) && (defined $address)) {
@@ -8666,7 +8687,7 @@ sub check_ext_msk {
     my $mask;
     my $address;
 
-    if ($arg_ref->[0] =~ $op_keywords) {return 0;}
+    if ($arg_ref->[0] =~ $OP_KEYWORDS) {return 0;}
     $self->get_byte(\$arg_ref->[1], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$mask);
     $self->get_word(\$arg_ref->[0], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$address);
         if ((defined $mask) && (defined $address)) {
@@ -8788,7 +8809,7 @@ sub check_dir_msk_rel {
     my $mask;
     my $address;
 
-    if ($arg_ref->[0] =~ $op_keywords) {return 0;}
+    if ($arg_ref->[0] =~ $OP_KEYWORDS) {return 0;}
     if ($self->get_dir(0, \$arg_ref->[0], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$address)) {
        $self->get_byte(\$arg_ref->[1], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$mask);
        $self->get_rel8(4, \$arg_ref->[2], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$rel);
@@ -8821,7 +8842,7 @@ sub check_s12x_dir_msk_rel {
     my $address;
 
     #printf STDERR "check_s12x_dir_msk_rel: \"%s\" %X\n", $arg_ref->[0], $dir_pag;
-    if ($arg_ref->[0] =~ $op_keywords) {return 0;}
+    if ($arg_ref->[0] =~ $OP_KEYWORDS) {return 0;}
     if ($self->get_dir($self->{dir_page}, \$arg_ref->[0], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$address)) {
         $self->get_byte(\$arg_ref->[1], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$mask);
         $self->get_rel8(4, \$arg_ref->[2], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$rel);
@@ -8853,7 +8874,7 @@ sub check_ext_msk_rel {
     my $mask;
     my $address;
 
-    if ($arg_ref->[0] =~ $op_keywords) {return 0;}
+    if ($arg_ref->[0] =~ $OP_KEYWORDS) {return 0;}
     $self->get_rel8(5, \$arg_ref->[2], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$rel);
     $self->get_byte(\$arg_ref->[1], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$mask);
     $self->get_word(\$arg_ref->[0], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$address);
@@ -8980,7 +9001,7 @@ sub check_ext_pgimpl {
     #temporary
     my $address;
 
-    if ($arg_ref->[0] =~ $op_keywords) {return 0;}
+    if ($arg_ref->[0] =~ $OP_KEYWORDS) {return 0;}
     $self->get_ext_pgimpl(\$arg_ref->[0], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$address);
     if (defined $address) {
         $$result_ref = join(" ", ($$hex_ref, $address));
@@ -9008,7 +9029,7 @@ sub check_ext_pg {
     my $address;
 
     #printf "check_ext_pg: \"%s\", \"%s\"\n", $arg_ref->[0], $arg_ref->[1];
-    if ($arg_ref->[0] =~ $op_keywords) {return 0;}
+    if ($arg_ref->[0] =~ $OP_KEYWORDS) {return 0;}
     $self->get_byte(\$arg_ref->[1], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$page);
     $self->get_word(\$arg_ref->[0], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$address);
     $$result_ref = join(" ", ($$hex_ref, $address, $page));
@@ -9132,7 +9153,7 @@ sub check_imm8_ext {
     my $data;
     my $address;
 
-    if ($arg_ref->[1] =~ $op_keywords) {return 0;}
+    if ($arg_ref->[1] =~ $OP_KEYWORDS) {return 0;}
     $self->get_word(\$arg_ref->[1], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$address);
     $self->get_byte(\$arg_ref->[0], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$data);
     if ((defined $data) && (defined $address)) {
@@ -9347,7 +9368,7 @@ sub check_imm16_ext {
     my $data;
     my $address;
 
-    if ($arg_ref->[1] =~ $op_keywords) {return 0;}
+    if ($arg_ref->[1] =~ $OP_KEYWORDS) {return 0;}
     $self->get_word(\$arg_ref->[1], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$address);
     $self->get_word(\$arg_ref->[0], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$data);
     if ((defined $data) && (defined $address)) {
@@ -9562,8 +9583,8 @@ sub check_ext_ext {
     my $addr0;
     my $addr1;
 
-    if ($arg_ref->[0] =~ $op_keywords) {return 0;}
-    if ($arg_ref->[1] =~ $op_keywords) {return 0;}
+    if ($arg_ref->[0] =~ $OP_KEYWORDS) {return 0;}
+    if ($arg_ref->[1] =~ $OP_KEYWORDS) {return 0;}
     $self->get_word(\$arg_ref->[1], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$addr1);
     $self->get_word(\$arg_ref->[0], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$addr0);
     if ((defined $addr0) && (defined $addr1)) {
@@ -9592,7 +9613,7 @@ sub check_ext_idx {
     my $addr1;
     #printf STDERR "check_ext_idx: \"$arg_ref->[0]\" \"$arg_ref->[1]\" \"$arg_ref->[2]\" \"$arg_ref->[3]\" \"$arg_ref->[4]\"\n";
 
-    if ($arg_ref->[0] =~ $op_keywords) {return 0;}
+    if ($arg_ref->[0] =~ $OP_KEYWORDS) {return 0;}
     if ($self->get_idx(\$arg_ref->[1],
                        \$arg_ref->[2],
                        \$arg_ref->[3],
@@ -9626,7 +9647,7 @@ sub check_ext_idx1 {
     my $addr1;
     #printf STDERR "check_ext_idx1: \"$arg_ref->[0]\" \"$arg_ref->[1]\" \"$arg_ref->[2]\"\n";
 
-    if ($arg_ref->[0] =~ $op_keywords) {return 0;}
+    if ($arg_ref->[0] =~ $OP_KEYWORDS) {return 0;}
     if ($self->get_idx1(\$arg_ref->[1],
                         \$arg_ref->[2], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$addr1)) {
         $self->get_word(\$arg_ref->[0], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$addr0);
@@ -9658,7 +9679,7 @@ sub check_ext_idx2 {
     my $addr1;
     #printf STDERR "check_ext_idx2: \"$arg_ref->[0]\" \"$arg_ref->[1]\" \"$arg_ref->[2]\"\n";
 
-    if ($arg_ref->[0] =~ $op_keywords) {return 0;}
+    if ($arg_ref->[0] =~ $OP_KEYWORDS) {return 0;}
     if ($self->get_idx2(0xe2,
                         \$arg_ref->[1],
                         \$arg_ref->[2], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$addr1)) {
@@ -9691,7 +9712,7 @@ sub check_ext_ididx {
     my $addr1;
     #printf STDERR "check_ext_ididx: \"$arg_ref->[0]\" \"$arg_ref->[1]\"\n";
 
-    if ($arg_ref->[0] =~ $op_keywords) {return 0;}
+    if ($arg_ref->[0] =~ $OP_KEYWORDS) {return 0;}
     if ($self->get_ididx(\$arg_ref->[1], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$addr1)) {
         $self->get_word(\$arg_ref->[0], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$addr0);
         if ((defined $addr1) && (defined $addr0)) {
@@ -9722,7 +9743,7 @@ sub check_ext_iidx2 {
     my $addr1;
     #printf STDERR "check_ext_iidx2: \"$arg_ref->[0]\" \"$arg_ref->[1]\" \"$arg_ref->[2]\"\n";
 
-    if ($arg_ref->[0] =~ $op_keywords) {return 0;}
+    if ($arg_ref->[0] =~ $OP_KEYWORDS) {return 0;}
     if ($self->get_idx2(0xe3,
                         \$arg_ref->[1],
                         \$arg_ref->[2], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$addr1)) {
@@ -9788,7 +9809,7 @@ sub check_idx_ext {
     my $addr0;
     my $addr1;
 
-    if ($arg_ref->[4] =~ $op_keywords) {return 0;}
+    if ($arg_ref->[4] =~ $OP_KEYWORDS) {return 0;}
     $self->get_word(\$arg_ref->[4], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$addr1);
     if ($self->get_idx(\$arg_ref->[0],
                        \$arg_ref->[1],
@@ -10050,7 +10071,7 @@ sub check_idx1_ext {
     my $addr0;
     my $addr1;
 
-    if ($arg_ref->[2] =~ $op_keywords) {return 0;}
+    if ($arg_ref->[2] =~ $OP_KEYWORDS) {return 0;}
     $self->get_word(\$arg_ref->[2], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$addr1);
     if ($self->get_idx1(\$arg_ref->[0],
                         \$arg_ref->[1], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$addr0)) {
@@ -10284,7 +10305,7 @@ sub check_idx2_ext {
     #                                       $arg_ref->[1],
     #                                       $arg_ref->[2];
 
-    if ($arg_ref->[2] =~ $op_keywords) {return 0;}
+    if ($arg_ref->[2] =~ $OP_KEYWORDS) {return 0;}
     $self->get_word(\$arg_ref->[2], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$addr1);
     if ($self->get_idx2(0xe2,
                         \$arg_ref->[0],
@@ -10522,7 +10543,7 @@ sub check_ididx_ext {
     my $addr0;
     my $addr1;
 
-    if ($arg_ref->[1] =~ $op_keywords) {return 0;}
+    if ($arg_ref->[1] =~ $OP_KEYWORDS) {return 0;}
     $self->get_word(\$arg_ref->[1], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$addr1);
     if ($self->get_ididx(\$arg_ref->[0], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$addr0)) {
         if ((defined $addr0) && (defined $addr1)) {
@@ -10745,7 +10766,7 @@ sub check_iidx2_ext {
     my $addr0;
     my $addr1;
 
-    if ($arg_ref->[2] =~ $op_keywords) {return 0;}
+    if ($arg_ref->[2] =~ $OP_KEYWORDS) {return 0;}
     $self->get_word(\$arg_ref->[2], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$addr1);
     if ($self->get_idx2(0xe3,
                         \$arg_ref->[0],
@@ -10944,6 +10965,7 @@ sub check_iidx2_iext {
     #temporary
     my $addr0;
     my $addr1;
+    my $offset;
 
     $offset = 6 + split(" ", $$hex_ref); 
     #printf "check_iidx2_iext: hex0=%s,  pcpag=%x, dest=%s, offset=%d\n", $$hex_ref, $pc_pag, $arg_ref->[2], $offset;
@@ -10985,7 +11007,7 @@ sub check_iext_ext {
     $offset = 5 + split(" ", $$hex_ref); 
     #printf "check_iext_ext: hex0=%s,  pcpag=%x, dest=%s, offset=%d\n", $$hex_ref, $pc_pag, $arg_ref->[0], $offset;
 
-    if ($arg_ref->[1] =~ $op_keywords) {return 0;}
+    if ($arg_ref->[1] =~ $OP_KEYWORDS) {return 0;}
     $self->get_word(\$arg_ref->[1], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$addr1);
     if ($self->get_iext($offset,
                         \$arg_ref->[0], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$addr0)) {
@@ -11240,8 +11262,8 @@ sub check_exg {
     #temporary
     my $value;
 
-    if ($self->get_tfr($tfr_s12,
-                       $tfr_exg,
+    if ($self->get_tfr($TFR_S12,
+                       $TFR_EXG,
                        \$arg_ref->[0],
                        \$arg_ref->[1], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$value)) {
         if (defined $value) {
@@ -11270,8 +11292,8 @@ sub check_s12x_exg {
     #temporary
     my $value;
 
-    if ($self->get_tfr($tfr_s12x,
-                       $tfr_exg,
+    if ($self->get_tfr($TFR_S12X,
+                       $TFR_EXG,
                        \$arg_ref->[0],
                        \$arg_ref->[1], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$value)) {
         if (defined $value) {
@@ -11300,8 +11322,8 @@ sub check_tfr {
     #temporary
     my $value;
 
-    if ($self->get_tfr($tfr_s12,
-                       $tfr_tfr,
+    if ($self->get_tfr($TFR_S12,
+                       $TFR_TFR,
                        \$arg_ref->[0],
                        \$arg_ref->[1], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$value)) {
         if (defined $value) {
@@ -11330,8 +11352,8 @@ sub check_s12x_tfr {
     #temporary
     my $value;
 
-    if ($self->get_tfr($tfr_s12x,
-                       $tfr_tfr,
+    if ($self->get_tfr($TFR_S12X,
+                       $TFR_TFR,
                        \$arg_ref->[0],
                        \$arg_ref->[1], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$value)) {
         if (defined $value) {
@@ -11360,8 +11382,8 @@ sub check_sex {
     #temporary
     my $value;
 
-    if ($self->get_tfr($tfr_s12,
-                       $tfr_sex,
+    if ($self->get_tfr($TFR_S12,
+                       $TFR_SEX,
                        \$arg_ref->[0],
                        \$arg_ref->[1], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$value)) {
         if (defined $value) {
@@ -11390,8 +11412,8 @@ sub check_s12x_sex {
     #temporary
     my $value;
 
-    if ($self->get_tfr($tfr_s12x,
-                       $tfr_sex,
+    if ($self->get_tfr($TFR_S12X,
+                       $TFR_SEX,
                        \$arg_ref->[0],
                        \$arg_ref->[1], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$value)) {
         if (defined $value) {
@@ -12013,6 +12035,7 @@ sub check_xgate_mon {
     #temporary
     my $reg1;
     my $hex;
+    my $value;
 
         if ($self->get_xgate_gpr(\$arg_ref->[0], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$reg1)) {
             $hex = $$hex_ref;
@@ -12041,6 +12064,7 @@ sub check_xgate_mon_twice {
     #temporary
     my $reg1;
     my $hex;
+    my $value;
 
         if ($self->get_xgate_gpr(\$arg_ref->[0], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$reg1)) {
             $hex = $$hex_ref;
@@ -12073,6 +12097,7 @@ sub check_xgate_dya {
     my $reg1;
     my $reg2;
     my $hex;
+    my $value;
 
     if ($self->get_xgate_gpr(\$arg_ref->[1], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$reg2)) {
         if ($self->get_xgate_gpr(\$arg_ref->[0], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$reg1)) {
@@ -12105,6 +12130,7 @@ sub check_xgate_tri {
     my $reg2;
     my $reg3;
     my $hex;
+    my $value;
 
     if ($self->get_xgate_gpr(\$arg_ref->[2], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$reg3)) {
         if ($self->get_xgate_gpr(\$arg_ref->[1], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$reg2)) {
@@ -12255,6 +12281,7 @@ sub check_xgate_idr {
     my $reg2;
     my $reg3;
     my $hex;
+    my $value;
 
     if ($self->get_xgate_gpr(\$arg_ref->[2], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$reg3)) {
         if ($self->get_xgate_gpr(\$arg_ref->[1], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$reg2)) {
@@ -12289,6 +12316,7 @@ sub check_xgate_idri {
     my $reg2;
     my $reg3;
     my $hex;
+    my $value;
 
     if ($self->get_xgate_gpr(\$arg_ref->[2], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$reg3)) {
         if ($self->get_xgate_gpr(\$arg_ref->[1], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$reg2)) {
@@ -12322,6 +12350,7 @@ sub check_xgate_idrd {
     my $reg2;
     my $reg3;
     my $hex;
+    my $value;
 
     if ($self->get_xgate_gpr(\$arg_ref->[2], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$reg3)) {
         if ($self->get_xgate_gpr(\$arg_ref->[1], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$reg2)) {
@@ -12354,6 +12383,7 @@ sub check_xgate_tfr_rd_ccr {
     #temporary
     my $reg1;
     my $hex;
+    my $value;
 
         if ($self->get_xgate_gpr(\$arg_ref->[0], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$reg1)) {
             $hex = $$hex_ref;
@@ -12382,6 +12412,7 @@ sub check_xgate_tfr_ccr_rs {
     #temporary
     my $reg1;
     my $hex;
+    my $value;
 
          if ($self->get_xgate_gpr(\$arg_ref->[0], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$reg1)) {
              $hex = $$hex_ref;
@@ -12410,6 +12441,7 @@ sub check_xgate_tfr_rd_pc {
     #temporary
     my $reg1;
     my $hex;
+    my $value;
 
          if ($self->get_xgate_gpr(\$arg_ref->[0], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$reg1)) {
              $hex = $$hex_ref;
@@ -12439,6 +12471,7 @@ sub check_xgate_com_mon {
     #temporary
     my $reg1;
     my $hex;
+    my $value;
 
         if ($self->get_xgate_gpr(\$arg_ref->[0], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$reg1)) {
             $hex = $$hex_ref;
@@ -12467,6 +12500,7 @@ sub check_xgate_tst_mon {
     #temporary
     my $reg1;
     my $hex;
+    my $value;
 
         if ($self->get_xgate_gpr(\$arg_ref->[0], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$reg1)) {
             $hex = $$hex_ref;
@@ -12496,6 +12530,7 @@ sub check_xgate_com_dya {
     my $reg1;
     my $reg2;
     my $hex;
+    my $value;
 
     if ($self->get_xgate_gpr(\$arg_ref->[1], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$reg2)) {
         if ($self->get_xgate_gpr(\$arg_ref->[0], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$reg1)) {
@@ -12527,6 +12562,7 @@ sub check_xgate_cmp_dya {
     my $reg1;
     my $reg2;
     my $hex;
+    my $value;
 
     if ($self->get_xgate_gpr(\$arg_ref->[1], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$reg2)) {
         if ($self->get_xgate_gpr(\$arg_ref->[0], $pc_lin, $pc_pag, $loc_cnt, $sym_tabs, $error_ref, \$reg1)) {
@@ -13027,7 +13063,7 @@ sub get_idx1 {
     ################
     # check offset #
     ################
-    if ($$offset_ref =~ $op_keywords) {
+    if ($$offset_ref =~ $OP_KEYWORDS) {
         return 0;
     }
 
@@ -13127,7 +13163,7 @@ sub get_idx2 {
     ################
     # check offset #
     ################
-    if ($$offset_ref =~ $op_keywords) {
+    if ($$offset_ref =~ $OP_KEYWORDS) {
         return 0;
     }
 
@@ -13270,7 +13306,7 @@ sub get_iext {
     ##################
     # check argument #
     ##################
-    if ($$string_ref =~ $op_keywords) {
+    if ($$string_ref =~ $OP_KEYWORDS) {
         return 0;
     }
 
@@ -13351,9 +13387,9 @@ sub get_tfr {
     # extension byte #
     ##################
     for ($tfr_type) {
-        ($tfr_type == $tfr_tfr) && do {$extension_byte = 0x00;last;};
-        ($tfr_type == $tfr_sex) && do {$extension_byte = 0x00;last;};
-        ($tfr_type == $tfr_exg) && do {$extension_byte = 0x80;last;};
+        ($tfr_type == $TFR_TFR) && do {$extension_byte = 0x00;last;};
+        ($tfr_type == $TFR_SEX) && do {$extension_byte = 0x00;last;};
+        ($tfr_type == $TFR_EXG) && do {$extension_byte = 0x80;last;};
     }
 
     ###################
@@ -13370,21 +13406,21 @@ sub get_tfr {
                 ##########
                 /^\s*A\s*$/i && do {
                     $extension_byte = $extension_byte | 0x00;
-                    if ($tfr_type == $tfr_sex) {$error = 1;}
+                    if ($tfr_type == $TFR_SEX) {$error = 1;}
                     last;};
                 ##########
                 # A -> B #
                 ##########
                 /^\s*B\s*$/i && do {
                     $extension_byte = $extension_byte | 0x01;
-                    if ($tfr_type == $tfr_sex) {$error = 1;}
+                    if ($tfr_type == $TFR_SEX) {$error = 1;}
                     last;};
                 #################
                 # A -> CCR,CCRL #
                 #################
                 /^\s*(CCR|CCRL)\s*$/i && do {
                     $extension_byte = $extension_byte | 0x02;
-                    if ($tfr_type == $tfr_sex) {$error = 1;}
+                    if ($tfr_type == $TFR_SEX) {$error = 1;}
                     last;};
                 #############
                 # A -> TMP2 #
@@ -13421,35 +13457,35 @@ sub get_tfr {
                 #############
                 /^\s*(CCRH)\s*$/i && do {
                     $extension_byte = $extension_byte | 0x0a;
-                    if (($cpu == $tfr_s12) || ($tfr_type == $tfr_sex)) {$error = 1;}
+                    if (($cpu == $TFR_S12) || ($tfr_type == $TFR_SEX)) {$error = 1;}
                     last;};
                 ##############
                 # A -> TMP2H #
                 ##############
                 /^\s*(TMP2H)\s*$/i && do {
                     $extension_byte = $extension_byte | 0x0b;
-                    if (($cpu == $tfr_s12) || ($tfr_type == $tfr_sex)) {$error = 1;}
+                    if (($cpu == $TFR_S12) || ($tfr_type == $TFR_SEX)) {$error = 1;}
                     last;};
                 ###########
                 # A -> XH #
                 ###########
                 /^\s*(XH)\s*$/i && do {
                     $extension_byte = $extension_byte | 0x0d;
-                    if (($cpu == $tfr_s12) || ($tfr_type == $tfr_sex)) {$error = 1;}
+                    if (($cpu == $TFR_S12) || ($tfr_type == $TFR_SEX)) {$error = 1;}
                     last;};
                 ###########
                 # A -> YH #
                 ###########
                 /^\s*(YH)\s*$/i && do {
                     $extension_byte = $extension_byte | 0x0e;
-                    if (($cpu == $tfr_s12) || ($tfr_type == $tfr_sex)) {$error = 1;}
+                    if (($cpu == $TFR_S12) || ($tfr_type == $TFR_SEX)) {$error = 1;}
                     last;};
                 ############
                 # A -> SPH #
                 ############
                 /^\s*(SPH)\s*$/i && do {
                     $extension_byte = $extension_byte | 0x0f;
-                    if (($cpu == $tfr_s12) || ($tfr_type == $tfr_sex)) {$error = 1;}
+                    if (($cpu == $TFR_S12) || ($tfr_type == $TFR_SEX)) {$error = 1;}
                     last;};
                 ############
                 # no match #
@@ -13467,21 +13503,21 @@ sub get_tfr {
                 ##########
                 /^\s*A\s*$/i && do {
                     $extension_byte = $extension_byte | 0x10;
-                    if ($tfr_type == $tfr_sex) {$error = 1;}
+                    if ($tfr_type == $TFR_SEX) {$error = 1;}
                     last;};
                 ##########
                 # B -> B #
                 ##########
                 /^\s*B\s*$/i && do {
                     $extension_byte = $extension_byte | 0x11;
-                    if ($tfr_type == $tfr_sex) {$error = 1;}
+                    if ($tfr_type == $TFR_SEX) {$error = 1;}
                     last;};
                 #################
                 # B -> CCR,CCRL #
                 #################
                 /^\s*(CCR|CCRL)\s*$/i && do {
                     $extension_byte = $extension_byte | 0x12;
-                    if ($tfr_type == $tfr_sex) {$error = 1;}
+                    if ($tfr_type == $TFR_SEX) {$error = 1;}
                     last;};
                 #############
                 # B -> TMP2 #
@@ -13518,28 +13554,28 @@ sub get_tfr {
                 ##############
                 /^\s*(TMP2L)\s*$/i && do {
                     $extension_byte = $extension_byte | 0x1b;
-                    if (($cpu == $tfr_s12) || ($tfr_type == $tfr_sex)) {$error = 1;}
+                    if (($cpu == $TFR_S12) || ($tfr_type == $TFR_SEX)) {$error = 1;}
                     last;};
                 ###########
                 # B -> XL #
                 ###########
                 /^\s*(XL)\s*$/i && do {
                     $extension_byte = $extension_byte | 0x1d;
-                    if (($cpu == $tfr_s12) || ($tfr_type == $tfr_sex)) {$error = 1;}
+                    if (($cpu == $TFR_S12) || ($tfr_type == $TFR_SEX)) {$error = 1;}
                     last;};
                 ###########
                 # B -> YL #
                 ###########
                 /^\s*(YL)\s*$/i && do {
                     $extension_byte = $extension_byte | 0x1e;
-                    if (($cpu == $tfr_s12) || ($tfr_type == $tfr_sex)) {$error = 1;}
+                    if (($cpu == $TFR_S12) || ($tfr_type == $TFR_SEX)) {$error = 1;}
                     last;};
                 ############
                 # B -> SPL #
                 ############
                 /^\s*(SPL)\s*$/i && do {
                     $extension_byte = $extension_byte | 0x1f;
-                    if (($cpu == $tfr_s12) || ($tfr_type == $tfr_sex)) {$error = 1;}
+                    if (($cpu == $TFR_S12) || ($tfr_type == $TFR_SEX)) {$error = 1;}
                     last;};
                 ############
                 # no match #
@@ -13557,21 +13593,21 @@ sub get_tfr {
                 #################
                 /^\s*A\s*$/i && do {
                     $extension_byte = $extension_byte | 0x20;
-                    if ($tfr_type == $tfr_sex) {$error = 1;}
+                    if ($tfr_type == $TFR_SEX) {$error = 1;}
                     last;};
                 #################
                 # CCR,CCRL -> B #
                 #################
                 /^\s*B\s*$/i && do {
                     $extension_byte = $extension_byte | 0x21;
-                    if ($tfr_type == $tfr_sex) {$error = 1;}
+                    if ($tfr_type == $TFR_SEX) {$error = 1;}
                     last;};
                 ########################
                 # CCR,CCRL -> CCR,CCRL #
                 ########################
                 /^\s*(CCR|CCRL)\s*$/i && do {
                     $extension_byte = $extension_byte | 0x22;
-                    if ($tfr_type == $tfr_sex) {$error = 1;}
+                    if ($tfr_type == $TFR_SEX) {$error = 1;}
                     last;};
                 ####################
                 # CCR,CCRL -> TMP2 #
@@ -13613,7 +13649,7 @@ sub get_tfr {
         # CCRH #
         ########
         /^\s*(CCRH)\s*$/i && do {
-            if (($cpu == $tfr_s12) || ($tfr_type == $tfr_sex)) {$error = 1;}
+            if (($cpu == $TFR_S12) || ($tfr_type == $TFR_SEX)) {$error = 1;}
             for ($$dst_reg_ref) {
                 #############
                 # CCRH -> A #
@@ -13631,7 +13667,7 @@ sub get_tfr {
         # CCRW #
         ########
         /^\s*(CCRW)\s*$/i && do {
-            if (($cpu == $tfr_s12) || ($tfr_type == $tfr_sex)) {$error = 1;}
+            if (($cpu == $TFR_S12) || ($tfr_type == $TFR_SEX)) {$error = 1;}
             for ($$dst_reg_ref) {
                 ################
                 # CCRW -> CCRW #
@@ -13679,7 +13715,7 @@ sub get_tfr {
         # TMP3 #
         ########
         /^\s*(TMP3)\s*$/i && do {
-            if ($tfr_type == $tfr_sex) {$error = 1;}
+            if ($tfr_type == $TFR_SEX) {$error = 1;}
             for ($$dst_reg_ref) {
                 #############
                 # TMP3 -> A #
@@ -13733,7 +13769,7 @@ sub get_tfr {
                 # TMP3 -> CCRW #
                 ################
                 /^\s*(CCRW)\s*$/i && do {
-                    if ($cpu == $tfr_s12) {$error = 1;}
+                    if ($cpu == $TFR_S12) {$error = 1;}
                     $extension_byte = $extension_byte | 0x3A;
                     last;};
                 ############
@@ -13746,7 +13782,7 @@ sub get_tfr {
         # TMP3L #
         #########
         /^\s*(TMP3L)\s*$/i && do {
-            if ($tfr_type == $tfr_sex) {$error = 1;}
+            if ($tfr_type == $TFR_SEX) {$error = 1;}
             for ($$dst_reg_ref) {
                 ##############
                 # TMP3L -> A #
@@ -13776,7 +13812,7 @@ sub get_tfr {
         # TMP3H #
         #########
         /^\s*(TMP3H)\s*$/i && do {
-            if (($cpu == $tfr_s12) || ($tfr_type == $tfr_sex)) {$error = 1;}
+            if (($cpu == $TFR_S12) || ($tfr_type == $TFR_SEX)) {$error = 1;}
             for ($$dst_reg_ref) {
                 #############
                 # CCRH -> A #
@@ -13794,7 +13830,7 @@ sub get_tfr {
         # TMP1 #
         ########
         /^\s*(TMP1)\s*$/i && do {
-            if (($cpu == $tfr_s12) || ($tfr_type == $tfr_sex)) {$error = 1;}
+            if (($cpu == $TFR_S12) || ($tfr_type == $TFR_SEX)) {$error = 1;}
             for ($$dst_reg_ref) {
                 #############
                 # CCRH -> D #
@@ -13818,35 +13854,35 @@ sub get_tfr {
                 ##########
                 /^\s*A\s*$/i && do {
                     $extension_byte = $extension_byte | 0x40;
-                    if ($tfr_type == $tfr_sex) {$error = 1;}
+                    if ($tfr_type == $TFR_SEX) {$error = 1;}
                     last;};
                 ##########
                 # D -> B #
                 ##########
                 /^\s*B\s*$/i && do {
                     $extension_byte = $extension_byte | 0x41;
-                    if ($tfr_type == $tfr_sex) {$error = 1;}
+                    if ($tfr_type == $TFR_SEX) {$error = 1;}
                     last;};
                 #################
                 # D -> CCR,CCRL #
                 #################
                 /^\s*(CCR|CCRL)\s*$/i && do {
                     $extension_byte = $extension_byte | 0x42;
-                    if ($tfr_type == $tfr_sex) {$error = 1;}
+                    if ($tfr_type == $TFR_SEX) {$error = 1;}
                     last;};
                 #############
                 # D -> TMP2 #
                 #############
                 /^\s*(TMP2)\s*$/i && do {
                     $extension_byte = $extension_byte | 0x43;
-                    if ($tfr_type == $tfr_sex) {$error = 1;}
+                    if ($tfr_type == $TFR_SEX) {$error = 1;}
                     last;};
                 ##########
                 # D -> D #
                 ##########
                 /^\s*D\s*$/i && do {
                     $extension_byte = $extension_byte | 0x44;
-                    if ($tfr_type == $tfr_sex) {$error = 1;}
+                    if ($tfr_type == $TFR_SEX) {$error = 1;}
                     last;};
                 ##########
                 # D -> X #
@@ -13867,21 +13903,21 @@ sub get_tfr {
                 ###########
                 /^\s*(SP)\s*$/i && do {
                     $extension_byte = $extension_byte | 0x47;
-                    if ($tfr_type == $tfr_sex) {$error = 1;}
+                    if ($tfr_type == $TFR_SEX) {$error = 1;}
                     last;};
                 #############
                 # D -> CCRW #
                 #############
                 /^\s*(CCRW)\s*$/i && do {
                     $extension_byte = $extension_byte | 0x4a;
-                    if (($cpu == $tfr_s12) || ($tfr_type == $tfr_sex)) {$error = 1;}
+                    if (($cpu == $TFR_S12) || ($tfr_type == $TFR_SEX)) {$error = 1;}
                     last;};
                 #############
                 # D -> TMP1 #
                 #############
                 /^\s*(TMP1)\s*$/i && do {
                     $extension_byte = $extension_byte | 0x4b;
-                    if (($cpu == $tfr_s12) || ($tfr_type == $tfr_sex)) {$error = 1;}
+                    if (($cpu == $TFR_S12) || ($tfr_type == $TFR_SEX)) {$error = 1;}
                     last;};
                 ############
                 # no match #
@@ -13893,7 +13929,7 @@ sub get_tfr {
         # INDEX X #
         ###########
         /^\s*(X)\s*$/i && do {
-            if ($tfr_type == $tfr_sex) {$error = 1;}
+            if ($tfr_type == $TFR_SEX) {$error = 1;}
             for ($$dst_reg_ref) {
                 ##########
                 # X -> A #
@@ -13947,7 +13983,7 @@ sub get_tfr {
                 # X -> CCRW #
                 #############
                 /^\s*(CCRW)\s*$/i && do {
-                    if ($cpu == $tfr_s12) {$error = 1;}
+                    if ($cpu == $TFR_S12) {$error = 1;}
                     $extension_byte = $extension_byte | 0x5A;
                     last;};
                 ############
@@ -13960,7 +13996,7 @@ sub get_tfr {
         # INDEX XL #
         ############
         /^\s*(XL)\s*$/i && do {
-            if ($tfr_type == $tfr_sex) {$error = 1;}
+            if ($tfr_type == $TFR_SEX) {$error = 1;}
             for ($$dst_reg_ref) {
                 ###########
                 # XL -> A #
@@ -13990,7 +14026,7 @@ sub get_tfr {
         # INDEX XH #
         ############
         /^\s*(XH)\s*$/i && do {
-            if (($cpu == $tfr_s12) || ($tfr_type == $tfr_sex)) {$error = 1;}
+            if (($cpu == $TFR_S12) || ($tfr_type == $TFR_SEX)) {$error = 1;}
             for ($$dst_reg_ref) {
                 ###########
                 # XH -> A #
@@ -14008,7 +14044,7 @@ sub get_tfr {
         # INDEX Y #
         ###########
         /^\s*(Y)\s*$/i && do {
-            if ($tfr_type == $tfr_sex) {$error = 1;}
+            if ($tfr_type == $TFR_SEX) {$error = 1;}
             for ($$dst_reg_ref) {
                 ##########
                 # Y -> A #
@@ -14062,7 +14098,7 @@ sub get_tfr {
                 # Y -> CCRW #
                 #############
                 /^\s*(CCRW)\s*$/i && do {
-                    if ($cpu == $tfr_s12) {$error = 1;}
+                    if ($cpu == $TFR_S12) {$error = 1;}
                     $extension_byte = $extension_byte | 0x6A;
                     last;};
                 ############
@@ -14075,7 +14111,7 @@ sub get_tfr {
         # INDEX YL #
         ############
         /^\s*(YL)\s*$/i && do {
-            if ($tfr_type == $tfr_sex) {$error = 1;}
+            if ($tfr_type == $TFR_SEX) {$error = 1;}
             for ($$dst_reg_ref) {
                 ###########
                 # YL -> A #
@@ -14105,7 +14141,7 @@ sub get_tfr {
         # INDEX YH #
         ############
         /^\s*(YH)\s*$/i && do {
-            if (($cpu == $tfr_s12) || ($tfr_type == $tfr_sex)) {$error = 1;}
+            if (($cpu == $TFR_S12) || ($tfr_type == $TFR_SEX)) {$error = 1;}
             for ($$dst_reg_ref) {
                 ###########
                 # YH -> A #
@@ -14123,7 +14159,7 @@ sub get_tfr {
         # STACK POINTER #
         #################
         /^\s*(SP)\s*$/i && do {
-            if ($tfr_type == $tfr_sex) {$error = 1;}
+            if ($tfr_type == $TFR_SEX) {$error = 1;}
             for ($$dst_reg_ref) {
                 ###########
                 # SP -> A #
@@ -14177,7 +14213,7 @@ sub get_tfr {
                 # SP -> CCRW #
                 ##############
                 /^\s*(CCRW)\s*$/i && do {
-                    if ($cpu == $tfr_s12) {$error = 1;}
+                    if ($cpu == $TFR_S12) {$error = 1;}
                     $extension_byte = $extension_byte | 0x7A;
                     last;};
                 ############
@@ -14190,7 +14226,7 @@ sub get_tfr {
         # SPL #
         #######
         /^\s*(SPL)\s*$/i && do {
-            if ($tfr_type == $tfr_sex) {$error = 1;}
+            if ($tfr_type == $TFR_SEX) {$error = 1;}
             for ($$dst_reg_ref) {
                 ############
                 # SPL -> A #
@@ -14220,7 +14256,7 @@ sub get_tfr {
         # SPH #
         #######
         /^\s*(SPH)\s*$/i && do {
-            if (($cpu == $tfr_s12) || ($tfr_type == $tfr_sex)) {$error = 1;}
+            if (($cpu == $TFR_S12) || ($tfr_type == $TFR_SEX)) {$error = 1;}
             for ($$dst_reg_ref) {
                 ############
                 # SPH -> A #

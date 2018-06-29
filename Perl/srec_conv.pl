@@ -67,27 +67,30 @@ require hsw12_srec_import;
 # global vars #
 ###############
 if ($#ARGV != 1) {
-    printf "usage: %s <%s|%s|%s|%s> <src file>\n", $0, $hsw12_srec_import::srec_type_lin_s12,
-                                                       $hsw12_srec_import::srec_type_pag_s12,
-						       $hsw12_srec_import::srec_type_lin_s12x,
-						       $hsw12_srec_import::srec_type_pag_s12x;
+    printf "usage: %s <%s|%s|%s|%s> <src file>\n", $0, $hsw12_srec_import::SREC_TYPE_LIN_S12,
+                                                       $hsw12_srec_import::SREC_TYPE_PAG_S12,
+						       $hsw12_srec_import::SREC_TYPE_LIN_S12X,
+						       $hsw12_srec_import::SREC_TYPE_PAG_S12X;
     print  "\n";
     exit;
 }
     
-$srec_type        = shift @ARGV;
-$src_file         = shift @ARGV;
+our $srec_type        = shift @ARGV;
+our $src_file         = shift @ARGV;
+our $code             = {};
+our $prog_name        = "";
+our $out_string       = "";
 
-if (($srec_type ne $hsw12_srec_import::srec_type_lin_s12)  &&
-    ($srec_type ne $hsw12_srec_import::srec_type_pag_s12)  &&
-    ($srec_type ne $hsw12_srec_import::srec_type_lin_s12x) &&
-    ($srec_type ne $hsw12_srec_import::srec_type_pag_s12x)) {
+if (($srec_type ne $hsw12_srec_import::SREC_TYPE_LIN_S12)  &&
+    ($srec_type ne $hsw12_srec_import::SREC_TYPE_PAG_S12)  &&
+    ($srec_type ne $hsw12_srec_import::SREC_TYPE_LIN_S12X) &&
+    ($srec_type ne $hsw12_srec_import::SREC_TYPE_PAG_S12X)) {
 
     printf STDOUT "Unkown S-Record format: \"%s\"\n", $srec_type;
-    printf STDOUT "Try one of the following: %s, %s, %s, %s\n", ($hsw12_srec_import::srec_type_lin_s12,
-								 $hsw12_srec_import::srec_type_pag_s12,
-								 $hsw12_srec_import::srec_type_lin_s12x,
-								 $hsw12_srec_import::srec_type_pag_s12x);
+    printf STDOUT "Try one of the following: %s, %s, %s, %s\n", ($hsw12_srec_import::SREC_TYPE_LIN_S12,
+								 $hsw12_srec_import::SREC_TYPE_PAG_S12,
+								 $hsw12_srec_import::SREC_TYPE_LIN_S12X,
+								 $hsw12_srec_import::SREC_TYPE_PAG_S12X);
     exit;
 }
 

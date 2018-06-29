@@ -66,26 +66,26 @@ require hsw12_asm;
 ###############
 # global vars #
 ###############
-@src_files         = ();
-@lib_files         = ();
-%defines           = ();
-$prog_name         = "";
-$arg_type          = "src";
-$srec_format       = $hsw12_asm::srec_def_format;
-$srec_data_length  = $hsw12_asm::srec_def_data_length;
-$srec_add_s5       = $hsw12_asm::srec_def_add_s5;
-$srec_word_entries = 1;
-$code              = {};
-$out_string        = "";
-$start_symbol      = "";
-$start_addr        = 0;
-$end_symbol        = "";
-$end_addr          = 0;
+our @src_files         = ();
+our @lib_files         = ();
+our %defines           = ();
+our $prog_name         = "";
+our $arg_type          = "src";
+our $srec_format       = $hsw12_asm::SREC_DEF_FORMAT;
+our $srec_data_length  = $hsw12_asm::SREC_DEF_DATA_LENGTH;
+our $srec_add_s5       = $hsw12_asm::SREC_DEF_ADD_S5;
+our $srec_word_entries = 1;
+our $code              = {};
+our $out_string        = "";
+our $start_symbol      = "";
+our $start_addr        = 0;
+our $end_symbol        = "";
+our $end_addr          = 0;
 
 ##########################
 # read command line args #
 ##########################
-foreach $arg (@ARGV) {
+foreach my $arg (@ARGV) {
     if ($arg =~ /^\s*\-L\s*$/i) {
 	$arg_type = "lib";
     } elsif ($arg =~ /^\s*\-D\s*$/i) {

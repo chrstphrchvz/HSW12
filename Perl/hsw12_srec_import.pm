@@ -137,6 +137,7 @@ Dirk Heisswolf
 #use warnings;
 #use strict;
 require hsw12_asm;
+use Readonly;
 
 ####################
 # create namespace #
@@ -149,6 +150,7 @@ package hsw12_srec_import;
 use IO::File;
 use Fcntl;
 #use Text::Tabs;
+use Readonly;
 
 ####################
 # global variables #
@@ -167,79 +169,79 @@ use Fcntl;
 ###########
 # version #
 ###########
-*version = \"00.01";#"
+Readonly our $VERSION => "00.01";#"
 
 #############################
 # default S-record settings #
 #############################
-*srec_def_format      = \"S28";#" 
-*srec_def_data_length = \64;
-*srec_def_add_s5      = \0;
-*srec_def_fill_byte   = \0xff;
+Readonly our $SREC_DEF_FORMAT      => "S28";#" 
+Readonly our $SREC_DEF_DATA_LENGTH => 64;
+Readonly our $SREC_DEF_ADD_S5      => 0;
+Readonly our $SREC_DEF_FILL_BYTE   => 0xff;
 
 ###################
 # path delimeters #
 ###################
-*path_del         = \qr/[\/\\]/;
-*path_absolute    = \qr/^\.?[\/\\]/;
+Readonly our $PATH_DEL         => qr/[\/\\]/;
+Readonly our $PATH_ABSOLUTE    => qr/^\.?[\/\\]/;
 
 #######################
 # operand expressions #
 #######################
-*op                    = \qr/(?:[^,]|\\,)+/ix;
-*op_opt                = \qr/(?:[^,]|\\,)*/ix;
-*del                   = \qr/\s*(?<!\\),\s*/ix;
-*op_keywords           = \qr/^\s*(A|B|D|X|Y|PC|SP|CCR|TMP2|TMP3|UNMAPPED)\s*$/i; #$1: keyword
-*op_unmapped           = \qr/^\s*UNMAPPED\s*$/i;
-*op_oprtr              = \qr/\-|\+|\*|\/|%|&|\||~|<<|>>/;
-*op_no_oprtr           = \qr/[^\-\+\/%&\|~<>\s]/;
-*op_term               = \qr/\%[01]+|[0-9]+|\$[0-9a-fA-F]+|\"(\w)\"|\*|\@/;
-*op_binery             = \qr/^\s*([~\-]?)\s*\%([01_]+)\s*$/; #$1:complement $2:binery number
-*op_dec                = \qr/^\s*([~\-]?)\s*([0-9_]+)\s*$/; #$1:complement $2:decimal number
-*op_hex                = \qr/^\s*([~\-]?)\s*\$([0-9a-fA-F_]+)\s*$/; #$1:complement $2:hex number
-*op_ascii              = \qr/^\s*([~\-]?)\s*[\'\"](.+)[\'\"]\s*$/; #$1:complement $2:ASCII caracter
-#*op_symbol             = \qr/^\s*([~\-]?)\s*([\w]+[\`]?)\s*$/; #$1:complement $2:symbol
-#*op_curr_lin_pc        = \qr/^\s*([~\-]?)\s*\@\s*$/;
-#*op_curr_pag_pc        = \qr/^\s*([~\-]?)\s*\*\s*$/;
-*op_formula            = \qr/^\s*($op)\s*$/; #$1:formula
-*op_formula_pars       = \qr/^\s*(.*)\s*\(\s*([^\(\)]+)\s*\)\s*(.*)\s*$/; #$1:leftside $2:inside $3:rightside 
-*op_formula_and        = \qr/^\s*([^\&]*)\s*\&\s*(.+)\s*$/; #$1:leftside $2:rightside 
-*op_formula_or         = \qr/^\s*([^\|]*)\s*\|\s*(.+)\s*$/; #$1:leftside $2:rightside 
-*op_formula_exor       = \qr/^\s*([^\^]*)\s*\^\s*(.+)\s*$/; #$1:leftside $2:rightside 
-*op_formula_rightshift = \qr/^\s*([^>]*)\s*>>\s*(.+)\s*$/; #$1:leftside $2:rightside 
-*op_formula_leftshift  = \qr/^\s*([^<]*)\s*<<\s*(.+)\s*$/; #$1:leftside $2:rightside 
-*op_formula_mul        = \qr/^\s*(.*$op_no_oprtr)\s*\*\s*(.+)\s*$/; #$1:leftside $2:rightside 
-*op_formula_div        = \qr/^\s*([^\/]*)\s*\/\s*(.+)\s*$/; #$1:leftside $2:rightside 
-*op_formula_mod        = \qr/^\s*(.*$op_no_oprtr)\s*\%\s*(.*)\s*$/; #$1:leftside $2:rightside 
-*op_formula_plus       = \qr/^\s*([^\+]*)\s*\+\s*(.+)\s*$/; #$1:leftside $2:rightside 
-*op_formula_minus      = \qr/^\s*(.*$op_no_oprtr)\s*\-\s*(.+)\s*$/; #$1:leftside $2:rightside 
-*op_whitespace         = \qr/^\s*$/; 
+Readonly our $OP                    => qr/(?:[^,]|\\,)+/ix;
+Readonly our $OP_OPT                => qr/(?:[^,]|\\,)*/ix;
+Readonly our $DEL                   => qr/\s*(?<!\\),\s*/ix;
+Readonly our $OP_KEYWORDS           => qr/^\s*(A|B|D|X|Y|PC|SP|CCR|TMP2|TMP3|UNMAPPED)\s*$/i; #$1: keyword
+Readonly our $OP_UNMAPPED           => qr/^\s*UNMAPPED\s*$/i;
+Readonly our $OP_OPRTR              => qr/\-|\+|\*|\/|%|&|\||~|<<|>>/;
+Readonly our $OP_NO_OPRTR           => qr/[^\-\+\/%&\|~<>\s]/;
+Readonly our $OP_TERM               => qr/\%[01]+|[0-9]+|\$[0-9a-fA-F]+|\"(\w)\"|\*|\@/;
+Readonly our $OP_BINERY             => qr/^\s*([~\-]?)\s*\%([01_]+)\s*$/; #$1:complement $2:binery number
+Readonly our $OP_DEC                => qr/^\s*([~\-]?)\s*([0-9_]+)\s*$/; #$1:complement $2:decimal number
+Readonly our $OP_HEX                => qr/^\s*([~\-]?)\s*\$([0-9a-fA-F_]+)\s*$/; #$1:complement $2:hex number
+Readonly our $OP_ASCII              => qr/^\s*([~\-]?)\s*[\'\"](.+)[\'\"]\s*$/; #$1:complement $2:ASCII caracter
+#Readonly our $OP_SYMBOL             => qr/^\s*([~\-]?)\s*([\w]+[\`]?)\s*$/; #$1:complement $2:symbol
+#Readonly our $OP_CURR_LIN_PC        => qr/^\s*([~\-]?)\s*\@\s*$/;
+#Readonly our $OP_CURR_PAG_PC        => qr/^\s*([~\-]?)\s*\*\s*$/;
+Readonly our $OP_FORMULA            => qr/^\s*($OP)\s*$/; #$1:formula
+Readonly our $OP_FORMULA_PARS       => qr/^\s*(.*)\s*\(\s*([^\(\)]+)\s*\)\s*(.*)\s*$/; #$1:leftside $2:inside $3:rightside 
+Readonly our $OP_FORMULA_AND        => qr/^\s*([^\&]*)\s*\&\s*(.+)\s*$/; #$1:leftside $2:rightside 
+Readonly our $OP_FORMULA_OR         => qr/^\s*([^\|]*)\s*\|\s*(.+)\s*$/; #$1:leftside $2:rightside 
+Readonly our $OP_FORMULA_EXOR       => qr/^\s*([^\^]*)\s*\^\s*(.+)\s*$/; #$1:leftside $2:rightside 
+Readonly our $OP_FORMULA_RIGHTSHIFT => qr/^\s*([^>]*)\s*>>\s*(.+)\s*$/; #$1:leftside $2:rightside 
+Readonly our $OP_FORMULA_LEFTSHIFT  => qr/^\s*([^<]*)\s*<<\s*(.+)\s*$/; #$1:leftside $2:rightside 
+Readonly our $OP_FORMULA_MUL        => qr/^\s*(.*$OP_NO_OPRTR)\s*\*\s*(.+)\s*$/; #$1:leftside $2:rightside 
+Readonly our $OP_FORMULA_DIV        => qr/^\s*([^\/]*)\s*\/\s*(.+)\s*$/; #$1:leftside $2:rightside 
+Readonly our $OP_FORMULA_MOD        => qr/^\s*(.*$OP_NO_OPRTR)\s*\%\s*(.*)\s*$/; #$1:leftside $2:rightside 
+Readonly our $OP_FORMULA_PLUS       => qr/^\s*([^\+]*)\s*\+\s*(.+)\s*$/; #$1:leftside $2:rightside 
+Readonly our $OP_FORMULA_MINUS      => qr/^\s*(.*$OP_NO_OPRTR)\s*\-\s*(.+)\s*$/; #$1:leftside $2:rightside 
+Readonly our $OP_WHITESPACE         => qr/^\s*$/; 
 
 ##################
 # S-Record types #
 ##################
-*srec_type_lin_s12     = \"lin_s12";#"
-*srec_type_pag_s12     = \"pag_s12";#"
-*srec_type_lin_s12x    = \"lin_s12x";#"
-*srec_type_pag_s12x    = \"pag_s12x";#"
+Readonly our $SREC_TYPE_LIN_S12     => "lin_s12";#"
+Readonly our $SREC_TYPE_PAG_S12     => "pag_s12";#"
+Readonly our $SREC_TYPE_LIN_S12X    => "lin_s12x";#"
+Readonly our $SREC_TYPE_PAG_S12X    => "pag_s12x";#"
 
 ####################
 # S-Record formats #
 ####################
-*srec_format_nothing  = \qr/^\s*$/; 
-*srec_format_S0       = \qr/^\s*([Ss]0)([0-9a-fA-F]{2})([0-9a-fA-F]{4})([0-9a-fA-F]*)([0-9a-fA-F]{2})\s*$/; #$1:type $2:count $3:address $4:data $5:checksum
-*srec_format_S1       = \qr/^\s*([Ss]1)([0-9a-fA-F]{2})([0-9a-fA-F]{4})([0-9a-fA-F]*)([0-9a-fA-F]{2})\s*$/; #$1:type $2:count $3:address $4:data $5:checksum
-*srec_format_S2       = \qr/^\s*([Ss]2)([0-9a-fA-F]{2})([0-9a-fA-F]{6})([0-9a-fA-F]*)([0-9a-fA-F]{2})\s*$/; #$1:type $2:count $3:address $4:data $5:checksum 
-*srec_format_S3       = \qr/^\s*([Ss]3)([0-9a-fA-F]{2})([0-9a-fA-F]{8})([0-9a-fA-F]*)([0-9a-fA-F]{2})\s*$/; #$1:type $2:count $3:address $4:data $5:checksum 
-*srec_format_S5       = \qr/^\s*([Ss]5)([0-9a-fA-F]{2})([0-9a-fA-F]{4})([0-9a-fA-F]*)([0-9a-fA-F]{2})\s*$/; #$1:type $2:count $3:address $4:data $5:checksum
-*srec_format_S7       = \qr/^\s*([Ss]7)([0-9a-fA-F]{2})([0-9a-fA-F]{8})([0-9a-fA-F]*)([0-9a-fA-F]{2})\s*$/; #$1:type $2:count $3:address $4:data $5:checksum
-*srec_format_S8       = \qr/^\s*([Ss]8)([0-9a-fA-F]{2})([0-9a-fA-F]{6})([0-9a-fA-F]*)([0-9a-fA-F]{2})\s*$/; #$1:type $2:count $3:address $4:data $5:checksum
-*srec_format_S9       = \qr/^\s*([Ss]9)([0-9a-fA-F]{2})([0-9a-fA-F]{4})([0-9a-fA-F]*)([0-9a-fA-F]{2})\s*$/; #$1:type $2:count $3:address $4:data $5:checksum
+Readonly our $SREC_FORMAT_NOTHING  => qr/^\s*$/; 
+Readonly our $SREC_FORMAT_S0       => qr/^\s*([Ss]0)([0-9a-fA-F]{2})([0-9a-fA-F]{4})([0-9a-fA-F]*)([0-9a-fA-F]{2})\s*$/; #$1:type $2:count $3:address $4:data $5:checksum
+Readonly our $SREC_FORMAT_S1       => qr/^\s*([Ss]1)([0-9a-fA-F]{2})([0-9a-fA-F]{4})([0-9a-fA-F]*)([0-9a-fA-F]{2})\s*$/; #$1:type $2:count $3:address $4:data $5:checksum
+Readonly our $SREC_FORMAT_S2       => qr/^\s*([Ss]2)([0-9a-fA-F]{2})([0-9a-fA-F]{6})([0-9a-fA-F]*)([0-9a-fA-F]{2})\s*$/; #$1:type $2:count $3:address $4:data $5:checksum 
+Readonly our $SREC_FORMAT_S3       => qr/^\s*([Ss]3)([0-9a-fA-F]{2})([0-9a-fA-F]{8})([0-9a-fA-F]*)([0-9a-fA-F]{2})\s*$/; #$1:type $2:count $3:address $4:data $5:checksum 
+Readonly our $SREC_FORMAT_S5       => qr/^\s*([Ss]5)([0-9a-fA-F]{2})([0-9a-fA-F]{4})([0-9a-fA-F]*)([0-9a-fA-F]{2})\s*$/; #$1:type $2:count $3:address $4:data $5:checksum
+Readonly our $SREC_FORMAT_S7       => qr/^\s*([Ss]7)([0-9a-fA-F]{2})([0-9a-fA-F]{8})([0-9a-fA-F]*)([0-9a-fA-F]{2})\s*$/; #$1:type $2:count $3:address $4:data $5:checksum
+Readonly our $SREC_FORMAT_S8       => qr/^\s*([Ss]8)([0-9a-fA-F]{2})([0-9a-fA-F]{6})([0-9a-fA-F]*)([0-9a-fA-F]{2})\s*$/; #$1:type $2:count $3:address $4:data $5:checksum
+Readonly our $SREC_FORMAT_S9       => qr/^\s*([Ss]9)([0-9a-fA-F]{2})([0-9a-fA-F]{4})([0-9a-fA-F]*)([0-9a-fA-F]{2})\s*$/; #$1:type $2:count $3:address $4:data $5:checksum
 
 ########################
 # compiler expressions #
 ########################
-*cmp_no_hexcode        = \qr/^\s*(.*?[^0-9a-fA-F\ ].*?)\s*$/; #$1:string
+Readonly our $CMP_NO_HEXCODE        => qr/^\s*(.*?[^0-9a-fA-F\ ].*?)\s*$/; #$1:string
 
 ###############
 # constructor #
@@ -297,6 +299,8 @@ sub new {
 sub reload {
     my $self         = shift @_;
     my $verbose      = shift @_;
+    my $source_file  = $self->{source_files}->[0];
+    my $srec_type    = $self->{srec_type};
 
     #reset global variables
     $self->{problems}         = "no code";
@@ -426,7 +430,7 @@ sub import_srec {
 	    ###########
 	    # nothing #
 	    ###########
-	    /$srec_format_nothing/ && do {
+	    /$SREC_FORMAT_NOTHING/ && do {
 
 		print STDERR "Empty!\n";
 
@@ -434,7 +438,7 @@ sub import_srec {
 	    #############
 	    # S0-Record #
 	    #############
-	    /$srec_format_S0/ && do {
+	    /$SREC_FORMAT_S0/ && do {
 		$type     = $1;
 		$length   = $2;
 		$address  = $3;
@@ -479,7 +483,7 @@ sub import_srec {
 	    #############
 	    # S1-Record #
 	    #############
-	    /$srec_format_S1/ && do {
+	    /$SREC_FORMAT_S1/ && do {
 		$type     = $1;
 		$length   = $2;
 		$address  = $3;
@@ -545,7 +549,7 @@ sub import_srec {
 	    #############
 	    # S2-Record #
 	    #############
-	    /$srec_format_S2/ && do {
+	    /$SREC_FORMAT_S2/ && do {
  		$type     = $1;
 		$length   = $2;
 		$address  = $3;
@@ -614,7 +618,7 @@ sub import_srec {
 	    #############
 	    # S3-Record #
 	    #############
-	    /$srec_format_S3/ && do {
+	    /$SREC_FORMAT_S3/ && do {
 		$type     = $1;
 		$length   = $2;
 		$address  = $3;
@@ -678,7 +682,7 @@ sub import_srec {
 	    #############
 	    # S5-Record #
 	    #############
-	    /$srec_format_S5/ && do {
+	    /$SREC_FORMAT_S5/ && do {
 		$type     = $1;
 		$length   = $2;
 		$address  = $3;
@@ -727,7 +731,7 @@ sub import_srec {
 	    #############
 	    # S7-Record #
 	    #############    
-	    /$srec_format_S7/ && do {
+	    /$SREC_FORMAT_S7/ && do {
 		$type     = $1;
 		$length   = $2;
 		$address  = $3;
@@ -772,7 +776,7 @@ sub import_srec {
 	    #############
 	    # S8-Record #
 	    #############
-	    /$srec_format_S8/ && do {
+	    /$SREC_FORMAT_S8/ && do {
 		$type     = $1;
 		$length   = $2;
 		$address  = $3;
@@ -817,7 +821,7 @@ sub import_srec {
 	    #############
 	    # S9-Record #
 	    #############
-	    /$srec_format_S9/ && do {    
+	    /$SREC_FORMAT_S9/ && do {    
       		$type     = $1;
 		$length   = $2;
 		$address  = $3;
@@ -1012,7 +1016,7 @@ sub determine_pc {
 	#######################
 	# linear S12 S-Record #
 	#######################
-	/^$srec_type_lin_s12$/ && do {
+	/^$SREC_TYPE_LIN_S12$/ && do {
 	    #print STDERR "LINEAR S-RECORD!\n";
 	    $pc_lin = hex($address);
 	    #######################
@@ -1052,7 +1056,7 @@ sub determine_pc {
 	######################
 	# paged S12 S-Record #
 	######################
-	/^$srec_type_pag_s12$/ && do {
+	/^$SREC_TYPE_PAG_S12$/ && do {
 	    #print STDERR "PAGED S-RECORD!\n";
 	    $pc_pag = hex($address);
 	    #######################
@@ -1092,7 +1096,7 @@ sub determine_pc {
 	########################
 	# linear S12X S-Record #
 	########################
-	/^$srec_type_lin_s12x$/ && do {
+	/^$SREC_TYPE_LIN_S12X$/ && do {
 	    #print STDERR "LINEAR S-RECORD!\n";
 	    $pc_lin = hex($address);
 	    #######################
@@ -1180,7 +1184,7 @@ sub determine_pc {
 	######################
 	# paged S12X S-Record #
 	######################
-	/^$srec_type_pag_s12x$/ && do {
+	/^$SREC_TYPE_PAG_S12X$/ && do {
 	    #print STDERR "PAGED S-RECORD!\n";
 	    $pc_pag = hex($address);
 	    #######################
@@ -1271,6 +1275,8 @@ sub check_s5rec {
     my $self           = shift @_;
     my $address        = shift @_;
     my $srec_count     = shift @_;
+
+	my $error;
    
     $address = hex($address);
     ########################

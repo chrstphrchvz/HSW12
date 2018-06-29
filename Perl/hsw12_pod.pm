@@ -293,6 +293,7 @@ package hsw12_pod;
 use Tk;
 use IO::File;
 use IO::Select;
+use Readonly;
 
 ####################
 # global variables #
@@ -304,39 +305,39 @@ use IO::Select;
 ###########
 # version #
 ###########
-*version = \"00.15";#"
+Readonly our $VERSION => "00.15";#"
 
 ######################
 # parser expressions #
 ######################
 #display regs (1=PC 2=SP 3=X 4=Y 5=A 6=B 7=CCR)
-*parse_display_regs = \qr/\n +PC +SP +X +Y +D += +A:B +CCR += +SXHI NZVC.*\n([A-F\d]{4}) +([A-F\d]{4}) +([A-F\d]{4}) +([A-F\d]{4}) +([A-F\d]{2}):([A-F\d]{2}) +([A-F\d]{4} [A-F\d]{4})/is;
+Readonly our $PARSE_DISPLAY_REGS => qr/\n +PC +SP +X +Y +D += +A:B +CCR += +SXHI NZVC.*\n([A-F\d]{4}) +([A-F\d]{4}) +([A-F\d]{4}) +([A-F\d]{4}) +([A-F\d]{2}):([A-F\d]{2}) +([A-F\d]{4} [A-F\d]{4})/is;
 #display regs + ppage (1=PP 2=PC 3=SP 4=X 5=Y 6=A 7=B 8=CCR)
-*parse_display_regs_ppage = \qr/\nPP +PC +SP +X +Y +D += +A:B +CCR += +SXHI NZVC.*\n([A-FXx\d]{2}) +([A-F\d]{4}) +([A-F\d]{4}) +([A-F\d]{4}) +([A-F\d]{4}) +([A-F\d]{2}):([A-F\d]{2}) +([01]{4} [01]{4})/is;
-*parse_display_regs_ppage_ipl = \qr/\nPP +PC +SP +X +Y +D += +A:B +CCR += +IPL +SXHI NZVC.*\n([A-FXx\d]{2}) +([A-F\d]{4}) +([A-F\d]{4}) +([A-F\d]{4}) +([A-F\d]{4}) +([A-F\d]{2}):([A-F\d]{2}) +\d+ +([01]{4} [01]{4})/is;
+Readonly our $PARSE_DISPLAY_REGS_PPAGE => qr/\nPP +PC +SP +X +Y +D += +A:B +CCR += +SXHI NZVC.*\n([A-FXx\d]{2}) +([A-F\d]{4}) +([A-F\d]{4}) +([A-F\d]{4}) +([A-F\d]{4}) +([A-F\d]{2}):([A-F\d]{2}) +([01]{4} [01]{4})/is;
+Readonly our $PARSE_DISPLAY_REGS_PPAGE_IPL => qr/\nPP +PC +SP +X +Y +D += +A:B +CCR += +IPL +SXHI NZVC.*\n([A-FXx\d]{2}) +([A-F\d]{4}) +([A-F\d]{4}) +([A-F\d]{4}) +([A-F\d]{4}) +([A-F\d]{2}):([A-F\d]{2}) +\d+ +([01]{4} [01]{4})/is;
 #display memory bytes (1=address 2=+0 3=+1 4=+2 5=+3 6=+4 7=+5 8=+6 9=+7 10=+8 11=+9 12=+A 13=+B 14=+C 15=+D 16=+E 17=+F)
-*parse_display_mem_bytes = \qr/\n([A-F\d]{4}) +([A-F\d]{2}) +([A-F\d]{2}) +([A-F\d]{2}) +([A-F\d]{2}) +- +([A-F\d]{2}) +([A-F\d]{2}) +([A-F\d]{2}) +([A-F\d]{2}) +- +([A-F\d]{2}) +([A-F\d]{2}) +([A-F\d]{2}) +([A-F\d]{2}) +- +([A-F\d]{2}) +([A-F\d]{2}) +([A-F\d]{2}) +([A-F\d]{2}) */is;
+Readonly our $PARSE_DISPLAY_MEM_BYTES => qr/\n([A-F\d]{4}) +([A-F\d]{2}) +([A-F\d]{2}) +([A-F\d]{2}) +([A-F\d]{2}) +- +([A-F\d]{2}) +([A-F\d]{2}) +([A-F\d]{2}) +([A-F\d]{2}) +- +([A-F\d]{2}) +([A-F\d]{2}) +([A-F\d]{2}) +([A-F\d]{2}) +- +([A-F\d]{2}) +([A-F\d]{2}) +([A-F\d]{2}) +([A-F\d]{2}) */is;
 #display memory words (1=address 2=+0 3=+1 4=+2 5=+3 6=+4 7=+5 8=+6 9=+7 10=+8 11=+9 12=+A 13=+B 14=+C 15=+D 16=+E 17=+F)
-*parse_display_mem_words = \qr/\n([A-F\d]{4}) +([A-F\d]{2})([A-F\d]{2}) +([A-F\d]{2})([A-F\d]{2}) +- +([A-F\d]{2})([A-F\d]{2}) +([A-F\d]{2})([A-F\d]{2}) +- +([A-F\d]{2})([A-F\d]{2}) +([A-F\d]{2})([A-F\d]{2}) +- +([A-F\d]{2})([A-F\d]{2}) +([A-F\d]{2})([A-F\d]{2}) */is;
+Readonly our $PARSE_DISPLAY_MEM_WORDS => qr/\n([A-F\d]{4}) +([A-F\d]{2})([A-F\d]{2}) +([A-F\d]{2})([A-F\d]{2}) +- +([A-F\d]{2})([A-F\d]{2}) +([A-F\d]{2})([A-F\d]{2}) +- +([A-F\d]{2})([A-F\d]{2}) +([A-F\d]{2})([A-F\d]{2}) +- +([A-F\d]{2})([A-F\d]{2}) +([A-F\d]{2})([A-F\d]{2}) */is;
 #input regs (1=value)
-*parse_input_reg_pc   = \qr/\nPC=([A-F\d]{4}) +/is;
-*parse_input_reg_sp   = \qr/\nSP=([A-F\d]{4}) +/is;
-*parse_input_reg_x    = \qr/\nIX=([A-F\d]{4}) +/is;
-*parse_input_reg_y    = \qr/\nIY=([A-F\d]{4}) +/is;
-*parse_input_reg_a    = \qr/\nA=([A-F\d]{2}) +/is;
-*parse_input_reg_b    = \qr/\nB=([A-F\d]{2}) +/is;
-*parse_input_reg_ccr  = \qr/\nCCR=([A-F\d]{2}) +/is;
-*parse_input_reg_ccrw = \qr/\nCCRW=..([A-F\d]{2}) +/is;
+Readonly our $PARSE_INPUT_REG_PC   => qr/\nPC=([A-F\d]{4}) +/is;
+Readonly our $PARSE_INPUT_REG_SP   => qr/\nSP=([A-F\d]{4}) +/is;
+Readonly our $PARSE_INPUT_REG_X    => qr/\nIX=([A-F\d]{4}) +/is;
+Readonly our $PARSE_INPUT_REG_Y    => qr/\nIY=([A-F\d]{4}) +/is;
+Readonly our $PARSE_INPUT_REG_A    => qr/\nA=([A-F\d]{2}) +/is;
+Readonly our $PARSE_INPUT_REG_B    => qr/\nB=([A-F\d]{2}) +/is;
+Readonly our $PARSE_INPUT_REG_CCR  => qr/\nCCR=([A-F\d]{2}) +/is;
+Readonly our $PARSE_INPUT_REG_CCRW => qr/\nCCRW=..([A-F\d]{2}) +/is;
 #input memory bytes (1=address 2=value) 
-*parse_input_mem_bytes = \qr/\n([A-F\d]{4}) +([A-F\d]{2}) *\n/is;
+Readonly our $PARSE_INPUT_MEM_BYTES => qr/\n([A-F\d]{4}) +([A-F\d]{2}) *\n/is;
 #input memory words (1=address 2=hi 3=lo) 
-*parse_input_mem_words = \qr/\n([A-F\d]{4}) +([A-F\d]{2})([A-F\d]{2}) *\n/is;
+Readonly our $PARSE_INPUT_MEM_WORDS => qr/\n([A-F\d]{4}) +([A-F\d]{2})([A-F\d]{2}) *\n/is;
 
 ###############
 # delays (ms) #
 ###############
-*command_delay = \200;
-#*command_delay = \10;
+Readonly our $COMMAND_DELAY => 200;
+#Readonly our $COMMAND_DELAY => 10;
 
 ###############
 # constructor #
@@ -431,7 +432,7 @@ sub set_device {
       if (Tk::Exists $self->{terminal_window}) {
 	$self->{terminal_window}->insert('end', 
 					 sprintf("Error! Can't read from device \"%s\" (%s)\n", $device, $!),
-					 $hsw12_gui::terminal_tag_error);
+					 $hsw12_gui::TERMINAL_TAG_ERROR);
 
 	$self->{terminal_window}->see('end linestart');
 	$self->{terminal_window}->see('end');
@@ -447,7 +448,7 @@ sub set_device {
     if (Tk::Exists $self->{terminal_window}) {
       $self->{terminal_window}->insert('end', 
 				       sprintf("Error! Can't write to device \"%s\" (%s)\n", $device, $!),
-				       $hsw12_gui::terminal_tag_error);	
+				       $hsw12_gui::TERMINAL_TAG_ERROR);	
       $self->{terminal_window}->see('end linestart');
       $self->{terminal_window}->see('end');
     } else {
@@ -459,7 +460,7 @@ sub set_device {
   if (Tk::Exists $self->{terminal_window}) {
     $self->{terminal_window}->insert('end', 
 				     sprintf("Connected to device \"%s\"\n", $device),
-				     $hsw12_gui::terminal_tag_info);	
+				     $hsw12_gui::TERMINAL_TAG_INFO);	
     $self->{terminal_window}->see('end linestart');
     $self->{terminal_window}->see('end');
   }
@@ -480,6 +481,7 @@ sub set_baud_rate {
   if (defined $device) {
     undef $!;
     #set stty args
+	my $stty_call;
     if(index(`stty --version 2>&1`, 'stty (GNU coreutils)') != -1) {
       # detected coreutils stty, use necessary syntax
       $stty_call  = sprintf("stty -F %s ", $device);
@@ -551,7 +553,7 @@ sub set_baud_rate {
       if (Tk::Exists $self->{terminal_window}) {
 	$self->{terminal_window}->insert('end', 
 					 sprintf("Error! Can't set baud rate on device \"%s\" (%s)\n", $device, $!),
-					 $hsw12_gui::terminal_tag_error);	
+					 $hsw12_gui::TERMINAL_TAG_ERROR);	
 	$self->{terminal_window}->see('end linestart');
 	$self->{terminal_window}->see('end');
       } else {
@@ -563,7 +565,7 @@ sub set_baud_rate {
       if (Tk::Exists $self->{terminal_window}) {
 	$self->{terminal_window}->insert('end', 
 					 sprintf("Device \"%s\" set to %d baud\n", $device, $baud_rate),
-					 $hsw12_gui::terminal_tag_info);	
+					 $hsw12_gui::TERMINAL_TAG_INFO);	
 	$self->{terminal_window}->see('end linestart');
 	$self->{terminal_window}->see('end');
       }
@@ -575,7 +577,7 @@ sub set_baud_rate {
     if (Tk::Exists $self->{terminal_window}) {
       $self->{terminal_window}->insert('end', 
 				       "Error! Not connected\n",
-				       $hsw12_gui::terminal_tag_error);	
+				       $hsw12_gui::TERMINAL_TAG_ERROR);	
       $self->{terminal_window}->see('end linestart');
       $self->{terminal_window}->see('end');
     } else {
@@ -621,7 +623,7 @@ sub parse_input_stream {
 	    foreach $char (split //, $data) {
 		if ($char =~ /^[\x20-\x7e\s]$/) {
 		    #display one character
-		    $self->{terminal_window}->insert('end', $char, $hsw12_gui::terminal_tag_default);
+		    $self->{terminal_window}->insert('end', $char, $hsw12_gui::TERMINAL_TAG_DEFAULT);
 		} elsif ($char =~ /^[\x08]$/) {
 		    #backspace
 		    #print STDERR "backspace\n";
@@ -632,7 +634,7 @@ sub parse_input_stream {
 		    $self->{terminal_window}->bell;
 		} else {
 		    #display hex code
-		    $self->{terminal_window}->insert('end', sprintf("[%.2X]", ord($char)), $hsw12_gui::terminal_tag_error);
+		    $self->{terminal_window}->insert('end', sprintf("[%.2X]", ord($char)), $hsw12_gui::TERMINAL_TAG_ERROR);
 		}	    
 	    }	    
 	    $self->{terminal_window}->see('end linestart');
@@ -644,7 +646,7 @@ sub parse_input_stream {
 	    if (Tk::Exists $self->{terminal_window}) {
 		$self->{terminal_window}->insert('end', 
 						 sprintf("Error! Can't read from device \"%s\" (%s)\n", $self->{device}, $!),
-						 $hsw12_gui::terminal_tag_error);
+						 $hsw12_gui::TERMINAL_TAG_ERROR);
 		$self->{terminal_window}->see('end linestart');
 		$self->{terminal_window}->see('end');
 	    } else {
@@ -801,13 +803,15 @@ sub parse_string {
     my $match17;
     my $ccr_char;
     my $ccr_value;
+    my $binery_char;
+    my $binery_value;
     
     #printf STDERR "parse_string: \"%s\"\n", $string;
     for ($string) {
 	################
 	# display regs #
 	################
-	/$parse_display_regs/ && do {
+	/$PARSE_DISPLAY_REGS/ && do {
 	    $prematch  = $`;
 	    $postmatch = $';
 	    $match01   = $1;
@@ -845,7 +849,7 @@ sub parse_string {
 	########################
 	# display regs + ppage #
 	########################
-	/$parse_display_regs_ppage/ && do {
+	/$PARSE_DISPLAY_REGS_PPAGE/ && do {
 	    $prematch  = $`;
 	    $postmatch = $';
 	    $match01   = $1;
@@ -885,7 +889,7 @@ sub parse_string {
 	##############################
 	# display regs + ppage + ipl #
 	##############################
-	/$parse_display_regs_ppage_ipl/ && do {
+	/$PARSE_DISPLAY_REGS_PPAGE_IPL/ && do {
 	    $prematch  = $`;
 	    $postmatch = $';
 	    $match01   = $1;
@@ -925,7 +929,7 @@ sub parse_string {
 	########################
 	# display memory bytes #
 	########################
-	/$parse_display_mem_bytes/ && do {
+	/$PARSE_DISPLAY_MEM_BYTES/ && do {
 	    $prematch  = $`;
 	    $postmatch = $';
 	    $match01   = $1;
@@ -972,7 +976,7 @@ sub parse_string {
 	########################
 	# display memory words #
 	########################
-	/$parse_display_mem_words/ && do {
+	/$PARSE_DISPLAY_MEM_WORDS/ && do {
 	    $prematch  = $`;
 	    $postmatch = $';
 	    $match01   = $1;
@@ -1019,7 +1023,7 @@ sub parse_string {
 	###################
 	# input regs (PC) #
 	###################
-	/$parse_input_reg_pc/ && do {
+	/$PARSE_INPUT_REG_PC/ && do {
 	    $prematch  = $`;
 	    $postmatch = $';
 	    $match01   = $1;
@@ -1035,7 +1039,7 @@ sub parse_string {
 	###################
 	# input regs (SP) #
 	###################
-	/$parse_input_reg_sp/ && do {
+	/$PARSE_INPUT_REG_SP/ && do {
 	    $prematch  = $`;
 	    $postmatch = $';
 	    $match01   = $1;
@@ -1051,7 +1055,7 @@ sub parse_string {
 	##################
 	# input regs (X) #
 	##################
-	/$parse_input_reg_x/ && do {
+	/$PARSE_INPUT_REG_X/ && do {
 	    $prematch  = $`;
 	    $postmatch = $';
 	    $match01   = $1;
@@ -1067,7 +1071,7 @@ sub parse_string {
 	##################
 	# input regs (Y) #
 	##################
-	/$parse_input_reg_y/ && do {
+	/$PARSE_INPUT_REG_Y/ && do {
 	    $prematch  = $`;
 	    $postmatch = $';
 	    $match01   = $1;
@@ -1083,7 +1087,7 @@ sub parse_string {
 	##################
 	# input regs (A) #
 	##################
-	/$parse_input_reg_a/ && do {
+	/$PARSE_INPUT_REG_A/ && do {
 	    $prematch  = $`;
 	    $postmatch = $';
 	    $match01   = $1;
@@ -1099,7 +1103,7 @@ sub parse_string {
 	##################
 	# input regs (B) #
 	##################
-	/$parse_input_reg_b/ && do {
+	/$PARSE_INPUT_REG_B/ && do {
 	    $prematch  = $`;
 	    $postmatch = $';
 	    $match01   = $1;
@@ -1115,7 +1119,7 @@ sub parse_string {
 	####################
 	# input regs (CCR) #
 	####################
-	/$parse_input_reg_ccr/ && do {
+	/$PARSE_INPUT_REG_CCR/ && do {
 	    $prematch  = $`;
 	    $postmatch = $';
 	    $match01   = $1;
@@ -1131,7 +1135,7 @@ sub parse_string {
 	#####################
 	# input regs (CCRW) #
 	#####################
-	/$parse_input_reg_ccrw/ && do {
+	/$PARSE_INPUT_REG_CCRW/ && do {
 	    $prematch  = $`;
 	    $postmatch = $';
 	    $match01   = $1;
@@ -1147,7 +1151,7 @@ sub parse_string {
 	######################
 	# input memory bytes #
 	######################
-	/$parse_input_mem_bytes/ && do {
+	/$PARSE_INPUT_MEM_BYTES/ && do {
 	    $prematch  = $`;
 	    $postmatch = $';
 	    $match01   = $1;
@@ -1166,7 +1170,7 @@ sub parse_string {
 	######################
 	# input memory words #
 	######################
-	/$parse_input_mem_words/ && do {
+	/$PARSE_INPUT_MEM_WORDS/ && do {
 	    $prematch  = $`;
 	    $postmatch = $';
 	    $match01   = $1;
@@ -1232,18 +1236,18 @@ sub send_command {
 	
 	#transmit substring
 	if($self->{transmit}) {
-	    push @$output_queue, [$substring, $command_delay];
+	    push @$output_queue, [$substring, $COMMAND_DELAY];
 	} else {
-	    push @$output_queue, [$substring, $command_delay];
+	    push @$output_queue, [$substring, $COMMAND_DELAY];
 	    $self->transmit();
 	}
     }
 
     #transmit remaining data
     if($self->{transmit}) {
-	push @$output_queue, [$data, $command_delay];
+	push @$output_queue, [$data, $COMMAND_DELAY];
     } else {
-	push @$output_queue, [$data, $command_delay];
+	push @$output_queue, [$data, $COMMAND_DELAY];
 	$self->transmit();
     }
 }

@@ -58,45 +58,46 @@ Dirk Heisswolf
 use 5.005;
 use warnings;
 use IO::File;
+use Readonly;
 
 #############
 # constants #
 #############
-*mid_val       = \0x80;
-*threshold     = \0x08;
-*padding       = \3;
-*page_size     = \(16*1024);
+Readonly our $MID_VAL       => 0x80;
+Readonly our $THRESHOLD     => 0x08;
+Readonly our $PADDING       => 3;
+Readonly our $PAGE_SIZE     => (16*1024);
 
 ###############
 # global vars #
 ###############
-$arg               = "";
-$arg_type          = "";
-$offset            = 0;
-@src_files         = ();
-$src_file          = "";
-$src_handle        = 0;
-$riff_check        = "";
-$mono_check        = "";
-$rate_check        = "";
-$sample_check      = "";
-$file_size         = "";
-@data_buffer       = ();
-@pad_buffer        = ();
-$out_total         = 0;
-$out_count         = 0;
-$byte_count        = 0;
-$out_basename      = "";
-$out_file          = "";
-$out_handle        = 0;
+our $arg               = "";
+our $arg_type          = "";
+our $offset            = 0;
+our @src_files         = ();
+our $src_file          = "";
+our $src_handle        = 0;
+our $riff_check        = "";
+our $mono_check        = "";
+our $rate_check        = "";
+our $sample_check      = "";
+our $file_size         = "";
+our @data_buffer       = ();
+our @pad_buffer        = ();
+our $out_total         = 0;
+our $out_count         = 0;
+our $byte_count        = 0;
+our $out_basename      = "";
+our $out_file          = "";
+our $out_handle        = 0;
 
 #general purpose
-$i                 = 0;
-$j                 = 0;
-$byte              = "";
-$string            = "";
-$hival             = 0;
-$loval             = 0;
+our $i                 = 0;
+our $j                 = 0;
+our $byte              = "";
+our $string            = "";
+our $hival             = 0;
+our $loval             = 0;
 
 
 ##########################
@@ -232,12 +233,12 @@ foreach $src_file (@src_files) {
     while ($#data_buffer > 0) {
 	 $byte = shift @data_buffer;
 	 push @pad_buffer, $byte;
-	 if ($#pad_buffer > $padding) {
+	 if ($#pad_buffer > $PADDING) {
 	     shift @pad_buffer;
 	 }
          #printf STDERR "byte:    \"%X\" \"%X\" %s\n", $byte, $#pad_buffer, join(", ", @pad_buffer);
-	 if (($byte <= ($mid_val-$threshold)) || 
-	     ($byte >= ($mid_val+$threshold))) {
+	 if (($byte <= ($MID_VAL-$THRESHOLD)) || 
+	     ($byte >= ($MID_VAL+$THRESHOLD))) {
              #printf STDERR "sound byte:    \"%X\"\n", $byte;
 	     last;
 	 }
@@ -254,12 +255,12 @@ foreach $src_file (@src_files) {
     while ($#data_buffer > 0) {
 	 $byte = shift @data_buffer;
 	 push @pad_buffer, $byte;
-	 if ($#pad_buffer > $padding) {
+	 if ($#pad_buffer > $PADDING) {
 	     shift @pad_buffer;
 	 }
          #printf STDERR "byte:    \"%X\" \"%X\" %s\n", $byte, $#pad_buffer, join(", ", @pad_buffer);
-	 if (($byte <= ($mid_val-$threshold)) || 
-	     ($byte >= ($mid_val+$threshold))) {
+	 if (($byte <= ($MID_VAL-$THRESHOLD)) || 
+	     ($byte >= ($MID_VAL+$THRESHOLD))) {
              #printf STDERR "sound byte:    \"%X\"\n", $byte;
 	     last;
 	 }
@@ -311,11 +312,11 @@ foreach $src_file (@src_files) {
     #####################
     # prepare data dump #
     #####################
-    $offset       = $offset % $page_size;
+    $offset       = $offset % $PAGE_SIZE;
     #printf STDERR "offset:    \"%X\"\n", $offset;
     $out_count    = 0;
-    $out_total    = ($offset + $file_size) / $page_size;
-    if ((($offset + $file_size) % $page_size) > 0) {
+    $out_total    = ($offset + $file_size) / $PAGE_SIZE;
+    if ((($offset + $file_size) % $PAGE_SIZE) > 0) {
 	$out_total++;
     }
     if ($src_file =~ /^([\w-]+)\.wav$/i) {
@@ -356,7 +357,7 @@ foreach $src_file (@src_files) {
 
 	$byte_count = $offset;
 	while (1) {
-	    if ($byte_count >= $page_size) {
+	    if ($byte_count >= $PAGE_SIZE) {
 		#page is full
 		$offset = 0;
 		last;
@@ -371,7 +372,7 @@ foreach $src_file (@src_files) {
 		$loval             = 0xff;		
 		for ($i=1; (($i<=16)             && 
 			    ($#data_buffer >= 0) &&
-			    ($byte_count < $page_size)); $i++) {
+			    ($byte_count < $PAGE_SIZE)); $i++) {
 		    $byte = shift @data_buffer;		    
 		    #if ($#data_buffer < 10) {printf STDERR "byte:    \"%X\" \"%X\"\n", $byte, $#data_buffer;}
 		    if ($byte > $hival) {$hival = $byte;}

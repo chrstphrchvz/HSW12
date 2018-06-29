@@ -91,24 +91,33 @@ require hsw12_asm;
 ###############
 # global vars #
 ###############
-@src_files         = ();
-@lib_files         = ();
-%defines           = ();
-$output_path       = ();
-$prog_name         = "";
-$arg_type          = "src";
-$srec_format       = $hsw12_asm::srec_def_format;
-$srec_data_length  = $hsw12_asm::srec_def_data_length;
-$srec_add_s5       = $hsw12_asm::srec_def_add_s5;
-$srec_alignment    = $hsw12_asm::srec_def_alignment;
-$symbols           = {};
-$code              = {};
+our @src_files         = ();
+our @lib_files         = ();
+our %defines           = ();
+our $output_path       = ();
+our $prog_name         = "";
+our $arg_type          = "src";
+our $srec_format;
+our $srec_data_length;
+our $srec_add_s5;
+our $srec_alignment;
+# Suppress bogus warning:
+# "Name hsw12_asm::%s used only once: possible typo"
+{
+    no warnings 'once';
+    $srec_format       = $hsw12_asm::SREC_DEF_FORMAT;
+    $srec_data_length  = $hsw12_asm::SREC_DEF_DATA_LENGTH;
+    $srec_add_s5       = $hsw12_asm::SREC_DEF_ADD_S5;
+    $srec_alignment    = $hsw12_asm::SREC_DEF_ALIGNMENT;
+}
+our $symbols           = {};
+our $code              = {};
 
 ##########################
 # read command line args #
 ##########################
 #printf "parsing args: count: %s\n", $#ARGV + 1;
-foreach $arg (@ARGV) {
+foreach my $arg (@ARGV) {
     #printf "  arg: %s\n", $arg;
     if ($arg =~ /^\s*\-L\s*$/i) {
 	$arg_type = "lib";
@@ -128,7 +137,7 @@ foreach $arg (@ARGV) {
 	push @src_files, $arg;
     } elsif ($arg_type eq "lib") {
 	#library path
-	if ($arg !~ /\/$/) {$arg = sprintf("%s%s", $arg, $hsw12_asm::path_del);}
+	if ($arg !~ /\/$/) {$arg = sprintf("%s%s", $arg, $hsw12_asm::PATH_DEL);}
 	unshift @lib_files, $arg;
         $arg_type          = "src";
     } elsif ($arg_type eq "def") {
@@ -163,17 +172,18 @@ $output_path = dirname($src_files[0], ".s");
 #printf "libraries:    %s (%s)\n",join(", ", @lib_files), $#lib_files;
 #printf "source files: %s (%s)\n",join(", ", @src_files), $#src_files;
 if ($#lib_files < 0) {
-  foreach $src_file (@src_files) {
+  foreach my $src_file (@src_files) {
     #printf "add library:%s/\n", dirname($src_file);
-    push @lib_files, sprintf("%s%s", dirname($src_file), $hsw12_asm::path_del);
+    push @lib_files, sprintf("%s%s", dirname($src_file), $hsw12_asm::PATH_DEL);
   }
 }
 
 ####################
 # load symbol file #
 ####################
-$symbol_file_name = sprintf("%s%s%s.sym", $output_path, $hsw12_asm::path_del, $prog_name);
+my $symbol_file_name = sprintf("%s%s%s.sym", $output_path, $hsw12_asm::PATH_DEL, $prog_name);
 #printf STDERR "Loading: %s\n",  $symbol_file_name;
+my $data;
 if (open (FILEHANDLE, sprintf("<%s", $symbol_file_name))) {
     $data = join "", <FILEHANDLE>;
     eval $data;
@@ -194,7 +204,8 @@ $code = hsw12_asm->new(\@src_files, \@lib_files, \%defines, "S12", 1, $symbols);
 ###################
 # write list file #
 ###################
-$list_file_name = sprintf("%s%s%s.lst", $output_path, $hsw12_asm::path_del, $prog_name);
+my $list_file_name = sprintf("%s%s%s.lst", $output_path, $hsw12_asm::PATH_DEL, $prog_name);
+my $out_string;
 if (open (FILEHANDLE, sprintf("+>%s", $list_file_name))) {
     $out_string = $code->print_listing();
     print FILEHANDLE $out_string;
@@ -224,7 +235,7 @@ if ($code->{problems}) {
     # write symbol file #
     #####################
     if (open (FILEHANDLE, sprintf("+>%s", $symbol_file_name))) {
-	$dump = Data::Dumper->new([$code->{comp_symbols}], ['symbols']);
+	my $dump = Data::Dumper->new([$code->{comp_symbols}], ['symbols']);
 	$dump->Indent(2);
 	print FILEHANDLE $dump->Dump;
  	close FILEHANDLE;
@@ -236,7 +247,7 @@ if ($code->{problems}) {
     #########################
     # write linear S-record #
     #########################
-    $lin_srec_file_name = sprintf("%s%s%s_lin.%s", $output_path, $hsw12_asm::path_del, $prog_name, lc($srec_format));
+    my $lin_srec_file_name = sprintf("%s%s%s_lin.%s", $output_path, $hsw12_asm::PATH_DEL, $prog_name, lc($srec_format));
     if (open (FILEHANDLE, sprintf("+>%s", $lin_srec_file_name))) {
 	$out_string = $code->print_lin_srec(uc($prog_name),
 					    $srec_format,
@@ -253,7 +264,7 @@ if ($code->{problems}) {
     ########################
     # write paged S-record #
     ########################
-    $pag_srec_file_name = sprintf("%s%s%s_pag.%s", $output_path, $hsw12_asm::path_del, $prog_name, lc($srec_format));
+    my $pag_srec_file_name = sprintf("%s%s%s_pag.%s", $output_path, $hsw12_asm::PATH_DEL, $prog_name, lc($srec_format));
     if (open (FILEHANDLE, sprintf("+>%s", $pag_srec_file_name))) {
 	$out_string = $code->print_pag_srec(uc($prog_name),
 					    $srec_format,

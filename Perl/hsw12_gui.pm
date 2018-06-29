@@ -198,6 +198,7 @@ use Data::Dumper;
 use IO::File;
 use Fcntl;
 use File::Basename;
+use Readonly;
 
 ####################
 # global variables #
@@ -213,84 +214,84 @@ use File::Basename;
 ###########
 # version #
 ###########
-*version = \"00.22";#"
-*release = \"00.67";#"
+Readonly our $VERSION => "00.22";#"
+Readonly our $RELEASE => "00.67";#"
 
 #####################
 # macro expressions #
 #####################
-*macro_split_command         = \qr/^(.*?)(?<!\\)\[([^\[\]]*)(?<!\\)\](.*)$/isx; #$1:text $2:command $3:text
-*macro_command_update        = \qr/^\s*(?:update)\s*$/isx; 
-*macro_command_upload        = \qr/^\s*(?:upload|up|u)\s*$/isx; 
-*macro_command_upload_linear = \qr/^\s*(?:upload|up|u)\s*(?:linear|lin|l)\s*$/isx; 
-*macro_command_upload_paged  = \qr/^\s*(?:upload|up|u)\s*(?:paged|pag|p)\s*$/isx; 
-*macro_command_recompile     = \qr/^\s*(?:recompile|recomp|r)\s*$/isx; 
-*macro_command_evaluate      = \qr/^\s*(?:evaluate|eval|e)\s*(\S+)\s*(\d+)(b|d|h|a)\s*$/isx; #$1:expression $2:bits $3:format
-*macro_command_lookup        = \qr/^\s*(?:lookup|look|l)\s*(\S+)\s*(\d+)(b|d|h|a)\s*$/isx;   #$1:expression $2:bits $3:format
-*macro_format_bin            = \qr/^\s*(?:b)\s*$/isx; 
-*macro_format_dec            = \qr/^\s*(?:d)\s*$/isx; 
-*macro_format_hex            = \qr/^\s*(?:h)\s*$/isx; 
-*macro_format_ascii          = \qr/^\s*(?:a)\s*$/isx; 
+Readonly our $MACRO_SPLIT_COMMAND         => qr/^(.*?)(?<!\\)\[([^\[\]]*)(?<!\\)\](.*)$/isx; #$1:text $2:command $3:text
+Readonly our $MACRO_COMMAND_UPDATE        => qr/^\s*(?:update)\s*$/isx; 
+Readonly our $MACRO_COMMAND_UPLOAD        => qr/^\s*(?:upload|up|u)\s*$/isx; 
+Readonly our $MACRO_COMMAND_UPLOAD_LINEAR => qr/^\s*(?:upload|up|u)\s*(?:linear|lin|l)\s*$/isx; 
+Readonly our $MACRO_COMMAND_UPLOAD_PAGED  => qr/^\s*(?:upload|up|u)\s*(?:paged|pag|p)\s*$/isx; 
+Readonly our $MACRO_COMMAND_RECOMPILE     => qr/^\s*(?:recompile|recomp|r)\s*$/isx; 
+Readonly our $MACRO_COMMAND_EVALUATE      => qr/^\s*(?:evaluate|eval|e)\s*(\S+)\s*(\d+)(b|d|h|a)\s*$/isx; #$1:expression $2:bits $3:format
+Readonly our $MACRO_COMMAND_LOOKUP        => qr/^\s*(?:lookup|look|l)\s*(\S+)\s*(\d+)(b|d|h|a)\s*$/isx;   #$1:expression $2:bits $3:format
+Readonly our $MACRO_FORMAT_BIN            => qr/^\s*(?:b)\s*$/isx; 
+Readonly our $MACRO_FORMAT_DEC            => qr/^\s*(?:d)\s*$/isx; 
+Readonly our $MACRO_FORMAT_HEX            => qr/^\s*(?:h)\s*$/isx; 
+Readonly our $MACRO_FORMAT_ASCII          => qr/^\s*(?:a)\s*$/isx; 
 
 ##############
 # macro tags #
 ##############
-*macro_tag_default   = \"default";#"
-*macro_tag_error     = \"error";#"
-*macro_tag_evaluate  = \"evaluate";#"
-*macro_tag_lookup    = \"lookup";#"
+Readonly our $MACRO_TAG_DEFAULT   => "default";#"
+Readonly our $MACRO_TAG_ERROR     => "error";#"
+Readonly our $MACRO_TAG_EVALUATE  => "evaluate";#"
+Readonly our $MACRO_TAG_LOOKUP    => "lookup";#"
 
 ###############
 # macro_flags #
 ###############
-*macro_allow_pod_reads = \0x01;
-*macro_allow_update    = \0x02;
-*macro_allow_upload    = \0x04;
-*macro_allow_recompile = \0x08;
-*macro_allow_evaluate  = \0x10;
-*macro_allow_lookup    = \0x20;
-*macro_error_text      = \0x40;
-*macro_error_popup     = \0x80;
+Readonly our $MACRO_ALLOW_POD_READS => 0x01;
+Readonly our $MACRO_ALLOW_UPDATE    => 0x02;
+Readonly our $MACRO_ALLOW_UPLOAD    => 0x04;
+Readonly our $MACRO_ALLOW_RECOMPILE => 0x08;
+Readonly our $MACRO_ALLOW_EVALUATE  => 0x10;
+Readonly our $MACRO_ALLOW_LOOKUP    => 0x20;
+Readonly our $MACRO_ERROR_TEXT      => 0x40;
+Readonly our $MACRO_ERROR_POPUP     => 0x80;
 
 ####################
 # source code tags #
 ####################
-*source_tag_address    = \"address";#"
-*source_tag_hexcode    = \"hexcode";#"
-*source_tag_label      = \"label";#"
-*source_tag_mnemonic   = \"mnemonic";#"
-*source_tag_args       = \"args";#"
-*source_tag_comment    = \"comment";#"
-*source_tag_error      = \"error";#"
-*source_tag_highlight  = \"highlight";#"
+Readonly our $SOURCE_TAG_ADDRESS    => "address";#"
+Readonly our $SOURCE_TAG_HEXCODE    => "hexcode";#"
+Readonly our $SOURCE_TAG_LABEL      => "label";#"
+Readonly our $SOURCE_TAG_MNEMONIC   => "mnemonic";#"
+Readonly our $SOURCE_TAG_ARGS       => "args";#"
+Readonly our $SOURCE_TAG_COMMENT    => "comment";#"
+Readonly our $SOURCE_TAG_ERROR      => "error";#"
+Readonly our $SOURCE_TAG_HIGHLIGHT  => "highlight";#"
 
 ######################
 # terminal code tags #
 ######################
-*terminal_tag_default   = \"default";#"
-*terminal_tag_error     = \"error";#"
-*terminal_tag_info      = \"info";#"
+Readonly our $TERMINAL_TAG_DEFAULT   => "default";#"
+Readonly our $TERMINAL_TAG_ERROR     => "error";#"
+Readonly our $TERMINAL_TAG_INFO      => "info";#"
 
 ###############
 # PPAGE rules #
 ###############
-*ppage_always = \"always";#"
-*ppage_range  = \"range";#"
-*ppage_never  = \"never";#"
+Readonly our $PPAGE_ALWAYS => "always";#"
+Readonly our $PPAGE_RANGE  => "range";#"
+Readonly our $PPAGE_NEVER  => "never";#"
 
 ###########
 # choices #
 ###########
-*choices_enable      = \"enable";#"
-*choices_disable     = \"disable";#"
-*choices_yes         = \"yes";#"
-*choices_no          = \"no";#"
-*choices_on          = \"on";#"
-*choices_off         = \"off";#"
-*choices_none        = \"none";#"
-*choices_always      = \"always";#"
-*choices_ppage_range = \"\$8000-\$BFFF";#"
-*choices_never       = \"never";#"
+Readonly our $CHOICES_ENABLE      => "enable";#"
+Readonly our $CHOICES_DISABLE     => "disable";#"
+Readonly our $CHOICES_YES         => "yes";#"
+Readonly our $CHOICES_NO          => "no";#"
+Readonly our $CHOICES_ON          => "on";#"
+Readonly our $CHOICES_OFF         => "off";#"
+Readonly our $CHOICES_NONE        => "none";#"
+Readonly our $CHOICES_ALWAYS      => "always";#"
+Readonly our $CHOICES_PPAGE_RANGE => "\$8000-\$BFFF";#"
+Readonly our $CHOICES_NEVER       => "never";#"
 
 ###############
 # constructor #
@@ -339,7 +340,7 @@ sub new {
 		#save file name
 		$self->{session}->{source_file} = $file_name;
 		#assemble code
-		$self->{session}->{code} = hsw12_srec_import->new($file_name, $hsw12_srec_import::srec_type_pag);
+		$self->{session}->{code} = hsw12_srec_import->new($file_name, $hsw12_srec_import::SREC_TYPE_PAG);
 		last;};
 	    #####################
 	    # unknown file type # 
@@ -1136,10 +1137,10 @@ sub main_window_import_linear_s12_srecord_cmd {
 	#assemble code
 	if (Tk::Exists $self->{gui}->{source_code}->{text_text}) {
 	    #use source code window
-	    $self->{session}->{code} = hsw12_srec_import->new($file_name, $hsw12_srec_import::srec_type_lin_s12, 0);
+	    $self->{session}->{code} = hsw12_srec_import->new($file_name, $hsw12_srec_import::SREC_TYPE_LIN_S12, 0);
 	} else {
 	    #use STDOUT
-	    $self->{session}->{code} = hsw12_srec_import->new($file_name, $hsw12_srec_import::srec_type_lin_s12, 0);
+	    $self->{session}->{code} = hsw12_srec_import->new($file_name, $hsw12_srec_import::SREC_TYPE_LIN_S12, 0);
 	}
 
 	#build GUI
@@ -1175,10 +1176,10 @@ sub main_window_import_paged_s12_srecord_cmd {
 	#assemble code
 	if (Tk::Exists $self->{gui}->{source_code}->{text_text}) {
 	    #use source code window
-	    $self->{session}->{code} = hsw12_srec_import->new($file_name, $hsw12_srec_import::srec_type_pag_s12, 0);
+	    $self->{session}->{code} = hsw12_srec_import->new($file_name, $hsw12_srec_import::SREC_TYPE_PAG_S12, 0);
 	} else {
 	    #use STDOUT
-	    $self->{session}->{code} = hsw12_srec_import->new($file_name, $hsw12_srec_import::srec_type_pag_s12, 0);
+	    $self->{session}->{code} = hsw12_srec_import->new($file_name, $hsw12_srec_import::SREC_TYPE_PAG_S12, 0);
 	}
 
 	#build GUI
@@ -1214,10 +1215,10 @@ sub main_window_import_linear_s12x_srecord_cmd {
 	#assemble code
 	if (Tk::Exists $self->{gui}->{source_code}->{text_text}) {
 	    #use source code window
-	    $self->{session}->{code} = hsw12_srec_import->new($file_name, $hsw12_srec_import::srec_type_lin_s12x, 0);
+	    $self->{session}->{code} = hsw12_srec_import->new($file_name, $hsw12_srec_import::SREC_TYPE_LIN_S12X, 0);
 	} else {
 	    #use STDOUT
-	    $self->{session}->{code} = hsw12_srec_import->new($file_name, $hsw12_srec_import::srec_type_lin_s12x, 0);
+	    $self->{session}->{code} = hsw12_srec_import->new($file_name, $hsw12_srec_import::SREC_TYPE_LIN_S12X, 0);
 	}
 
 	#build GUI
@@ -1253,10 +1254,10 @@ sub main_window_import_paged_s12x_srecord_cmd {
 	#assemble code
 	if (Tk::Exists $self->{gui}->{source_code}->{text_text}) {
 	    #use source code window
-	    $self->{session}->{code} = hsw12_srec_import->new($file_name, $hsw12_srec_import::srec_type_pag_s12x, 0);
+	    $self->{session}->{code} = hsw12_srec_import->new($file_name, $hsw12_srec_import::SREC_TYPE_PAG_S12X, 0);
 	} else {
 	    #use STDOUT
-	    $self->{session}->{code} = hsw12_srec_import->new($file_name, $hsw12_srec_import::srec_type_pag_s12x, 0);
+	    $self->{session}->{code} = hsw12_srec_import->new($file_name, $hsw12_srec_import::SREC_TYPE_PAG_S12X, 0);
 	}
 
 	#build GUI
@@ -1408,13 +1409,13 @@ sub main_window_about_cmd {
     #about dialog
     $about_text  = sprintf("HSW12 IDE for HC(S)12 Microcontrollers\n");
     $about_text .= sprintf("\n");
-    $about_text .= sprintf("Release..................%s\n", $hsw12_gui::release);
+    $about_text .= sprintf("Release..................%s\n", $hsw12_gui::RELEASE);
     $about_text .= sprintf("\n");
     $about_text .= sprintf("Versions:\n");
-    $about_text .= sprintf("Assembler................%s\n", $hsw12_asm::version);
-    $about_text .= sprintf("GUI......................%s\n", $hsw12_gui::version);
-    $about_text .= sprintf("DBug12 Interface.........%s\n", $hsw12_pod::version);
-    $about_text .= sprintf("HCS12 S-Record Importer..%s\n", $hsw12_srec_import::version);
+    $about_text .= sprintf("Assembler................%s\n", $hsw12_asm::VERSION);
+    $about_text .= sprintf("GUI......................%s\n", $hsw12_gui::VERSION);
+    $about_text .= sprintf("DBug12 Interface.........%s\n", $hsw12_pod::VERSION);
+    $about_text .= sprintf("HCS12 S-Record Importer..%s\n", $hsw12_srec_import::VERSION);
     $about_text .= sprintf("Perl.....................%s\n", $]);
     $about_text .= sprintf("Tk.......................%s\n", $Tk::VERSION);
     $about_text .= sprintf("\n");
@@ -1701,11 +1702,11 @@ sub update_terminal_window {
 	######################
 	# update text widget #
 	######################	
-	$self->{gui}->{terminal}->{text_text}->tagConfigure($terminal_tag_default,
+	$self->{gui}->{terminal}->{text_text}->tagConfigure($TERMINAL_TAG_DEFAULT,
 							    -foreground => $color_text);
-	$self->{gui}->{terminal}->{text_text}->tagConfigure($terminal_tag_error,
+	$self->{gui}->{terminal}->{text_text}->tagConfigure($TERMINAL_TAG_ERROR,
 							    -foreground => $color_error);
-	$self->{gui}->{terminal}->{text_text}->tagConfigure($terminal_tag_info,
+	$self->{gui}->{terminal}->{text_text}->tagConfigure($TERMINAL_TAG_INFO,
 							    -foreground => $color_info);
 
 	#load content into the test widget
@@ -1760,12 +1761,12 @@ sub terminal_send_line_cmd {
     my $output_string;
     my $error_occured;
     #macro_flags
-    my $macro_flags = ($macro_allow_update    |
-		       $macro_allow_upload    |
-		       $macro_allow_recompile |
-		       $macro_allow_evaluate  |
-		       $macro_allow_lookup    |
-		       $macro_error_popup);
+    my $macro_flags = ($MACRO_ALLOW_UPDATE    |
+		       $MACRO_ALLOW_UPLOAD    |
+		       $MACRO_ALLOW_RECOMPILE |
+		       $MACRO_ALLOW_EVALUATE  |
+		       $MACRO_ALLOW_LOOKUP    |
+		       $MACRO_ERROR_POPUP);
     
     ##########################
     # evaluate format string #
@@ -1784,7 +1785,7 @@ sub terminal_send_line_cmd {
 	    $text_component_tag  = $text_component->[1];
 	    #printf STDERR "%s (%s)\n", $text_component_text, $text_component_tag;
 	    
-	    if ($text_component_tag eq $macro_tag_error) {
+	    if ($text_component_tag eq $MACRO_TAG_ERROR) {
 		$error_occured = 1;
 	    } else {
 		$output_string .= $text_component_text;
@@ -1842,12 +1843,12 @@ sub terminal_execute_macro_cmd {
     my $output_string;
     my $error_occured;
     #macro_flags
-    my $macro_flags = ($macro_allow_update    |
-                       $macro_allow_upload    |
-                       $macro_allow_recompile |
-                       $macro_allow_evaluate  |
-		       $macro_allow_lookup    |
-		       $macro_error_popup);
+    my $macro_flags = ($MACRO_ALLOW_UPDATE    |
+                       $MACRO_ALLOW_UPLOAD    |
+                       $MACRO_ALLOW_RECOMPILE |
+                       $MACRO_ALLOW_EVALUATE  |
+		       $MACRO_ALLOW_LOOKUP    |
+		       $MACRO_ERROR_POPUP);
 		       
     ##########################
     # evaluate format string #
@@ -1864,7 +1865,7 @@ sub terminal_execute_macro_cmd {
 	    $text_component_text = $text_component->[0];
 	    $text_component_tag  = $text_component->[1];
 	    
-	    if ($text_component_tag eq $macro_tag_error) {
+	    if ($text_component_tag eq $MACRO_TAG_ERROR) {
 		$error_occured = 1;
 	    } else {
 		$output_string .= $text_component_text;
@@ -2156,6 +2157,7 @@ sub update_source_code_text {
     my $addrspace_entry;
     my $addr_tag;
     #code entry
+	my $code_file;
     my $code_entry;
     my $code_line;
     my $code_comments;
@@ -2168,6 +2170,7 @@ sub update_source_code_text {
     my @code_hex_bytes;
     my @code_hex_strings;
     my $code_hex_string;
+	my $code_macros;
     #comments
     my $cmt_line;
     my $cmt_line_cnt;
@@ -2178,6 +2181,7 @@ sub update_source_code_text {
     my $cmt_args;
     my $cmt_args_wsp;
     my $cmt_comment;
+	my $cmt_comment_wsp;
     #colors
     my $color_address           = $self->{session}->{colors}->{purple};
     my $color_address_highlight = $self->{session}->{colors}->{dark_purple};
@@ -2206,21 +2210,21 @@ sub update_source_code_text {
     ###########################
     # configure standard tags #
     ###########################
-    $text->tagConfigure($source_tag_address,
+    $text->tagConfigure($SOURCE_TAG_ADDRESS,
 			-foreground => $color_address);
-    $text->tagConfigure($source_tag_hexcode,
+    $text->tagConfigure($SOURCE_TAG_HEXCODE,
 			-foreground => $color_hexcode);
-    $text->tagConfigure($source_tag_label,
+    $text->tagConfigure($SOURCE_TAG_LABEL,
 			-foreground => $color_label);
-    $text->tagConfigure($source_tag_mnemonic,
+    $text->tagConfigure($SOURCE_TAG_MNEMONIC,
 			-foreground => $color_mnemonic);
-    $text->tagConfigure($source_tag_args,
+    $text->tagConfigure($SOURCE_TAG_ARGS,
 			-foreground => $color_args);
-    $text->tagConfigure($source_tag_comment,
+    $text->tagConfigure($SOURCE_TAG_COMMENT,
 			-foreground => $color_comment);
-    $text->tagConfigure($source_tag_error,
+    $text->tagConfigure($SOURCE_TAG_ERROR,
 			-foreground => $color_error);
-    $text->tagConfigure($source_tag_highlight,
+    $text->tagConfigure($SOURCE_TAG_HIGHLIGHT,
 			-background => $color_highlight);
 
     #############
@@ -2255,7 +2259,7 @@ sub update_source_code_text {
 		#############################
 		# string instead of hexcode #
 		#############################
-		/$hsw12_asm::cmp_no_hexcode/ && do {
+		/$hsw12_asm::CMP_NO_HEXCODE/ && do {
 		    @code_hex_strings = ($1);
 		    last;};
 		###########
@@ -2332,15 +2336,15 @@ sub update_source_code_text {
 	    ########################
 	    if ($cmt_line_cnt < $#$code_comments) {
 		#no address or hex code
-		#$self->{gui}->{source_code}->{text_text}->insert('end', sprintf("%6s ", ""), $source_tag_address);
-		#$self->{gui}->{source_code}->{text_text}->insert('end', sprintf("%-18s ", ""), $source_tag_hexcode);
+		#$self->{gui}->{source_code}->{text_text}->insert('end', sprintf("%6s ", ""), $SOURCE_TAG_ADDRESS);
+		#$self->{gui}->{source_code}->{text_text}->insert('end', sprintf("%-18s ", ""), $SOURCE_TAG_HEXCODE);
 		$self->{gui}->{source_code}->{text_text}->insert('end', sprintf("%6s ", ""));
 		$self->{gui}->{source_code}->{text_text}->insert('end', sprintf("%-18s ", ""));
 	    } else {
 		####################################
 		# compare address to address space #
 		####################################
-		#$addr_tag = $source_tag_address;
+		#$addr_tag = $SOURCE_TAG_ADDRESS;
 		#if (defined $code_pc_pag) {
 		#    if (exists $self->{session}->{code}->{pag_addrspace}->{$code_pc_pag}) {
 		#	 if ($self->{session}->{code}->{pag_addrspace}->{$code_pc_pag}->[1] == $code_entry) {
@@ -2352,15 +2356,15 @@ sub update_source_code_text {
 		#    }
 		#}
 		#$self->{gui}->{source_code}->{text_text}->insert('end', sprintf("%6s ", $code_pc_pag_string), $addr_tag);
-		$self->{gui}->{source_code}->{text_text}->insert('end', sprintf("%6s", $code_pc_pag_string), $source_tag_address, " ");
-		$self->{gui}->{source_code}->{text_text}->insert('end', sprintf("%-18s", shift @code_hex_strings), $source_tag_hexcode, " ");
+		$self->{gui}->{source_code}->{text_text}->insert('end', sprintf("%6s", $code_pc_pag_string), $SOURCE_TAG_ADDRESS, " ");
+		$self->{gui}->{source_code}->{text_text}->insert('end', sprintf("%-18s", shift @code_hex_strings), $SOURCE_TAG_HEXCODE, " ");
 	    }
 	    
 	    #label
 	    if ($cmt_label =~ /^\s*$/) {
 		$self->{gui}->{source_code}->{text_text}->insert('end', $cmt_label);
 	    } else {
-		$self->{gui}->{source_code}->{text_text}->insert('end', $cmt_label, $source_tag_label);
+		$self->{gui}->{source_code}->{text_text}->insert('end', $cmt_label, $SOURCE_TAG_LABEL);
 	    }
 	    $self->{gui}->{source_code}->{text_text}->insert('end', $cmt_label_wsp);
 	    
@@ -2368,7 +2372,7 @@ sub update_source_code_text {
 	    if ($cmt_mnemonic =~ /^\s*$/) {
 		$self->{gui}->{source_code}->{text_text}->insert('end', $cmt_mnemonic);
 	    } else {
-		$self->{gui}->{source_code}->{text_text}->insert('end', $cmt_mnemonic, $source_tag_mnemonic);
+		$self->{gui}->{source_code}->{text_text}->insert('end', $cmt_mnemonic, $SOURCE_TAG_MNEMONIC);
 	    }
 	    $self->{gui}->{source_code}->{text_text}->insert('end', $cmt_mnemonic_wsp);
 	    
@@ -2376,7 +2380,7 @@ sub update_source_code_text {
 	    if ($cmt_args =~ /^\s*$/) {
 		$self->{gui}->{source_code}->{text_text}->insert('end', sprintf("%s%s", $cmt_args, $cmt_args_wsp));
 	    } else {
-		$self->{gui}->{source_code}->{text_text}->insert('end', $cmt_args, $source_tag_args);
+		$self->{gui}->{source_code}->{text_text}->insert('end', $cmt_args, $SOURCE_TAG_ARGS);
 		$self->{gui}->{source_code}->{text_text}->insert('end', $cmt_args_wsp);
 	    }
 	    
@@ -2384,7 +2388,7 @@ sub update_source_code_text {
 	    if ($cmt_comment =~ /^\s*$/) {
 		$self->{gui}->{source_code}->{text_text}->insert('end', $cmt_comment_wsp);
 	    } else {
-		$self->{gui}->{source_code}->{text_text}->insert('end', $cmt_comment, $source_tag_comment);
+		$self->{gui}->{source_code}->{text_text}->insert('end', $cmt_comment, $SOURCE_TAG_COMMENT);
 	    }
 
 	    #line break
@@ -2395,8 +2399,8 @@ sub update_source_code_text {
 
 	#print additional hex bytes
 	foreach $code_hex_string (@code_hex_strings) {
-	    $self->{gui}->{source_code}->{text_text}->insert('end', sprintf("%6s ", ""), $source_tag_address);
-	    $self->{gui}->{source_code}->{text_text}->insert('end', sprintf("%-18s\n", $code_hex_string), $source_tag_hexcode);
+	    $self->{gui}->{source_code}->{text_text}->insert('end', sprintf("%6s ", ""), $SOURCE_TAG_ADDRESS);
+	    $self->{gui}->{source_code}->{text_text}->insert('end', sprintf("%-18s\n", $code_hex_string), $SOURCE_TAG_HEXCODE);
 	    push @info, $code_entry,
 	}
 
@@ -2404,13 +2408,13 @@ sub update_source_code_text {
 	foreach $code_error (@$code_errors) {
 	    $self->{gui}->{source_code}->{text_text}->insert('end', 
 							     sprintf("  ERROR! %s\n", $code_error), 
-							     $source_tag_error);
+							     $SOURCE_TAG_ERROR);
 	    push @info, $code_entry,
 	}
 	if ($#$code_errors >= 0) {
 	    $self->{gui}->{source_code}->{text_text}->insert('end', 
 							     sprintf("         (%s, line: %d)\n", $$code_file, $code_line), 
-							     $source_tag_error);
+							     $SOURCE_TAG_ERROR);
 	    push @info, $code_entry,
 	}
     }
@@ -2496,7 +2500,7 @@ sub source_code_goto_address {
     ########################
     # remove highlight tag #
     ########################
-    $self->{gui}->{source_code}->{text_text}->tagRemove($source_tag_highlight, '0.0', 'end');
+    $self->{gui}->{source_code}->{text_text}->tagRemove($SOURCE_TAG_HIGHLIGHT, '0.0', 'end');
 
     if (defined $pc) {
 	if (defined $ppage) {
@@ -2513,7 +2517,7 @@ sub source_code_goto_address {
 	# address loop #
 	################
 	while (!$search_done) {
-	    ($current_start, $current_end) = $self->{gui}->{source_code}->{text_text}->tagNextrange($source_tag_address, $current_end);
+	    ($current_start, $current_end) = $self->{gui}->{source_code}->{text_text}->tagNextrange($SOURCE_TAG_ADDRESS, $current_end);
 	    if ((defined $current_start) && (defined $current_end)) {
 		#######################
 		# read address string #
@@ -2574,7 +2578,7 @@ sub source_code_goto_address {
 	    #####################
 	    # highlight address #
 	    #####################
-	    $self->{gui}->{source_code}->{text_text}->tagAdd($source_tag_highlight,
+	    $self->{gui}->{source_code}->{text_text}->tagAdd($SOURCE_TAG_HIGHLIGHT,
 							     $best_start, 
 							     $best_end);
 	    $self->{gui}->{source_code}->{text_text}->see("$best_start linestart");
@@ -2905,14 +2909,14 @@ sub update_variables_text {
     # determine macro flags #
     #########################
     if ($allow_pod_reads) {
-	$macro_flags = ($macro_allow_pod_reads |
-			$macro_allow_evaluate  |
-			$macro_allow_lookup    |
-			$macro_error_text);
+	$macro_flags = ($MACRO_ALLOW_POD_READS |
+			$MACRO_ALLOW_EVALUATE  |
+			$MACRO_ALLOW_LOOKUP    |
+			$MACRO_ERROR_TEXT);
     } else {
-	$macro_flags = ($macro_allow_evaluate |
-			$macro_allow_lookup    |
-			$macro_error_text);
+	$macro_flags = ($MACRO_ALLOW_EVALUATE |
+			$MACRO_ALLOW_LOOKUP    |
+			$MACRO_ERROR_TEXT);
     }
 
     #####################
@@ -2930,13 +2934,13 @@ sub update_variables_text {
     ###########################
     # configure standard tags #
     ###########################
-    $text->tagConfigure($macro_tag_default,
+    $text->tagConfigure($MACRO_TAG_DEFAULT,
 			-foreground => $color_text);
-    $text->tagConfigure($macro_tag_evaluate,
+    $text->tagConfigure($MACRO_TAG_EVALUATE,
 			-foreground => $color_evaluate);
-    $text->tagConfigure($macro_tag_lookup,
+    $text->tagConfigure($MACRO_TAG_LOOKUP,
 			-foreground => $color_lookup);
-    $text->tagConfigure($macro_tag_error,
+    $text->tagConfigure($MACRO_TAG_ERROR,
 			-foreground => $color_error);
 
     ##########################
@@ -4870,7 +4874,7 @@ sub evaluate_macro {
     my $value;
     my $output_string;
  
-    if ($input_string =~ $macro_split_command) {
+    if ($input_string =~ $MACRO_SPLIT_COMMAND) {
 	$pre_string     = $1;
 	$command_string = $2;
         $post_string    = $3;
@@ -4892,84 +4896,84 @@ sub evaluate_macro {
 	    ##########
 	    # update #
 	    ##########
-	    /$macro_command_update/ && do {
-		if ($macro_flags & $macro_allow_update) {
+	    /$MACRO_COMMAND_UPDATE/ && do {
+		if ($macro_flags & $MACRO_ALLOW_UPDATE) {
                     if (defined $self->{pod}) {$self->{pod}->clear_cache();}
 		    $self->update_variables_text(1);	    
 		    $self->update_register_values(1);	    
 		} 
 		#return array reference
-		return [[$pre_string, $macro_tag_default],
+		return [[$pre_string, $MACRO_TAG_DEFAULT],
 			@{$self->evaluate_macro($post_string, $macro_flags)}];
 		last;};
 	    ##########
 	    # upload #
 	    ##########
-	    /$macro_command_upload/ && do {
+	    /$MACRO_COMMAND_UPLOAD/ && do {
 	        #print STDERR "UPLOAD\n";
-		if (($macro_flags & $macro_allow_upload) &&
+		if (($macro_flags & $MACRO_ALLOW_UPLOAD) &&
 		    (exists $self->{session}->{code}->{problems})) {
 		    #print linear S-Record
 	            #print STDERR "OK\n";
-		    return [[$pre_string, $macro_tag_default],
+		    return [[$pre_string, $MACRO_TAG_DEFAULT],
 			    [$self->{session}->{code}->print_lin_srec("HSW12",
 							   $self->{session}->{preferences}->{srec}->{format},
 							   $self->{session}->{preferences}->{srec}->{length},
 							   $self->{session}->{preferences}->{srec}->{s5},
-							   $self->{session}->{preferences}->{srec}->{fill_bytes}), $macro_tag_default],
+							   $self->{session}->{preferences}->{srec}->{fill_bytes}), $MACRO_TAG_DEFAULT],
 			    @{$self->evaluate_macro($post_string, $macro_flags)}];    
 		} else {
 		    #return array reference
 	            #print STDERR "NOT OK\n";
-		    return [[$pre_string, $macro_tag_default],
+		    return [[$pre_string, $MACRO_TAG_DEFAULT],
 			    @{$self->evaluate_macro($post_string, $macro_flags)}];
 		} 
 		last;};
 	    #################
 	    # upload linear #
 	    #################
-	    /$macro_command_upload_linear/ && do {
-		if (($macro_flags & $macro_allow_upload) &&
+	    /$MACRO_COMMAND_UPLOAD_LINEAR/ && do {
+		if (($macro_flags & $MACRO_ALLOW_UPLOAD) &&
 		    (exists $self->{session}->{code}->{problems})) {
 		    #print linear S-Record
-		    return [[$pre_string, $macro_tag_default],
+		    return [[$pre_string, $MACRO_TAG_DEFAULT],
 			    [$self->{session}->{code}->print_lin_srec("HSW12",
 							   $self->{session}->{preferences}->{srec}->{format},
 							   $self->{session}->{preferences}->{srec}->{length},
 							   $self->{session}->{preferences}->{srec}->{s5},
-							   $self->{session}->{preferences}->{srec}->{fill_bytes}), $macro_tag_default],
+							   $self->{session}->{preferences}->{srec}->{fill_bytes}), $MACRO_TAG_DEFAULT],
 			    @{$self->evaluate_macro($post_string, $macro_flags)}];    
 		} else {
 		    #return array reference
-		    return [[$pre_string, $macro_tag_default],
+		    return [[$pre_string, $MACRO_TAG_DEFAULT],
 			    @{$self->evaluate_macro($post_string, $macro_flags)}];
 		} 
 		last;};
 	    ################
 	    # upload paged #
 	    ################
-	    /$macro_command_upload_paged/ && do {
-		if (($macro_flags & $macro_allow_upload) &&
+	    /$MACRO_COMMAND_UPLOAD_PAGED/ && do {
+		if (($macro_flags & $MACRO_ALLOW_UPLOAD) &&
 		    (exists $self->{session}->{code}->{problems})) {
 		    #print linear S-Record
-		    return [[$pre_string, $macro_tag_default],
+		    return [[$pre_string, $MACRO_TAG_DEFAULT],
 			    [$self->{session}->{code}->print_pag_srec("HSW12",
 							   $self->{session}->{preferences}->{srec}->{format},
 							   $self->{session}->{preferences}->{srec}->{length},
 							   $self->{session}->{preferences}->{srec}->{s5},
-							   $self->{session}->{preferences}->{srec}->{fill_bytes}), $macro_tag_default],
+							   $self->{session}->{preferences}->{srec}->{fill_bytes}), $MACRO_TAG_DEFAULT],
 			    @{$self->evaluate_macro($post_string, $macro_flags)}];    
 		} else {
 		    #return array reference
-		    return [[$pre_string, $macro_tag_default],
+		    return [[$pre_string, $MACRO_TAG_DEFAULT],
 			    @{$self->evaluate_macro($post_string, $macro_flags)}];
 		} 
 		last;};
 	    #############
 	    # recompile #
 	    #############
-	    /$macro_command_recompile/ && do {
-		if ($macro_flags & $macro_allow_recompile) {
+	    /$MACRO_COMMAND_RECOMPILE/ && do {
+		if ($macro_flags & $MACRO_ALLOW_RECOMPILE) {
 		    if (exists $self->{session}->{code}->{problems}) {
 			$self->{gui}->{main}->Busy(-recurse => 1);
 			if (Tk::Exists $self->{gui}->{source_code}->{text_text}) {
@@ -4986,18 +4990,18 @@ sub evaluate_macro {
 		    }
 		} 
 		#return array reference
-		return [[$pre_string, $macro_tag_default],
+		return [[$pre_string, $MACRO_TAG_DEFAULT],
 			@{$self->evaluate_macro($post_string, $macro_flags)}]; 
 		last; };
 	    ############
 	    # evaluate #
 	    ############
-	    /$macro_command_evaluate/ && do {
+	    /$MACRO_COMMAND_EVALUATE/ && do {
 		#read arguments
 		$expression    = $1;
 		$bytes         = $2;
 		$type          = $3;
-		if ($macro_flags & $macro_allow_evaluate) {
+		if ($macro_flags & $MACRO_ALLOW_EVALUATE) {
 		
 		    #determine mask
 		    $mask = ((256 ** $bytes) - 1);
@@ -5009,16 +5013,16 @@ sub evaluate_macro {
 			########################
 			#  error in expression #
 			########################
-			if ($macro_flags & $macro_error_popup) {
+			if ($macro_flags & $MACRO_ERROR_POPUP) {
 			    $self->show_error_message(sprintf("%s \"%s\"", $error, $expression));
 			    return [];
 			}
-			if ($macro_flags & $macro_error_text) {
-			    return [[$pre_string, $macro_tag_default],
-				    [sprintf(" \"Error! %s (%s)\" ", $error, $expression), $macro_tag_error],
+			if ($macro_flags & $MACRO_ERROR_TEXT) {
+			    return [[$pre_string, $MACRO_TAG_DEFAULT],
+				    [sprintf(" \"Error! %s (%s)\" ", $error, $expression), $MACRO_TAG_ERROR],
 				    @{$self->evaluate_macro($post_string, $macro_flags)}]; 		    
 			}
-		    } elsif (($macro_flags & $macro_error_popup) &&
+		    } elsif (($macro_flags & $MACRO_ERROR_POPUP) &&
 			     (!defined $value)) {
 			$self->show_error_message(sprintf("undefined result \"%s\"", $expression));
 			return [];
@@ -5032,40 +5036,40 @@ sub evaluate_macro {
 			    ###################
 			    # error in format #
 			    ###################
-			    if ($macro_flags & $macro_error_popup) {
+			    if ($macro_flags & $MACRO_ERROR_POPUP) {
 				$self->show_error_message(sprintf("invalid format \"%s\"", $expression));
 				return [];
 			    }
-			    if ($macro_flags & $macro_error_text) {
-				return [[$pre_string, $macro_tag_default],
-					[sprintf(" \"Error! invalid format (%s)\" ", $expression), $macro_tag_error],
+			    if ($macro_flags & $MACRO_ERROR_TEXT) {
+				return [[$pre_string, $MACRO_TAG_DEFAULT],
+					[sprintf(" \"Error! invalid format (%s)\" ", $expression), $MACRO_TAG_ERROR],
 					@{$self->evaluate_macro($post_string, $macro_flags)}]; 		    
 			    }
 			} else {
 			    #############
 			    # no errors #
 			    #############
-			    return [[$pre_string, $macro_tag_default],
-				    [$output_string, $macro_tag_default],
+			    return [[$pre_string, $MACRO_TAG_DEFAULT],
+				    [$output_string, $MACRO_TAG_DEFAULT],
 				    @{$self->evaluate_macro($post_string, $macro_flags)}]; 
 			} 
 		    }
 		} else {
 		    #return array reference
-		    return [[$pre_string, $macro_tag_default],
+		    return [[$pre_string, $MACRO_TAG_DEFAULT],
 			    @{$self->evaluate_macro($post_string, $macro_flags)}]; 
 		}
 		last;};
 	    ##########
 	    # lookup #
 	    ##########
-	    /$macro_command_lookup/ && do {
+	    /$MACRO_COMMAND_LOOKUP/ && do {
 		#read arguments
 		$expression    = $1;
 		$bytes         = $2;
 		$type          = $3;
 		
-		if ($macro_flags & $macro_allow_lookup) {
+		if ($macro_flags & $MACRO_ALLOW_LOOKUP) {
 		
 		    #determine mask
 		    $mask = ((256 ** $bytes) - 1);
@@ -5076,26 +5080,26 @@ sub evaluate_macro {
 			########################
 			#  error in expression #
 			########################
-			if ($macro_flags & $macro_error_popup) {
+			if ($macro_flags & $MACRO_ERROR_POPUP) {
 			    $self->show_error_message(sprintf("%s \"%s\"", $error, $expression));
 			    return [];
 			}
-			if ($macro_flags & $macro_error_text) {
-			    return [[$pre_string, $macro_tag_default],
-				    [sprintf(" \"Error! %s (%s)\" ", $error, $expression), $macro_tag_error],
+			if ($macro_flags & $MACRO_ERROR_TEXT) {
+			    return [[$pre_string, $MACRO_TAG_DEFAULT],
+				    [sprintf(" \"Error! %s (%s)\" ", $error, $expression), $MACRO_TAG_ERROR],
 				    @{$self->evaluate_macro($post_string, $macro_flags)}]; 		    
 			}
 		    } elsif (!defined $value) {
 			#####################
 			# undefined address #
 			#####################
-			if ($macro_flags & $macro_error_popup) {
+			if ($macro_flags & $MACRO_ERROR_POPUP) {
 			    $self->show_error_message(sprintf("undefined expression \"%s\"", $expression));
 			    return [];
 			}
-			if ($macro_flags & $macro_error_text) {
-			    return [[$pre_string, $macro_tag_default],
-				    [sprintf(" \"Error! undefined expression (%s)\" ", $expression), $macro_tag_error],
+			if ($macro_flags & $MACRO_ERROR_TEXT) {
+			    return [[$pre_string, $MACRO_TAG_DEFAULT],
+				    [sprintf(" \"Error! undefined expression (%s)\" ", $expression), $MACRO_TAG_ERROR],
 				    @{$self->evaluate_macro($post_string, $macro_flags)}]; 		    
 			}
 		    } else {
@@ -5103,7 +5107,7 @@ sub evaluate_macro {
 			# read memory #
 			###############
 		        if (defined $self->{pod}) {
-			  if ($macro_flags & $macro_allow_pod_reads) {
+			  if ($macro_flags & $MACRO_ALLOW_POD_READS) {
 			    $value = $self->{pod}->read_mem($value, $bytes, 1);
 			  } else {
 			    $value = $self->{pod}->read_mem($value, $bytes, 0);
@@ -5114,7 +5118,7 @@ sub evaluate_macro {
 			####################
 			# undefined result #
 			####################			
-			if (($macro_flags & $macro_error_popup) &&
+			if (($macro_flags & $MACRO_ERROR_POPUP) &&
 			    (!defined $value)) {
 			    $self->show_error_message(sprintf("undefined result \"%s\"", $expression));
 			    return [];
@@ -5127,28 +5131,28 @@ sub evaluate_macro {
 				###################
 				# error in format #
 				###################
-				if ($macro_flags & $macro_error_popup) {
+				if ($macro_flags & $MACRO_ERROR_POPUP) {
 				    $self->show_error_message(sprintf("invalid format \"%s\"", $expression));
 				    return [];
 				}
-				if ($macro_flags & $macro_error_text) {
-				    return [[$pre_string, $macro_tag_default],
-					    [sprintf(" \"Error! invalid format (%s)\" ", $expression), $macro_tag_error],
+				if ($macro_flags & $MACRO_ERROR_TEXT) {
+				    return [[$pre_string, $MACRO_TAG_DEFAULT],
+					    [sprintf(" \"Error! invalid format (%s)\" ", $expression), $MACRO_TAG_ERROR],
 					    @{$self->evaluate_macro($post_string, $macro_flags)}]; 		    
 				}
 			    } else {
 				#############
 				# no errors #
 				#############
-				return [[$pre_string, $macro_tag_default],
-					[$output_string, $macro_tag_default],
+				return [[$pre_string, $MACRO_TAG_DEFAULT],
+					[$output_string, $MACRO_TAG_DEFAULT],
 					@{$self->evaluate_macro($post_string, $macro_flags)}]; 
 			    } 
 			}
 		    }
 		} else {
 		    #return array reference
-		    return [[$pre_string, $macro_tag_default],
+		    return [[$pre_string, $MACRO_TAG_DEFAULT],
 			    @{$self->evaluate_macro($post_string, $macro_flags)}]; 
 		}
 		last;};
@@ -5156,13 +5160,13 @@ sub evaluate_macro {
 	    # error #
 	    #########
 	    #print STDERR sprintf("invalid command \"\[%s\]\"\n", $command_string);
-	    if ($macro_flags & $macro_error_popup) {
+	    if ($macro_flags & $MACRO_ERROR_POPUP) {
 		$self->show_error_message(sprintf("invalid command \"\[%s\]\"", $command_string));
 		return [];
 	    }
-	    if ($macro_flags & $macro_error_text) {
-		return [[$pre_string, $macro_tag_default],
-			[sprintf(" \"Error! invalid command \[%s\]\" ", $command_string), $macro_tag_error],
+	    if ($macro_flags & $MACRO_ERROR_TEXT) {
+		return [[$pre_string, $MACRO_TAG_DEFAULT],
+			[sprintf(" \"Error! invalid command \[%s\]\" ", $command_string), $MACRO_TAG_ERROR],
 			@{$self->evaluate_macro($post_string, $macro_flags)}]; 		    
 	    }
 	}
@@ -5172,7 +5176,7 @@ sub evaluate_macro {
 	####################
 	#printf "no macro: \"%s\"\n", $input_string;
 	#return array reference
-	return [[$input_string, $macro_tag_default]];
+	return [[$input_string, $MACRO_TAG_DEFAULT]];
     }
 }
 
@@ -5198,7 +5202,7 @@ sub format_integer {
 	#######
 	# bin #
 	#######
-	/$macro_format_bin/ && do {
+	/$MACRO_FORMAT_BIN/ && do {
 	    $output_string = "";
 	    if (defined $value) {
 		foreach $i (1 .. ($bytes * 8)) {
@@ -5215,7 +5219,7 @@ sub format_integer {
 	#######
 	# dec #
 	#######
-	/$macro_format_dec/ && do {
+	/$MACRO_FORMAT_DEC/ && do {
 	    $digits = (log ((256 ** $bytes) - 1)) / (log 10);
 	    if (int($digits) < $digits) {
 		$digits = int($digits) + 1;
@@ -5235,7 +5239,7 @@ sub format_integer {
 	#######
 	# hex #
 	#######
-	/$macro_format_hex/ && do {
+	/$MACRO_FORMAT_HEX/ && do {
 	    $digits = $bytes * 2; 
 	    if (defined $value) {
 		$output_string = sprintf(sprintf("%%.%dX", $digits), $value);
@@ -5250,7 +5254,7 @@ sub format_integer {
 	#########
 	# ascii #
 	#########
-	/$macro_format_ascii/ && do {
+	/$MACRO_FORMAT_ASCII/ && do {
 	    $output_string = "";
 	    if (defined $value) {
 		foreach $i (1 .. ($bytes)) {
