@@ -1527,14 +1527,16 @@ sub create_terminal_window {
 	    #####################
 	    # macro button loop #
 	    #####################
-	    foreach $macro_button (['macro1', 0, 0],
+	    foreach $macro_button (
+				   ['macro1', 0, 0],
 				   ['macro2', 1, 0],
 				   ['macro3', 2, 0],
 				   ['macro4', 3, 0],
 				   ['macro5', 0, 1],
 				   ['macro6', 1, 1],
 				   ['macro7', 2, 1],
-				   ['macro8', 3, 1]) {
+				   ['macro8', 3, 1],
+		) {
 
 		$self->{gui}->{terminal}->{$macro_button->[0]}->{button} = 
 		    $self->{gui}->{terminal}->{macro_frame}->Button(-command => [\&terminal_execute_macro_cmd, $self, $macro_button->[0]]);	    
