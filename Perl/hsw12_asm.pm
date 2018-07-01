@@ -6346,9 +6346,11 @@ sub print_mem_alloc {
 			                                      $pag_seg_end,
 			                                      $lin_seg_start,
 			                                      $lin_seg_end);
-    } else {
+    } elsif ((defined $pag_seg_start) && (defined $pag_seg_end)) {
 	$out_string .= sprintf("%.6X - %.6X\n", $pag_seg_start,
 			                        $pag_seg_end);
+    } else {
+    $out_string .= "\n";
     }
     #print STDERR $out_string;
     #exit;
@@ -6401,9 +6403,11 @@ sub print_mem_alloc {
 			                                      $pag_seg_end,
 			                                      $lin_seg_start,
 			                                      $lin_seg_end);
-    } else {
+    } elsif ((defined $pag_seg_start) && (defined $pag_seg_end)) {
 	$out_string .= sprintf("%.6X - %.6X\n", $pag_seg_start,
 			                        $pag_seg_end);
+    } else {
+    $out_string .= "\n";
     }
     return $out_string;
 }
