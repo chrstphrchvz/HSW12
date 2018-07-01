@@ -5523,7 +5523,7 @@ sub print_lin_srec {
     #S-records
     my $srec_count;
     my @srec_bytes;
-    my $srec_addr;
+    my $srec_addr = 0;
     #memoryspace
     my $mem_addr;
     my $mem_entry;
@@ -5688,7 +5688,7 @@ sub print_pag_srec {
     #S-records
     my $srec_count;
     my @srec_bytes;
-    my $srec_addr;
+    my $srec_addr = 0;
     #memoryspace
     my $mem_addr;
     my $mem_entry;
