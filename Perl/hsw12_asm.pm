@@ -3515,7 +3515,7 @@ sub precompile {
 								undef,                #paged pc
 								undef,                #hex code
 								undef,                #bytes
-								0,                    #errors
+								[],                   #errors
 								undef,                #macros
 								undef];               #symbol tables
 
@@ -3534,7 +3534,7 @@ sub precompile {
 						    undef,                #paged pc
 						    undef,                #hex code
 						    undef,                #bytes
-						    0,                    #errors
+						    [],                   #errors
 						    undef,                #macros
 						    undef];               #symbol tables
 
