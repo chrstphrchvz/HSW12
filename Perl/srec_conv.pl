@@ -67,10 +67,13 @@ require hsw12_srec_import;
 # global vars #
 ###############
 if ($#ARGV != 1) {
-    printf "usage: %s <%s|%s|%s|%s> <src file>\n", $0, $hsw12_srec_import::srec_type_lin_s12,
-                                                       $hsw12_srec_import::srec_type_pag_s12,
-						       $hsw12_srec_import::srec_type_lin_s12x,
-						       $hsw12_srec_import::srec_type_pag_s12x;
+    printf "usage: %s <%s|%s|%s|%s> <src file>\n", (
+        $0,
+        $hsw12_srec_import::srec_type_lin_s12,
+        $hsw12_srec_import::srec_type_pag_s12,
+		$hsw12_srec_import::srec_type_lin_s12x,
+		$hsw12_srec_import::srec_type_pag_s12x,
+    );
     print  "\n";
     exit;
 }
@@ -84,10 +87,12 @@ if (($srec_type ne $hsw12_srec_import::srec_type_lin_s12)  &&
     ($srec_type ne $hsw12_srec_import::srec_type_pag_s12x)) {
 
     printf STDOUT "Unkown S-Record format: \"%s\"\n", $srec_type;
-    printf STDOUT "Try one of the following: %s, %s, %s, %s\n", ($hsw12_srec_import::srec_type_lin_s12,
-								 $hsw12_srec_import::srec_type_pag_s12,
-								 $hsw12_srec_import::srec_type_lin_s12x,
-								 $hsw12_srec_import::srec_type_pag_s12x);
+    printf STDOUT "Try one of the following: %s, %s, %s, %s\n", (
+        $hsw12_srec_import::srec_type_lin_s12,
+		$hsw12_srec_import::srec_type_pag_s12,
+		$hsw12_srec_import::srec_type_lin_s12x,
+		$hsw12_srec_import::srec_type_pag_s12x,
+    );
     exit;
 }
 
@@ -122,33 +127,47 @@ if ($code->{problems}) {
     #########################
     # write linear S-record #
     #########################
-    if (open (FILEHANDLE, sprintf(">%s_lin.%s\n", $prog_name, lc($srec_format)))) {
-	$out_string = $code->print_lin_srec(uc($prog_name),
-					    $srec_format,
-					    $srec_data_length,
-					    $srec_add_s5,
-					    $srec_word_entries);
+    if (open (FILEHANDLE, sprintf(
+        ">%s_lin.%s\n", $prog_name, lc($srec_format)
+    ))) {
+	$out_string = $code->print_lin_srec(
+        uc($prog_name),
+		$srec_format,
+		$srec_data_length,
+		$srec_add_s5,
+		$srec_word_entries,
+    );
 	print FILEHANDLE $out_string;
 	close FILEHANDLE;
     } else {
-	printf STDERR "Can't open S-recordfile \"%s_lin.%s\"\n", $prog_name, lc($srec_format);
+	printf STDERR "Can't open S-recordfile \"%s_lin.%s\"\n", (
+        $prog_name,
+        lc($srec_format),
+    );
 	exit;
     }
 
     ########################
     # write paged S-record #
     ########################
-    if (open (FILEHANDLE, sprintf(">%s_pag.%s\n", $prog_name, lc($srec_format)))) {
-	$out_string = $code->print_pag_srec(uc($prog_name),
-					    $srec_format,
-					    $srec_data_length,
-					    $srec_add_s5,
-					    $srec_word_entries);
-	print FILEHANDLE $out_string;
-	close FILEHANDLE;
+    if (open (FILEHANDLE, sprintf(
+            ">%s_pag.%s\n", $prog_name, lc($srec_format)
+    ))) {
+        $out_string = $code->print_pag_srec(
+            uc($prog_name),
+            $srec_format,
+            $srec_data_length,
+            $srec_add_s5,
+            $srec_word_entries,
+        );
+        print FILEHANDLE $out_string;
+        close FILEHANDLE;
     } else {
-	printf STDERR "Can't open S-recordfile \"%s_pag.%s\"\n", $prog_name, lc($srec_format);
-	exit;
+        printf STDERR "Can't open S-recordfile \"%s_pag.%s\"\n", (
+            $prog_name,
+            lc($srec_format),
+        );
+        exit;
     }
 }
 

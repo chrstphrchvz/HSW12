@@ -447,11 +447,13 @@ sub import_srec {
 		#printf STDERR "data:     %s\n",      $data;
 		#printf STDERR "checksum: %s\n",      $checksum;
 
-		$error = $self->check_srec(2,
-					   $length,
-					   $address,
-					   $data,
-					   $checksum);
+		$error = $self->check_srec(
+			2,
+			$length,
+			$address,
+			$data,
+			$checksum,
+		);
 
 		if (!$error) {
 		    push @srccode_sequence, $self->print_S0_data($data);
@@ -460,18 +462,20 @@ sub import_srec {
 		    #store S-Record
 		    push @srccode_sequence, $line;
 		    #store error message
-		    push @{$self->{code}}, [$line_count,         #line count
-					    \$source_file,       #file name
-					    [@srccode_sequence], #code sequence
-					    "",                  #label
-					    "S0",                #opcode
-					    "",                  #arguments
-					    undef,               #linear pc
-					    undef,               #paged pc
-					    undef,               #hex code
-					    undef,               #bytes
-					    undef,               #cycles
-					    [$error]];           #errors
+		    push @{$self->{code}}, [
+				$line_count,         #line count
+				\$source_file,       #file name
+				[@srccode_sequence], #code sequence
+				"",                  #label
+				"S0",                #opcode
+				"",                  #arguments
+				undef,               #linear pc
+				undef,               #paged pc
+				undef,               #hex code
+				undef,               #bytes
+				undef,               #cycles
+				[$error],			 #errors
+			];
 		    $error_count++;
 		    @srccode_sequence = ();
 		}	    
@@ -492,32 +496,40 @@ sub import_srec {
 		#printf STDERR "data:     %s\n",      $data;
 		#printf STDERR "checksum: %s\n",      $checksum;
 
-		$error = $self->check_srec(2,
-					   $length,
-					   $address,
-					   $data,
-					   $checksum);
+		$error = $self->check_srec(
+			2,
+			$length,
+			$address,
+			$data,
+			$checksum,
+		);
 		($pc_lin, $pc_pag)          = $self->determine_pc($address, $srec_type); 
 		($data_count, $data_string) = $self->format_S123_data($data);
-		push @srccode_sequence, sprintf("S1-Record: \$%.4X - \$%.4X (%d bytes)", (hex($address),
-											  (hex($address) + $data_count - 1),
-											  $data_count));
+		push @srccode_sequence, sprintf(
+			"S1-Record: \$%.4X - \$%.4X (%d bytes)", (
+				hex($address),
+				(hex($address) + $data_count - 1),
+				$data_count,
+			)
+		);
 		#push @srccode_sequence, "srec_count = $srec_count";
 
 		if (!$error) {
 		    #store data
-		    push @{$self->{code}}, [$line_count,         #line count
-					    \$source_file,       #file name
-					    [@srccode_sequence], #code sequence
-					    "",                  #label
-					    "S1",                #opcode
-					    "",                  #arguments
-					    $pc_lin,             #linear pc
-					    $pc_pag,             #paged pc
-					    $data_string,        #hex code
-					    $data_count,         #bytes
-					    undef,               #cycles
-					    []];                 #errors
+		    push @{$self->{code}}, [
+				$line_count,         #line count
+				\$source_file,       #file name
+				[@srccode_sequence], #code sequence
+				"",                  #label
+				"S1",                #opcode
+				"",                  #arguments
+				$pc_lin,             #linear pc
+				$pc_pag,             #paged pc
+				$data_string,        #hex code
+				$data_count,         #bytes
+				undef,               #cycles
+				[],                  #errors
+			];
 		    $srec_count++;
 		    @srccode_sequence = ();
 		} else {
@@ -525,18 +537,20 @@ sub import_srec {
 		    #store S-Record
 		    push @srccode_sequence, $line;
 		    #store error message
-		    push @{$self->{code}}, [$line_count,         #line count
-					    \$source_file,       #file name
-					    [@srccode_sequence], #code sequence
-					    "",                  #label
-					    "S1",                #opcode
-					    "",                  #arguments
-					    $pc_lin,             #linear pc
-					    $pc_pag,             #paged pc
-					    undef,               #hex code
-					    undef,               #bytes
-					    undef,               #cycles
-					    [$error]];           #errors
+		    push @{$self->{code}}, [
+				$line_count,         #line count
+				\$source_file,       #file name
+				[@srccode_sequence], #code sequence
+				"",                  #label
+				"S1",                #opcode
+				"",                  #arguments
+				$pc_lin,             #linear pc
+				$pc_pag,             #paged pc
+				undef,               #hex code
+				undef,               #bytes
+				undef,               #cycles
+				[$error],            #errors
+			];
 		    $srec_count++;
 		    $error_count++;
 		    @srccode_sequence = ();
@@ -558,16 +572,22 @@ sub import_srec {
 		#printf STDERR "data:     %s\n",      $data;
 		#printf STDERR "checksum: %s\n",      $checksum;
 
-		$error = $self->check_srec(3,
-					   $length,
-					   $address,
-					   $data,
-					   $checksum);
+		$error = $self->check_srec(
+			3,
+			$length,
+			$address,
+			$data,
+			$checksum,
+		);
 		($pc_lin, $pc_pag)          = $self->determine_pc($address, $srec_type); 
 		($data_count, $data_string) = $self->format_S123_data($data);
-		push @srccode_sequence, sprintf("S2-Record: \$%.6X - \$%.6X (%d bytes)", (hex($address),
-											  (hex($address) + $data_count - 1),
-											  $data_count));
+		push @srccode_sequence, sprintf(
+			"S2-Record: \$%.6X - \$%.6X (%d bytes)", (
+				hex($address),
+				(hex($address) + $data_count - 1),
+				$data_count,
+			)
+		);
 		
 		#printf STDERR "hex:    %s\n", $data_string;
 		#printf STDERR "pc_lin: %X\n", $pc_lin;
@@ -575,18 +595,20 @@ sub import_srec {
 
 		if (!$error) {
 		    #store data
-		    push @{$self->{code}}, [$line_count,         #line count
-					    \$source_file,       #file name
-					    [@srccode_sequence], #code sequence
-					    "",                  #label
-					    "S2",                #opcode
-					    "",                  #arguments
-					    $pc_lin,             #linear pc
-					    $pc_pag,             #paged pc
-					    $data_string,        #hex code
-					    $data_count,         #bytes
-					    undef,               #cycles
-					    []];                 #errors
+		    push @{$self->{code}}, [
+				$line_count,         #line count
+				\$source_file,       #file name
+				[@srccode_sequence], #code sequence
+				"",                  #label
+				"S2",                #opcode
+				"",                  #arguments
+				$pc_lin,             #linear pc
+				$pc_pag,             #paged pc
+				$data_string,        #hex code
+				$data_count,         #bytes
+				undef,               #cycles
+				[],                  #errors
+			];
 		    $srec_count++;
 		    @srccode_sequence = ();
 		} else {
@@ -594,18 +616,20 @@ sub import_srec {
 		    #store S-Record
 		    push @srccode_sequence, $line;
 		    #store error message
-		    push @{$self->{code}}, [$line_count,         #line count
-					    \$source_file,       #file name
-					    [@srccode_sequence], #code sequence
-					    "",                  #label
-					    "S2",                #opcode
-					    "",                  #arguments
-					    $pc_lin,             #linear pc
-					    $pc_pag,             #paged pc
-					    undef,               #hex code
-					    undef,               #bytes
-					    undef,               #cycles
-					    [$error]];           #errors
+		    push @{$self->{code}}, [
+				$line_count,         #line count
+			    \$source_file,       #file name
+			    [@srccode_sequence], #code sequence
+			    "",                  #label
+			    "S2",                #opcode
+			    "",                  #arguments
+			    $pc_lin,             #linear pc
+			    $pc_pag,             #paged pc
+			    undef,               #hex code
+			    undef,               #bytes
+			    undef,               #cycles
+			    [$error],            #errors
+			];
 		    $srec_count++;
 		    $error_count++;
 		    @srccode_sequence = ();
@@ -627,30 +651,38 @@ sub import_srec {
 		#printf STDERR "data:     %s\n",      $data;
 		#printf STDERR "checksum: %s\n",      $checksum;
 
-		$error = $self->check_srec(4,
-					   $length,
-					   $address,
-					   $data,
-					   $checksum);
+		$error = $self->check_srec(
+			4,
+			$length,
+			$address,
+			$data,
+			$checksum,
+		);
 		($pc_lin, $pc_pag)          = $self->determine_pc($address, $srec_type); 
 		($data_count, $data_string) = $self->format_S123_data($data);
-		push @srccode_sequence, sprintf("S3-Record: \$%.8X - \$%.8X (%d bytes)", (hex($address),
-											  (hex($address) + $data_count - 1),
-											  $data_count));
+		push @srccode_sequence, sprintf(
+			"S3-Record: \$%.8X - \$%.8X (%d bytes)", (
+				hex($address),
+				(hex($address) + $data_count - 1),
+				$data_count,
+			)
+		);
 		if (!$error) {
 		    #store data
-		    push @{$self->{code}}, [$line_count,         #line count
-					    \$source_file,       #file name
-					    [@srccode_sequence], #code sequence
-					    "",                  #label
-					    "S3",                #opcode
-					    "",                  #arguments
-					    $pc_lin,             #linear pc
-					    $pc_pag,             #paged pc
-					    $data_string,        #hex code
-					    $data_count,         #bytes
-					    undef,               #cycles
-					    []];                 #errors
+		    push @{$self->{code}}, [
+				$line_count,         #line count
+			    \$source_file,       #file name
+			    [@srccode_sequence], #code sequence
+			    "",                  #label
+			    "S3",                #opcode
+			    "",                  #arguments
+			    $pc_lin,             #linear pc
+			    $pc_pag,             #paged pc
+			    $data_string,        #hex code
+			    $data_count,         #bytes
+			    undef,               #cycles
+			    [],                  #errors
+		];
 		    $srec_count++;
 		    @srccode_sequence = ();
 		} else {
@@ -658,18 +690,20 @@ sub import_srec {
 		    #store S-Record
 		    push @srccode_sequence, $line;
 		    #store error message
-		    push @{$self->{code}}, [$line_count,         #line count
-					    \$source_file,       #file name
-					    [@srccode_sequence], #code sequence
-					    "",                  #label
-					    "S3",                #opcode
-					    "",                  #arguments
-					    $pc_lin,             #linear pc
-					    $pc_pag,             #paged pc
-					    undef,               #hex code
-					    undef,               #bytes
-					    undef,               #cycles
-					    [$error]];           #errors
+		    push @{$self->{code}}, [
+				$line_count,         #line count
+			    \$source_file,       #file name
+			    [@srccode_sequence], #code sequence
+			    "",                  #label
+			    "S3",                #opcode
+			    "",                  #arguments
+			    $pc_lin,             #linear pc
+			    $pc_pag,             #paged pc
+			    undef,               #hex code
+			    undef,               #bytes
+			    undef,               #cycles
+			    [$error],            #errors
+		];
 		    $srec_count++;
 		    $error_count++;
 		    @srccode_sequence = ();
@@ -691,12 +725,13 @@ sub import_srec {
 		#printf STDERR "data:     %s\n",      $data;
 		#printf STDERR "checksum: %s\n",      $checksum;
 
-		$error = $self->check_srec(2,
-					   $length,
-					   $address,
-					   $data,
-					   $checksum);
-		
+		$error = $self->check_srec(
+			2,
+			$length,
+			$address,
+			$data,
+			$checksum,
+		);
 		push @srccode_sequence, sprintf("S5-Record: %d S-Records counted", hex($address));
 		if (!$error) {
 		    $error = $self->check_s5rec($address, $srec_count);
@@ -708,18 +743,20 @@ sub import_srec {
 		    #store S-Record
 		    push @srccode_sequence, $line;
 		    #store error message
-		    push @{$self->{code}}, [$line_count,         #line count
-					    \$source_file,       #file name
-					    [@srccode_sequence], #code sequence
-					    "",                  #label
-					    "S5",                #opcode
-					    "",                  #arguments
-					    undef,               #linear pc
-					    undef,               #paged pc
-					    undef,               #hex code
-					    undef,               #bytes
-					    undef,               #cycles
-					    [$error]];           #errors
+		    push @{$self->{code}}, [
+				$line_count,         #line count
+				\$source_file,       #file name
+				[@srccode_sequence], #code sequence
+				"",                  #label
+				"S5",                #opcode
+				"",                  #arguments
+				undef,               #linear pc
+				undef,               #paged pc
+				undef,               #hex code
+				undef,               #bytes
+				undef,               #cycles
+				[$error],            #errors
+			];
 		    $error_count++;
 		    @srccode_sequence = ();
 		}	    
@@ -753,18 +790,20 @@ sub import_srec {
 		    #store S-Record
 		    push @srccode_sequence, $line;
 		    #store error message
-		    push @{$self->{code}}, [$line_count,         #line count
-					    \$source_file,       #file name
-					    [@srccode_sequence], #code sequence
-					    "",                  #label
-					    "S7",                #opcode
-					    "",                  #arguments
-					    undef,               #linear pc
-					    undef,               #paged pc
-					    undef,               #hex code
-					    undef,               #bytes
-					    undef,               #cycles
-					    [$error]];           #errors
+		    push @{$self->{code}}, [
+				$line_count,         #line count
+				\$source_file,       #file name
+				[@srccode_sequence], #code sequence
+				"",                  #label
+				"S7",                #opcode
+				"",                  #arguments
+				undef,               #linear pc
+				undef,               #paged pc
+				undef,               #hex code
+				undef,               #bytes
+				undef,               #cycles
+				[$error],            #errors
+			];
 		    $error_count++;
 		    @srccode_sequence = ();
 		}	    
@@ -785,31 +824,37 @@ sub import_srec {
 		#printf STDERR "data:     %s\n",      $data;
 		#printf STDERR "checksum: %s\n",      $checksum;
 
-		$error = $self->check_srec(3,
-					   $length,
-					   $address,
-					   $data,
-					   $checksum);
-		
-		push @srccode_sequence, sprintf("S8-Record: Start address = %.6X", hex($address));
+		$error = $self->check_srec(
+			3,
+			$length,
+			$address,
+			$data,
+			$checksum,
+		);
+		push @srccode_sequence, sprintf(
+			"S8-Record: Start address = %.6X",
+			hex($address),
+		);
 
 		if ($error) {
 		    #invalid S-Record
 		    #store S-Record
 		    push @srccode_sequence, $line;
 		    #store error message
-		    push @{$self->{code}}, [$line_count,         #line count
-					    \$source_file,       #file name
-					    [@srccode_sequence], #code sequence
-					    "",                  #label
-					    "S8",                #opcode
-					    "",                  #arguments
-					    undef,               #linear pc
-					    undef,               #paged pc
-					    undef,               #hex code
-					    undef,               #bytes
-					    undef,               #cycles
-					    [$error]];           #errors
+		    push @{$self->{code}}, [
+				$line_count,         #line count
+				\$source_file,       #file name
+				[@srccode_sequence], #code sequence
+				"",                  #label
+				"S8",                #opcode
+				"",                  #arguments
+				undef,               #linear pc
+				undef,               #paged pc
+				undef,               #hex code
+				undef,               #bytes
+				undef,               #cycles
+				[$error],            #errors
+			];
 		    $error_count++;
 		    @srccode_sequence = ();
 		}	    
@@ -818,7 +863,7 @@ sub import_srec {
 	    # S9-Record #
 	    #############
 	    /$srec_format_S9/ && do {    
-      		$type     = $1;
+      	$type     = $1;
 		$length   = $2;
 		$address  = $3;
 		$data     = $4;
@@ -830,31 +875,38 @@ sub import_srec {
 		#printf STDERR "data:     %s\n",      $data;
 		#printf STDERR "checksum: %s\n",      $checksum;
 
-		$error = $self->check_srec(2,
-					   $length,
-					   $address,
-					   $data,
-					   $checksum);
+		$error = $self->check_srec(
+			2,
+			$length,
+			$address,
+			$data,
+			$checksum,
+		);
 		
-		push @srccode_sequence, sprintf("S9-Record: Start address = %.4X", hex($address));
+		push @srccode_sequence, sprintf(
+			"S9-Record: Start address = %.4X",
+			hex($address),
+		);
 
 		if ($error) {
 		    #invalid S-Record
 		    #store S-Record
 		    push @srccode_sequence, $line;
 		    #store error message
-		    push @{$self->{code}}, [$line_count,         #line count
-					    \$source_file,       #file name
-					    [@srccode_sequence], #code sequence
-					    "",                  #label
-					    "S9",                #opcode
-					    "",                  #arguments
-					    undef,               #linear pc
-					    undef,               #paged pc
-					    undef,               #hex code
-					    undef,               #bytes
-					    undef,               #cycles
-					    [$error]];           #errors
+		    push @{$self->{code}}, [
+				$line_count,         #line count
+				\$source_file,       #file name
+				[@srccode_sequence], #code sequence
+				"",                  #label
+				"S9",                #opcode
+				"",                  #arguments
+				undef,               #linear pc
+				undef,               #paged pc
+				undef,               #hex code
+				undef,               #bytes
+				undef,               #cycles
+				[$error],            #errors
+			];
 		    $error_count++;
 		    @srccode_sequence = ();
 		}	    
@@ -868,18 +920,20 @@ sub import_srec {
 	    #store S-Record
 	    push @srccode_sequence, $line;
 	    #store error message
-	    push @{$self->{code}}, [$line_count,         #line count
-				    \$source_file,       #file name
-				    [@srccode_sequence], #code sequence
-				    "",                  #label
-				    "",                  #opcode
-				    "",                  #arguments
-				    undef,               #linear pc
-				    undef,               #paged pc
-				    undef,               #hex code
-				    undef,               #bytes
-				    undef,               #cycles
-				    ["invalid S-Record"]];           #errors
+	    push @{$self->{code}}, [
+			$line_count,         #line count
+			\$source_file,       #file name
+			[@srccode_sequence], #code sequence
+			"",                  #label
+			"",                  #opcode
+			"",                  #arguments
+			undef,               #linear pc
+			undef,               #paged pc
+			undef,               #hex code
+			undef,               #bytes
+			undef,               #cycles
+			["invalid S-Record"],           #errors
+		];
 	    $error_count++;
 	    @srccode_sequence = ();
 	}
@@ -914,8 +968,12 @@ sub check_srec {
     $act_length = ((($#data_chars + 1) / 2) + 1);
     $length     = hex($length);
     if ($length != $act_length) {
-	$error = sprintf("Incorrect data length %d instead of %d", $act_length, $length);
-	return $error;
+		$error = sprintf(
+			"Incorrect data length %d instead of %d",
+			$act_length,
+			$length,
+		);
+		return $error;
     }
 
     ##################
@@ -923,9 +981,9 @@ sub check_srec {
     ##################
     $act_checksum = 0;
     while ($#data_chars >= 1) {
-	$byte  = shift @data_chars;
-	$byte .= shift @data_chars;
-	$act_checksum += hex($byte);
+		$byte  = shift @data_chars;
+		$byte .= shift @data_chars;
+		$act_checksum += hex($byte);
     }
     #add data length
     $act_checksum += $length;
@@ -933,8 +991,12 @@ sub check_srec {
     $checksum     = hex($checksum);
 
     if ($checksum != $act_checksum) {
-	$error = sprintf("Incorrect checksum %.2X instead of %.2X", $act_checksum, $checksum);
-	return $error;
+		$error = sprintf(
+			"Incorrect checksum %.2X instead of %.2X",
+			$act_checksum,
+			$checksum,
+		);
+		return $error;
     }
 
     #############
@@ -961,10 +1023,10 @@ sub print_S0_data {
     @data_chars = split //, $data;
     $string = "\"";
     while ($#data_chars >= 1) {
-	$byte    = shift @data_chars;
-	$byte   .= shift @data_chars;
-	$string .= chr(hex($byte));
-	#printf STDERR "hex to string: %.2s -> \"%s\"\n", hex($byte), $string;
+		$byte    = shift @data_chars;
+		$byte   .= shift @data_chars;
+		$string .= chr(hex($byte));
+		#printf STDERR "hex to string: %.2s -> \"%s\"\n", hex($byte), $string;
     }
     $string .= "\"";
     return $string;
@@ -988,10 +1050,10 @@ sub format_S123_data {
     $string = "";
     $count  = 0;
     while ($#data_chars >= 1) {
-	$string .= shift @data_chars;
-	$string .= shift @data_chars;
-	$string .= " ";
-	$count++;
+		$string .= shift @data_chars;
+		$string .= shift @data_chars;
+		$string .= " ";
+		$count++;
     }
     $string =~ s/\s*$//g;
     return ($count, $string);
@@ -1259,7 +1321,12 @@ sub determine_pc {
 	$pc_pag = undef;
     }
 
-    #printf STDERR "address: %8s type: %8s paged: %8X linear: %8X\n",  $address, $srec_type, $pc_pag, $pc_lin;
+    #printf STDERR "address: %8s type: %8s paged: %8X linear: %8X\n", (
+	#	$address,
+	#	$srec_type,
+	#	$pc_pag,
+	#	$pc_lin,
+	#);
 
     return ($pc_lin, $pc_pag); 
 }
@@ -1277,14 +1344,18 @@ sub check_s5rec {
     # check S-Record count #
     ########################
     if ($address == $srec_count) {
-	#############
-	# no errors #
-	#############
-	$error = 0;
-	return $error;
+		#############
+		# no errors #
+		#############
+		$error = 0;
+		return $error;
     } else {
-	$error = sprintf("Incorrect S-Record count %d instead of %d", $srec_count, $address);
-	return $error;
+		$error = sprintf(
+			"Incorrect S-Record count %d instead of %d",
+			$srec_count,
+			$address,
+		);
+		return $error;
     }
 }
 
@@ -1334,7 +1405,14 @@ sub print_lin_srec {
     my $srec_add_s5       = shift @_;
     my $srec_word_entries = shift @_;
 
-    return hsw12_asm::print_lin_srec($self, $string, $srec_format, $srec_data_length, $srec_add_s5, $srec_word_entries);
+    return hsw12_asm::print_lin_srec(
+		$self,
+		$string,
+		$srec_format,
+		$srec_data_length,
+		$srec_add_s5,
+		$srec_word_entries,
+	);
 }
 
 ##################
@@ -1348,7 +1426,14 @@ sub print_pag_srec {
     my $srec_add_s5       = shift @_;
     my $srec_word_entries = shift @_;
  
-    return hsw12_asm::print_pag_srec($self, $string, $srec_format, $srec_data_length, $srec_add_s5, $srec_word_entries);
+    return hsw12_asm::print_pag_srec(
+		$self,
+		$string,
+		$srec_format,
+		$srec_data_length,
+		$srec_add_s5,
+		$srec_word_entries,
+	);
 }
 
 #####################
@@ -1359,7 +1444,11 @@ sub gen_header_srec {
     my $string           = shift @_;
     my $srec_data_length = shift @_;
  
-    return hsw12_asm::gen_header_srec($self, $string, $srec_data_length);
+    return hsw12_asm::gen_header_srec(
+		$self,
+		$string,
+		$srec_data_length,
+	);
 }
 
 #################
