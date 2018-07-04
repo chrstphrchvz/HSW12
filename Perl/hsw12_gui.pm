@@ -167,6 +167,10 @@ r
    (add/enable commonly used ones, comment out others)
  - use foreach loop to generate 'Preferences' > 'Terminal' > 'Speed' menu
  
+=item V00.23 - Jul ??, 2018
+
+ - use loop to generate registers window
+ 
 =back
 
 =cut
@@ -174,6 +178,7 @@ r
 #################
 # Perl settings #
 #################
+use 5.012_001;
 use warnings;
 use strict;
 use FindBin qw($RealBin);
@@ -3142,211 +3147,90 @@ sub create_registers_window {
 	    $self->{gui}->{registers}->{toplevel}->gridColumnconfigure( 1, -weight => 1);
 	    $self->{gui}->{registers}->{toplevel}->gridColumnconfigure( 2, -weight => 1);
 	    $self->{gui}->{registers}->{toplevel}->gridColumnconfigure( 3, -weight => 0);
-	    $self->{gui}->{registers}->{toplevel}->gridRowconfigure(    0, -weight => 1);
-	    $self->{gui}->{registers}->{toplevel}->gridRowconfigure(    1, -weight => 1);
-	    $self->{gui}->{registers}->{toplevel}->gridRowconfigure(    2, -weight => 1);
-	    $self->{gui}->{registers}->{toplevel}->gridRowconfigure(    3, -weight => 1);
-	    $self->{gui}->{registers}->{toplevel}->gridRowconfigure(    4, -weight => 1);
-	    $self->{gui}->{registers}->{toplevel}->gridRowconfigure(    5, -weight => 1);
-	    $self->{gui}->{registers}->{toplevel}->gridRowconfigure(    6, -weight => 1);
-	    $self->{gui}->{registers}->{toplevel}->gridRowconfigure(    7, -weight => 1);
-	    
-	    #accu A
-	    $self->{gui}->{registers}->{a_label} = $self->{gui}->{registers}->{toplevel}->Label(-text    => "A:",
-												-justify => 'right');
-	    $self->{gui}->{registers}->{a_read_label} = $self->{gui}->{registers}->{toplevel}->Label(-width    => 8,
-												     -relief   => 'ridge',
-												     -justify  => 'right');
-	    $self->{gui}->{registers}->{a_write_entry} = $self->{gui}->{registers}->{toplevel}->Entry(-width   => 8,
-												      -justify => 'right');
-	    $self->{gui}->{registers}->{a_set_button} = $self->{gui}->{registers}->{toplevel}->Button(-text    => "Set",
-												      -command => [\&registers_set_a_cmd, $self]);
-	    $self->{gui}->{registers}->{a_label}->grid(       -column => 0, -row => 0, -sticky => 'nse'); 
-	    $self->{gui}->{registers}->{a_read_label}->grid(  -column => 1, -row => 0, -sticky => 'nsew'); 
-	    $self->{gui}->{registers}->{a_write_entry}->grid( -column => 2, -row => 0, -sticky => 'nsew'); 
-	    $self->{gui}->{registers}->{a_set_button}->grid(  -column => 3, -row => 0, -sticky => 'nsew'); 
-	    $self->{gui}->{registers}->{a_write_entry}->bind('<Key-Return>', [sub {$self->registers_set_a_cmd()}]);
+		my @register_names = qw(a b x y sp pc ppage ccr);
+	    while (my ($i, $register_name) = each @register_names) {
+			$self->{gui}->{registers}->{toplevel}->gridRowconfigure(
+				$i,
+				-weight => 1,
+			);
 
-	    #accu B
-	    $self->{gui}->{registers}->{b_label} = $self->{gui}->{registers}->{toplevel}->Label(-text    => "B:",
-												-justify => 'right');
-	    $self->{gui}->{registers}->{b_read_label} = $self->{gui}->{registers}->{toplevel}->Label(-width    => 8,
-												     -relief   => 'ridge',
-												     -justify  => 'right');
-	    $self->{gui}->{registers}->{b_write_entry} = $self->{gui}->{registers}->{toplevel}->Entry(-width   => 8,
-												      -justify => 'right');
-	    $self->{gui}->{registers}->{b_set_button} = $self->{gui}->{registers}->{toplevel}->Button(-text    => "Set",
-												      -command => [\&registers_set_b_cmd, $self]);
-	    $self->{gui}->{registers}->{b_label}->grid(       -column => 0, -row => 1, -sticky => 'nse'); 
-	    $self->{gui}->{registers}->{b_read_label}->grid(  -column => 1, -row => 1, -sticky => 'nsew'); 
-	    $self->{gui}->{registers}->{b_write_entry}->grid( -column => 2, -row => 1, -sticky => 'nsew'); 
-	    $self->{gui}->{registers}->{b_set_button}->grid(  -column => 3, -row => 1, -sticky => 'nsew'); 
-	    $self->{gui}->{registers}->{b_write_entry}->bind('<Key-Return>', [sub {$self->registers_set_b_cmd()}]);
-	    
-	    #index X
-	    $self->{gui}->{registers}->{x_label} = $self->{gui}->{registers}->{toplevel}->Label(-text    => "X:",
-												-justify => 'right');
-	    $self->{gui}->{registers}->{x_read_label} = $self->{gui}->{registers}->{toplevel}->Label(-width    => 8,
-												     -relief   => 'ridge',
-												     -justify  => 'right');
-	    $self->{gui}->{registers}->{x_write_entry} = $self->{gui}->{registers}->{toplevel}->Entry(-width   => 8,
-												      -justify => 'right');
-	    $self->{gui}->{registers}->{x_set_button} = $self->{gui}->{registers}->{toplevel}->Button(-text    => "Set",
-												      -command => [\&registers_set_x_cmd, $self]);
-	    $self->{gui}->{registers}->{x_label}->grid(       -column => 0, -row => 2, -sticky => 'nse'); 
-	    $self->{gui}->{registers}->{x_read_label}->grid(  -column => 1, -row => 2, -sticky => 'nsew'); 
-	    $self->{gui}->{registers}->{x_write_entry}->grid( -column => 2, -row => 2, -sticky => 'nsew'); 
-	    $self->{gui}->{registers}->{x_set_button}->grid(  -column => 3, -row => 2, -sticky => 'nsew'); 
-	    $self->{gui}->{registers}->{x_write_entry}->bind('<Key-Return>', [sub {$self->registers_set_x_cmd()}]);
-	    
-	    #index Y
-	    $self->{gui}->{registers}->{y_label} = $self->{gui}->{registers}->{toplevel}->Label(-text    => "Y:",
-												-justify => 'right');
-	    $self->{gui}->{registers}->{y_read_label} = $self->{gui}->{registers}->{toplevel}->Label(-width    => 8,
-												     -relief   => 'ridge',
-												     -justify  => 'right');
-	    $self->{gui}->{registers}->{y_write_entry} = $self->{gui}->{registers}->{toplevel}->Entry(-width   => 8,
-												      -justify => 'right');
-	    $self->{gui}->{registers}->{y_set_button} = $self->{gui}->{registers}->{toplevel}->Button(-text    => "Set",
-												      -command => [\&registers_set_y_cmd, $self]);
-	    $self->{gui}->{registers}->{y_label}->grid(       -column => 0, -row => 3, -sticky => 'nse'); 
-	    $self->{gui}->{registers}->{y_read_label}->grid(  -column => 1, -row => 3, -sticky => 'nsew'); 
-	    $self->{gui}->{registers}->{y_write_entry}->grid( -column => 2, -row => 3, -sticky => 'nsew'); 
-	    $self->{gui}->{registers}->{y_set_button}->grid(  -column => 3, -row => 3, -sticky => 'nsew'); 
-	    $self->{gui}->{registers}->{y_write_entry}->bind('<Key-Return>', [sub {$self->registers_set_y_cmd()}]);
-	    
-	    #stack pointer SP
-	    $self->{gui}->{registers}->{sp_label} = $self->{gui}->{registers}->{toplevel}->Label(-text    => "SP:",
-												 -justify => 'right');
-	    $self->{gui}->{registers}->{sp_read_label} = $self->{gui}->{registers}->{toplevel}->Label(-width    => 8,
-												      -relief   => 'ridge',
-												      -justify  => 'right');
-	    $self->{gui}->{registers}->{sp_write_entry} = $self->{gui}->{registers}->{toplevel}->Entry(-width   => 8,
-												       -justify => 'right');
-	    $self->{gui}->{registers}->{sp_set_button} = $self->{gui}->{registers}->{toplevel}->Button(-text    => "Set",
-												       -command => [\&registers_set_sp_cmd, $self]);
-	    $self->{gui}->{registers}->{sp_label}->grid(       -column => 0, -row => 4, -sticky => 'nse'); 
-	    $self->{gui}->{registers}->{sp_read_label}->grid(  -column => 1, -row => 4, -sticky => 'nsew'); 
-	    $self->{gui}->{registers}->{sp_write_entry}->grid( -column => 2, -row => 4, -sticky => 'nsew'); 
-	    $self->{gui}->{registers}->{sp_set_button}->grid(  -column => 3, -row => 4, -sticky => 'nsew'); 
-	    $self->{gui}->{registers}->{sp_write_entry}->bind('<Key-Return>', [sub {$self->registers_set_sp_cmd()}]);
-	    
-	    #program counter PC
-	    $self->{gui}->{registers}->{pc_label} = $self->{gui}->{registers}->{toplevel}->Label(-text    => "PC:",
-												 -justify => 'right');
-	    $self->{gui}->{registers}->{pc_read_label} = $self->{gui}->{registers}->{toplevel}->Label(-width    => 8,
-												      -relief   => 'ridge',
-												      -justify  => 'right');
-	    $self->{gui}->{registers}->{pc_write_entry} = $self->{gui}->{registers}->{toplevel}->Entry(-width   => 8,
-												       -justify => 'right');
-	    $self->{gui}->{registers}->{pc_set_button} = $self->{gui}->{registers}->{toplevel}->Button(-text    => "Set",
-												       -command => [\&registers_set_pc_cmd, $self]);
-	    $self->{gui}->{registers}->{pc_label}->grid(       -column => 0, -row => 5, -sticky => 'nse'); 
-	    $self->{gui}->{registers}->{pc_read_label}->grid(  -column => 1, -row => 5, -sticky => 'nsew'); 
-	    $self->{gui}->{registers}->{pc_write_entry}->grid( -column => 2, -row => 5, -sticky => 'nsew'); 
-	    $self->{gui}->{registers}->{pc_set_button}->grid(  -column => 3, -row => 5, -sticky => 'nsew'); 
-	    $self->{gui}->{registers}->{pc_write_entry}->bind('<Key-Return>', [sub {$self->registers_set_pc_cmd()}]);
-	    
-	    #PPAGE register
-	    $self->{gui}->{registers}->{ppage_label_frame} = $self->{gui}->{registers}->{toplevel}->Frame();
-	    $self->{gui}->{registers}->{ppage_left_label}  = $self->{gui}->{registers}->{ppage_label_frame}->Label(-text    => "PPAGE:",
-	    												       -justify => 'right',
-	    												       -width   => 7)->pack(-side   => 'right',
-	    															    -fill   => 'both',
-	    															    -expand => 1);
-	    $self->{gui}->{registers}->{ppage_read_label}  = $self->{gui}->{registers}->{toplevel}->Label(-width    => 8,
-													  -relief   => 'ridge',
-													  -justify  => 'right');
-	    
-	    $self->{gui}->{registers}->{ppage_write_entry} = $self->{gui}->{registers}->{toplevel}->Entry(-width    => 8,
-													  -justify  => 'right');
-	    $self->{gui}->{registers}->{ppage_set_button}  = $self->{gui}->{registers}->{toplevel}->Button(-text    => "Set",
-													   -command => [\&registers_set_ppage_cmd, $self]);
-	    $self->{gui}->{registers}->{ppage_label_frame}->grid( -column => 0, -row => 6, -sticky => 'nse'); 
-	    $self->{gui}->{registers}->{ppage_read_label}->grid(  -column => 1, -row => 6, -sticky => 'nsew'); 
-	    $self->{gui}->{registers}->{ppage_write_entry}->grid( -column => 2, -row => 6, -sticky => 'nsew'); 
-	    $self->{gui}->{registers}->{ppage_set_button}->grid(  -column => 3, -row => 6, -sticky => 'nsew'); 
-	    $self->{gui}->{registers}->{ppage_write_entry}->bind('<Key-Return>', [sub {$self->registers_set_ppage_cmd()}]);
-	    
-	    #condition code register CCR
-	    $self->{gui}->{registers}->{ccr_label} = $self->{gui}->{registers}->{toplevel}->Label(-text    => "CCR:",
-												  -justify => 'right');
-	    $self->{gui}->{registers}->{ccr_read_label} = $self->{gui}->{registers}->{toplevel}->Label(-width        => 8,
-												       -relief       => 'ridge',
-												       -justify      => 'right');
-	    
-	    $self->{gui}->{registers}->{ccr_write_frame} =  $self->{gui}->{registers}->{toplevel}->Frame();
-	    $self->{gui}->{registers}->{ccr_s_write_cbutton} = $self->{gui}->{registers}->{ccr_write_frame}->Checkbutton(-text        => "S",
-															 -onvalue     => 1,
-															 -offvalue    => 0,
-															 -indicatoron => 0,
-															 -selectcolor => $self->{session}->{colors}->{dark_red},
-															 -width       => 1)->pack(-side   => 'left',
-																		  -fill   => 'both',
-																		  -expand => 1);
-	    $self->{gui}->{registers}->{ccr_x_write_cbutton} = $self->{gui}->{registers}->{ccr_write_frame}->Checkbutton(-text        => "X",
-															 -onvalue     => 1,
-															 -offvalue    => 0,
-															 -indicatoron => 0,
-															 -selectcolor => $self->{session}->{colors}->{dark_red},
-															 -width       => 1)->pack(-side   => 'left',
-																		  -fill   => 'both',
-																		  -expand => 1);
-	    $self->{gui}->{registers}->{ccr_h_write_cbutton} = $self->{gui}->{registers}->{ccr_write_frame}->Checkbutton(-text        => "H",
-															 -onvalue     => 1,
-															 -offvalue    => 0,
-															 -indicatoron => 0,
-															 -selectcolor => $self->{session}->{colors}->{dark_red},
-															 -width       => 1)->pack(-side   => 'left',
-																		  -fill   => 'both',
-																		  -expand => 1);
-	    $self->{gui}->{registers}->{ccr_i_write_cbutton} = $self->{gui}->{registers}->{ccr_write_frame}->Checkbutton(-text        => "I",
-															 -onvalue     => 1,
-															 -offvalue    => 0,
-															 -indicatoron => 0,
-															 -selectcolor => $self->{session}->{colors}->{dark_red},
-															 -width       => 1)->pack(-side   => 'left',
-																		  -fill   => 'both',
-																		  -expand => 1);
-	    $self->{gui}->{registers}->{ccr_n_write_cbutton} = $self->{gui}->{registers}->{ccr_write_frame}->Checkbutton(-text        => "N",
-															 -onvalue     => 1,
-															 -offvalue    => 0,
-															 -indicatoron => 0,
-															 -selectcolor => $self->{session}->{colors}->{dark_red},
-															 -width       => 1)->pack(-side   => 'left',
-																		  -fill   => 'both',
-																		  -expand => 1);
-	    $self->{gui}->{registers}->{ccr_z_write_cbutton} = $self->{gui}->{registers}->{ccr_write_frame}->Checkbutton(-text        => "Z",
-															 -onvalue     => 1,
-															 -offvalue    => 0,
-															 -indicatoron => 0,
-															 -selectcolor => $self->{session}->{colors}->{dark_red},
-															 -width       => 1)->pack(-side   => 'left',
-																		  -fill   => 'both',
-																		  -expand => 1);
-	    $self->{gui}->{registers}->{ccr_v_write_cbutton} = $self->{gui}->{registers}->{ccr_write_frame}->Checkbutton(-text        => "V",
-															 -onvalue     => 1,
-															 -offvalue    => 0,
-															 -indicatoron => 0,
-															 -selectcolor => $self->{session}->{colors}->{dark_red},
-															 -width       => 1)->pack(-side   => 'left',
-																		  -fill   => 'both',
-																		  -expand => 1);
-	    $self->{gui}->{registers}->{ccr_c_write_cbutton} = $self->{gui}->{registers}->{ccr_write_frame}->Checkbutton(-text        => "C",
-															 -onvalue     => 1,
-															 -offvalue    => 0,
-															 -indicatoron => 0,
-															 -selectcolor => $self->{session}->{colors}->{dark_red},
-															 -width       => 1)->pack(-side   => 'left',
-																		  -fill   => 'both',
-																		  -expand => 1);
-	    $self->{gui}->{registers}->{ccr_set_button} = $self->{gui}->{registers}->{toplevel}->Button(-text    => "Set",
-													-command => [\&registers_set_ccr_cmd, $self]);
-	    $self->{gui}->{registers}->{ccr_label}->grid(       -column => 0, -row => 7, -sticky => 'nse'); 
-	    $self->{gui}->{registers}->{ccr_read_label}->grid(  -column => 1, -row => 7, -sticky => 'nsew'); 
-	    $self->{gui}->{registers}->{ccr_write_frame}->grid( -column => 2, -row => 7, -sticky => 'nsew'); 
-	    $self->{gui}->{registers}->{ccr_set_button}->grid(  -column => 3, -row => 7, -sticky => 'nsew'); 
-	    
+			$self->{gui}->{registers}->{$register_name . '_label'} =
+				$self->{gui}->{registers}->{toplevel}->Label(
+					-text    => uc($register_name) . ':',
+					-justify => 'right',
+			);
+	    	$self->{gui}->{registers}->{$register_name . '_read_label'} =
+				$self->{gui}->{registers}->{toplevel}->Label(
+					-width    => 8,
+					-relief   => 'ridge',
+					-justify  => 'right',
+			);
+	    	$self->{gui}->{registers}->{$register_name . '_set_button'} = 
+				$self->{gui}->{registers}->{toplevel}->Button(
+					-text    => "Set",
+					-command => [
+						\&{'registers_set_' . $register_name . '_cmd'},
+						$self,
+					],
+			);
+		    $self->{gui}->{registers}->{$register_name . '_label'}->grid(
+				-column => 0,
+				-row => $i,
+				-sticky => 'nse',
+			);
+			$self->{gui}->{registers}->{$register_name . '_read_label'}->grid(
+				-column => 1,
+				-row => $i,
+				-sticky => 'nsew',
+			);
+		    $self->{gui}->{registers}->{$register_name . '_set_button'}->grid(
+				-column => 3,
+				-row => $i,
+				-sticky => 'nsew',
+			);
+	    	if ($register_name ne 'ccr') {
+				$self->{gui}->{registers}->{$register_name . '_write_entry'} =
+					$self->{gui}->{registers}->{toplevel}->Entry(
+						-width   => 8,
+						-justify => 'right',
+				);
+				$self->{gui}->{registers}->{$register_name . '_write_entry'}->bind(
+					'<Key-Return>' => [
+						$self => \&{'registers_set_' . $register_name . '_cmd'},
+					],
+				);
+				$self->{gui}->{registers}->{$register_name . '_write_entry'}->grid(
+					-column => 2,
+					-row => $i,
+					-sticky => 'nsew',
+				);
+			} else {
+				#condition code register CCR
+				$self->{gui}->{registers}->{ccr_write_frame} = 
+					$self->{gui}->{registers}->{toplevel}->Frame();
+				my @bit_names = qw(s x h i n z v c);
+				foreach my $bit_name (@bit_names) {
+					$self->{gui}->{registers}->{'ccr_' . $bit_name . '_write_cbutton'} = 
+						$self->{gui}->{registers}->{ccr_write_frame}->Checkbutton(
+							-text        => uc($bit_name),
+							-onvalue     => 1,
+							-offvalue    => 0,
+							-indicatoron => 0,
+							-selectcolor => $self->{session}->{colors}->{dark_red},
+							-width       => 1,
+						)->pack(
+							-side   => 'left',
+							-fill   => 'both',
+							-expand => 1,
+					);
+				}
+				$self->{gui}->{registers}->{ccr_write_frame}->grid(
+					-column => 2,
+					-row => $i,
+					-sticky => 'nsew',
+				);
+			}
+		}
 	}
 
 	################
